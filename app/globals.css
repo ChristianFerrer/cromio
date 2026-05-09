@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --y-green-900: #0b6e3f;
+  --y-green-700: #117c4e;
+  --y-green-500: #1fae5a;
+  --y-green-100: #e6f4ec;
+  --y-green-50: #f1faf4;
+  --y-ink: #0e0e0e;
+  --y-ink-soft: #1a1a1a;
+  --y-charcoal: #3a3a3a;
+  --y-gold: #d4af37;
+  --y-gold-light: #f0da8e;
+  --y-gold-dark: #8c7220;
+  --y-bone: #fafaf7;
+  --y-paper: #f5f4ee;
+  --y-line: #e8e6de;
+  --y-line-strong: #d8d5c9;
+  --y-mute: #8a8779;
+  --y-text: #1a1a1a;
+  --y-text-2: #5c5a50;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--y-bone);
+  color: var(--y-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-inter), -apple-system, system-ui, sans-serif;
+}
+
+.scroll-hide::-webkit-scrollbar {
+  display: none;
+}
+.scroll-hide {
+  scrollbar-width: none;
+}
+
+.font-display {
+  font-family: var(--font-bebas), "Oswald", system-ui, sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}

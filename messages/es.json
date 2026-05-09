@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "album": "Álbum",
+    "mapa": "Mapa",
+    "favoritos": "Favoritos",
+    "chat": "Chats",
+    "perfil": "Perfil"
+  },
+  "common": {
+    "appName": "Cromio",
+    "tagline": "Encuentra coleccionistas a tu alrededor",
+    "comingSoon": "Próximamente",
+    "loading": "Cargando..."
+  },
+  "album": {
+    "title": "Mi álbum",
+    "subtitle": "Mundial 2026 · Edición coleccionista",
+    "completed": "Completado",
+    "missing": "faltan",
+    "duplicates": "repes"
+  },
+  "mapa": {
+    "title": "Mapa",
+    "searchRadius": "Radio de búsqueda",
+    "hyperlocal": "Modo hiperlocal · Solo tu manzana"
+  },
+  "favoritos": {
+    "title": "Favoritos",
+    "empty": "Aún no tienes favoritos"
+  },
+  "chat": {
+    "title": "Chats",
+    "empty": "Sin conversaciones todavía"
+  },
+  "perfil": {
+    "title": "Perfil",
+    "settings": "Ajustes"
+  }
+}

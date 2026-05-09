@@ -1,0 +1,27 @@
+{
+  "name": "Cromio",
+  "short_name": "Cromio",
+  "description": "Encuentra coleccionistas del álbum Panini Mundial 2026 cerca de ti.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAFAF7",
+  "theme_color": "#0B6E3F",
+  "categories": ["sports", "social", "lifestyle"],
+  "lang": "es",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

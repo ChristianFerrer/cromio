@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "album": "Album",
+    "mapa": "Map",
+    "favoritos": "Favorites",
+    "chat": "Chats",
+    "perfil": "Profile"
+  },
+  "common": {
+    "appName": "Cromio",
+    "tagline": "Find collectors around you",
+    "comingSoon": "Coming soon",
+    "loading": "Loading..."
+  },
+  "album": {
+    "title": "My album",
+    "subtitle": "2026 World Cup · Collector's edition",
+    "completed": "Completed",
+    "missing": "missing",
+    "duplicates": "duplicates"
+  },
+  "mapa": {
+    "title": "Map",
+    "searchRadius": "Search radius",
+    "hyperlocal": "Hyperlocal mode · Just your block"
+  },
+  "favoritos": {
+    "title": "Favorites",
+    "empty": "No favorites yet"
+  },
+  "chat": {
+    "title": "Chats",
+    "empty": "No conversations yet"
+  },
+  "perfil": {
+    "title": "Profile",
+    "settings": "Settings"
+  }
+}
