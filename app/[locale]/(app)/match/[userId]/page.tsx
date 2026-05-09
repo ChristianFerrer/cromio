@@ -8,6 +8,7 @@ import { buildMockCollection } from "@/lib/data/stickers";
 import { buildMatch, fmtDistance } from "@/lib/matches";
 import { useCollection } from "@/hooks/useCollection";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useUser } from "@/hooks/useUser";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { Btn } from "@/components/ui/Btn";
 import { Badge } from "@/components/ui/Badge";
@@ -21,6 +22,7 @@ export default function MatchDetailPage({
   const u = MOCK_USERS_BY_ID[userId];
   const { collection } = useCollection(247);
   const { has, toggle } = useFavorites();
+  const { user: me } = useUser();
   const isFav = u ? has(u.id) : false;
 
   const userIdx = u ? Object.keys(MOCK_USERS_BY_ID).indexOf(u.id) + 1 : 1;
@@ -191,14 +193,25 @@ export default function MatchDetailPage({
       </div>
 
       <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur">
-        <Btn
-          kind="primaryVibrant"
-          full
-          size="lg"
-          icon={<MessageCircle size={18} strokeWidth={2} />}
-        >
-          {isLead ? "Proponer intercambio" : "Iniciar chat"}
-        </Btn>
+        {!me ? (
+          <Link
+            href="/login"
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-green-500 text-base font-bold text-white shadow-sh2"
+          >
+            <MessageCircle size={18} strokeWidth={2} />
+            Inicia sesión para chatear
+          </Link>
+        ) : (
+          <Btn
+            kind="primaryVibrant"
+            full
+            size="lg"
+            disabled
+            icon={<MessageCircle size={18} strokeWidth={2} />}
+          >
+            Chat con usuarios reales próximamente
+          </Btn>
+        )}
       </div>
     </main>
   );

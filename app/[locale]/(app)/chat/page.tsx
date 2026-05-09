@@ -1,99 +1,119 @@
-"use client";
-
 import Link from "next/link";
-import { MessageCircle } from "lucide-react";
-import { MOCK_USERS } from "@/lib/data/mock-users";
-import { buildMockCollection } from "@/lib/data/stickers";
-import { AlbumProgress } from "@/components/match/AlbumProgress";
+import { LogIn, MessageCircle } from "lucide-react";
+import { getCurrentUser } from "@/lib/profile";
+import { loadChatsForCurrentUser } from "@/lib/chat/queries";
 
-const MOCK_CHATS = [
-  {
-    id: "ch_maria",
-    userId: "u_maria",
-    state: "pending" as const,
-    last: "Quedamos mañana en Plaça Reial?",
-    time: "14:22",
-    unread: 2,
-  },
-  {
-    id: "ch_carlos",
-    userId: "u_carlos",
-    state: "confirmed" as const,
-    last: "✓ Quedada confirmada · sábado 11:00",
-    time: "12:08",
-    unread: 0,
-  },
-  {
-    id: "ch_pedro",
-    userId: "u_pedro",
-    state: "completed" as const,
-    last: "⭐ Intercambio completado",
-    time: "Ayer",
-    unread: 0,
-  },
-];
+export default async function ChatListPage() {
+  const user = await getCurrentUser();
 
-const STATE_COLORS = {
-  pending: "bg-gold/15 text-gold-dark",
-  confirmed: "bg-green-100 text-green-700",
-  completed: "bg-line text-text-2",
-} as const;
+  if (!user) {
+    return (
+      <main className="px-5 pb-6 pt-14">
+        <h1 className="font-display text-3xl tracking-tight">Chats</h1>
+        <div className="mt-10 flex flex-col items-center gap-3 rounded-md border border-dashed border-line bg-paper px-5 py-10 text-center">
+          <MessageCircle size={32} className="text-mute" />
+          <p className="text-sm text-text-2">
+            Inicia sesión para chatear con otros coleccionistas y coordinar intercambios.
+          </p>
+          <Link
+            href="/login"
+            className="mt-2 inline-flex items-center gap-2 rounded-md bg-green-500 px-5 py-2 text-sm font-bold text-white"
+          >
+            <LogIn size={14} /> Iniciar sesión
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
-export default function ChatListPage() {
+  const chats = await loadChatsForCurrentUser();
+
   return (
     <main className="px-5 pb-6 pt-14">
       <h1 className="font-display text-3xl tracking-tight">Chats</h1>
       <p className="mt-1 text-xs uppercase tracking-wider text-text-2">
-        {MOCK_CHATS.length} conversaciones
+        {chats.length} {chats.length === 1 ? "conversación" : "conversaciones"}
       </p>
 
-      <div className="mt-5 space-y-2">
-        {MOCK_CHATS.map((c) => {
-          const u = MOCK_USERS.find((x) => x.id === c.userId);
-          if (!u) return null;
-          const map = buildMockCollection(MOCK_USERS.indexOf(u) + 1);
-          let owned = 0;
-          map.forEach((cnt) => cnt >= 1 && owned++);
-          const pct = Math.round((owned / map.size) * 1000) / 10;
-          return (
-            <Link
-              key={c.id}
-              href={`/chat/${c.id}`}
-              className="flex items-center gap-3 rounded-md border border-line bg-white p-3"
-            >
-              <div className="relative">
-                <div className="grid h-12 w-12 place-items-center rounded-full bg-green-500 font-display text-lg text-white">
-                  {u.alias.slice(0, 2).toUpperCase()}
+      {chats.length === 0 ? (
+        <div className="mt-10 grid place-items-center rounded-md border border-dashed border-line bg-paper px-5 py-12 text-center">
+          <MessageCircle size={28} className="text-mute" />
+          <p className="mt-2 text-sm text-text-2">
+            Sin conversaciones todavía.<br />
+            Encuentra un coleccionista en el mapa y empieza un chat.
+          </p>
+          <Link
+            href="/mapa"
+            className="mt-3 rounded-md border border-line bg-white px-4 py-2 text-xs font-semibold"
+          >
+            Ir al mapa
+          </Link>
+        </div>
+      ) : (
+        <div className="mt-5 space-y-2">
+          {chats.map((c) => {
+            const initials = (c.other_user.alias ?? "??").slice(0, 2).toUpperCase();
+            const time = c.last_message_at
+              ? new Date(c.last_message_at).toLocaleTimeString("es-ES", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "";
+            const stateLabel =
+              c.state === "pending"
+                ? "Pendiente"
+                : c.state === "confirmed"
+                  ? "Confirmado"
+                  : c.state === "completed"
+                    ? "Completado"
+                    : "Cancelado";
+            const stateClass =
+              c.state === "pending"
+                ? "bg-gold/15 text-gold-dark"
+                : c.state === "confirmed"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-line text-text-2";
+
+            return (
+              <Link
+                key={c.id}
+                href={`/chat/${c.id}`}
+                className="flex items-center gap-3 rounded-md border border-line bg-white p-3"
+              >
+                <div className="relative">
+                  <div
+                    className="grid h-12 w-12 place-items-center rounded-full font-display text-lg text-white"
+                    style={{ background: c.other_user.color ?? "#1FAE5A" }}
+                  >
+                    {initials}
+                  </div>
+                  {c.unread_count > 0 && (
+                    <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-green-500 text-[10px] font-bold text-white ring-2 ring-white">
+                      {c.unread_count}
+                    </span>
+                  )}
                 </div>
-                {c.unread > 0 && (
-                  <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-green-500 text-[10px] font-bold text-white ring-2 ring-white">
-                    {c.unread}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="truncate text-sm font-bold">
+                      {c.other_user.display_name ?? c.other_user.alias}
+                    </span>
+                    {time && <span className="shrink-0 text-[11px] text-text-2">{time}</span>}
+                  </div>
+                  <span
+                    className={`mt-1 inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${stateClass}`}
+                  >
+                    {stateLabel}
                   </span>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="truncate text-sm font-bold">{u.alias}</span>
-                  <span className="shrink-0 text-[11px] text-text-2">{c.time}</span>
+                  <p className="mt-1 truncate text-xs text-text-2">
+                    {c.last_message?.body ?? "Sin mensajes todavía"}
+                  </p>
                 </div>
-                <span
-                  className={`mt-1 inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${STATE_COLORS[c.state]}`}
-                >
-                  {c.state === "pending" ? "Pendiente" : c.state === "confirmed" ? "Confirmado" : "Completado"}
-                </span>
-                <p className="mt-1 truncate text-xs text-text-2">{c.last}</p>
-                <AlbumProgress pct={pct} className="mt-1.5" />
-              </div>
-            </Link>
-          );
-        })}
-        {MOCK_CHATS.length === 0 && (
-          <div className="grid h-48 place-items-center rounded-md border border-dashed border-line text-center text-sm text-text-2">
-            <MessageCircle size={28} className="mx-auto mb-2 text-mute" />
-            Sin conversaciones todavía
-          </div>
-        )}
-      </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </main>
   );
 }
