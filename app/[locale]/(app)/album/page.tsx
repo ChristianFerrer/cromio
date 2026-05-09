@@ -1,28 +1,230 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Search, Bell, Plus, Globe, MapPin, ArrowRight, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { COUNTRIES, COUNTRY_BY_CODE } from "@/lib/data/countries";
+import { STICKERS, TOTAL_STICKERS } from "@/lib/data/stickers";
+import { MOCK_USERS } from "@/lib/data/mock-users";
+import { buildMockCollection } from "@/lib/data/stickers";
+import { buildMatch } from "@/lib/matches";
+import { useCollection } from "@/hooks/useCollection";
+import { CromoCard } from "@/components/cromo/CromoCard";
+import { Flag } from "@/components/cromo/Flag";
+import { Chip } from "@/components/ui/Chip";
+
+type Tab = "selecciones" | "especiales" | "estadios";
+type Filter = "todos" | "falti" | "repe";
 
 export default function AlbumPage() {
   const t = useTranslations();
+  const { collection, stats, adjust } = useCollection(247);
+  const [tab, setTab] = useState<Tab>("selecciones");
+  const [filter, setFilter] = useState<Filter>("todos");
+  const [country, setCountry] = useState<string>("all");
+
+  const tabPool = useMemo(() => {
+    if (tab === "especiales") {
+      return STICKERS.filter((s) => s.rarity !== "common");
+    }
+    if (tab === "estadios") {
+      return STICKERS.filter((s) => s.type === "host_city");
+    }
+    return STICKERS.filter((s) => s.type === "team_badge" || s.type === "team_photo" || s.type === "player");
+  }, [tab]);
+
+  const tabCountries = useMemo(() => {
+    const codes = new Set(tabPool.map((s) => s.team_code).filter(Boolean) as string[]);
+    return COUNTRIES.filter((c) => codes.has(c.code));
+  }, [tabPool]);
+
+  const list = useMemo(() => {
+    return tabPool
+      .filter((s) => country === "all" || s.team_code === country)
+      .filter((s) => {
+        const cnt = collection.get(s.n) ?? 0;
+        if (filter === "falti") return cnt === 0;
+        if (filter === "repe") return cnt >= 2;
+        return true;
+      });
+  }, [tabPool, country, filter, collection]);
+
+  const matchBanner = useMemo(() => {
+    const entries = MOCK_USERS.map((u, i) => {
+      const m = buildMatch(collection, buildMockCollection(i + 1));
+      return { youGet: m.youGet.length, theyGet: m.theyGet.length };
+    }).filter((x) => x.youGet > 0);
+    const matches = entries.filter((x) => x.theyGet > 0).length;
+    const leads = entries.filter((x) => x.theyGet === 0).length;
+    return { total: entries.length, matches, leads };
+  }, [collection]);
+
   return (
-    <main className="px-5 pt-14">
-      <header className="pt-2">
-        <h1 className="font-display text-3xl tracking-tight">
-          {t("common.appName")}
-        </h1>
-        <p className="mt-1 text-xs uppercase tracking-wider text-text-2">
+    <main className="flex flex-col">
+      <div className="flex items-center justify-between px-5 pt-14">
+        <h1 className="font-display text-3xl tracking-tight">CROMIO</h1>
+        <div className="flex gap-2">
+          <button className="grid h-9 w-9 place-items-center rounded-md border border-line bg-white text-text">
+            <Search size={18} strokeWidth={1.8} />
+          </button>
+          <button className="grid h-9 w-9 place-items-center rounded-md border border-line bg-white text-text">
+            <Bell size={18} strokeWidth={1.8} />
+          </button>
+        </div>
+      </div>
+
+      <section className="px-5 pt-3">
+        <p className="text-xs font-semibold uppercase tracking-wider text-text-2">
           {t("album.subtitle")}
         </p>
-      </header>
-
-      <section className="mt-6 rounded-card border border-line bg-white p-5 shadow-sh1">
-        <div className="font-display text-5xl leading-none text-text">0</div>
-        <div className="mt-1 text-sm text-text-2">/ 980 cromos · 0%</div>
-        <div className="mt-4 h-2 overflow-hidden rounded-full bg-line">
-          <div className="h-full w-0 bg-gradient-to-r from-green-700 to-green-500" />
+        <div className="mt-1.5 flex items-baseline gap-2 font-display text-text">
+          <span className="tabular leading-none" style={{ fontSize: 64 }}>
+            {stats.owned}
+          </span>
+          <span className="text-2xl text-mute">/{TOTAL_STICKERS}</span>
+          <span className="ml-auto text-2xl text-green-700">
+            {stats.pct.toFixed(1)}%
+          </span>
         </div>
-        <p className="mt-4 text-sm text-mute">
-          {t("common.comingSoon")} — sección {t("nav.album")}
-        </p>
+        <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-line">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-green-700 to-green-500 transition-[width]"
+            style={{ width: `${stats.pct}%` }}
+          />
+        </div>
+        <div className="mt-2 flex gap-3.5 text-xs text-text-2">
+          <span><b className="text-text">{stats.repes}</b> {t("album.duplicates")}</span>
+          <span><b className="text-text">{stats.missing}</b> {t("album.missing")}</span>
+        </div>
       </section>
+
+      {matchBanner.total > 0 ? (
+        <Link
+          href="/mapa"
+          className="mx-4 mt-3 flex items-center gap-2.5 rounded-md border border-green-100 bg-green-50 p-3"
+        >
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-green-500 text-white">
+            <MapPin size={18} strokeWidth={2.2} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13.5px] font-bold text-green-700">
+              Hay {matchBanner.total} usuario{matchBanner.total === 1 ? "" : "s"} con cromos de tu interés
+            </span>
+            <span className="mt-0.5 block text-xs text-text-2">
+              <strong className="text-green-700">{matchBanner.matches}</strong> Match{matchBanner.matches === 1 ? "" : "es"}
+              {" "}y{" "}
+              <strong className="text-match-interest">{matchBanner.leads}</strong> de Interés
+            </span>
+          </span>
+          <ArrowRight size={16} className="text-green-700" />
+        </Link>
+      ) : (
+        <Link
+          href="/mapa"
+          className="mx-4 mt-3 flex items-center gap-2.5 rounded-md border p-3"
+          style={{ background: "rgba(212,175,55,.10)", borderColor: "rgba(212,175,55,.35)" }}
+        >
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-gold text-white">
+            <Search size={18} strokeWidth={2.4} />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13.5px] font-bold" style={{ color: "#7a5d10" }}>
+              No hay usuarios con cromos de tu interés
+            </span>
+            <span className="mt-0.5 block text-xs text-text-2">
+              Agrega cromos a tu colección o incrementa el radio de búsqueda
+            </span>
+          </span>
+          <ArrowRight size={16} className="text-gold" />
+        </Link>
+      )}
+
+      <div className="mt-5 flex gap-5 border-b border-line px-5">
+        {(["selecciones", "especiales", "estadios"] as const).map((id) => (
+          <button
+            key={id}
+            onClick={() => {
+              setTab(id);
+              if (id !== "selecciones") setCountry("all");
+            }}
+            className={`-mb-px py-2 text-[14.5px] capitalize transition-colors ${
+              tab === id
+                ? "border-b-2 border-text font-bold text-text"
+                : "border-b-2 border-transparent font-medium text-mute"
+            }`}
+          >
+            {id}
+          </button>
+        ))}
+      </div>
+
+      <div className="scroll-hide flex gap-2 overflow-x-auto px-4 pb-1 pt-3">
+        <Chip active={country === "all"} onClick={() => setCountry("all")}>
+          <Globe size={14} strokeWidth={2} /> Todos
+        </Chip>
+        {tabCountries.map((c) => (
+          <Chip key={c.code} active={country === c.code} onClick={() => setCountry(c.code)}>
+            <Flag country={c} size={20} />
+            {c.short}
+          </Chip>
+        ))}
+      </div>
+
+      <div className="flex gap-2 px-4 pb-2 pt-3">
+        {(() => {
+          const inScope = tabPool.filter((s) => country === "all" || s.team_code === country);
+          const counts = {
+            todos: inScope.length,
+            falti: inScope.filter((s) => (collection.get(s.n) ?? 0) === 0).length,
+            repe: inScope.filter((s) => (collection.get(s.n) ?? 0) >= 2).length,
+          };
+          return (
+            <>
+              <Chip active={filter === "todos"} onClick={() => setFilter("todos")}>
+                Todos · {counts.todos}
+              </Chip>
+              <Chip active={filter === "falti"} onClick={() => setFilter("falti")}>
+                Me faltan · {counts.falti}
+              </Chip>
+              <Chip active={filter === "repe"} onClick={() => setFilter("repe")}>
+                Repes · {counts.repe}
+              </Chip>
+            </>
+          );
+        })()}
+      </div>
+
+      <div className="grid grid-cols-3 gap-3 px-4 pb-6 pt-1">
+        {list.map((s) => (
+          <div key={s.n} className="flex justify-center">
+            <CromoCard
+              sticker={s}
+              count={collection.get(s.n) ?? 0}
+              size="sm"
+              onAdjust={(d) => adjust(s.n, d)}
+            />
+          </div>
+        ))}
+        {list.length === 0 && (
+          <div className="col-span-3 py-10 text-center text-sm text-text-2">
+            Sin cromos para este filtro
+          </div>
+        )}
+      </div>
+
+      <button
+        className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-green-500 to-green-700 text-white shadow-sh3"
+        aria-label="Añadir cromos"
+        onClick={() => {
+          const n = window.prompt(`Número de cromo (1-${TOTAL_STICKERS}):`);
+          if (!n) return;
+          const num = Number(n);
+          if (num >= 1 && num <= TOTAL_STICKERS) adjust(num, +1);
+        }}
+      >
+        <Plus size={26} strokeWidth={2.4} />
+      </button>
     </main>
   );
 }
