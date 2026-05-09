@@ -27,6 +27,10 @@ export default function OnboardingPage() {
   const finish = () => {
     startTransition(async () => {
       const supabase = createClient();
+      if (!supabase) {
+        router.replace("/login");
+        return;
+      }
       const {
         data: { user },
       } = await supabase.auth.getUser();

@@ -33,6 +33,7 @@ export function useCollection(mockSeed = 247) {
       return;
     }
     const supabase = createClient();
+    if (!supabase) return;
     supabase
       .from("user_stickers")
       .select("sticker_n, count")
@@ -72,6 +73,7 @@ export function useCollection(mockSeed = 247) {
           return { ...(prev ?? {}), [n]: next };
         });
         const supabase = createClient();
+        if (!supabase) return;
         const cur = serverMap?.[n] ?? 0;
         const nextValue = Math.max(0, cur + delta);
         supabase
