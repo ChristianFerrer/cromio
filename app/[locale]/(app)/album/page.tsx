@@ -19,7 +19,7 @@ type Filter = "todos" | "falti" | "repe";
 
 export default function AlbumPage() {
   const t = useTranslations();
-  const { collection, stats, adjust } = useCollection(247);
+  const { collection, stats, adjust, isInitializing } = useCollection(247);
   const [tab, setTab] = useState<Tab>("selecciones");
   const [filter, setFilter] = useState<Filter>("todos");
   const [country, setCountry] = useState<string>("all");
@@ -51,6 +51,7 @@ export default function AlbumPage() {
   }, [tabPool, country, filter, collection]);
 
   const matchBanner = useMemo(() => {
+    if (isInitializing) return null;
     const entries = MOCK_USERS.map((u, i) => {
       const m = buildMatch(collection, buildMockCollection(i + 1));
       return { youGet: m.youGet.length, theyGet: m.theyGet.length };
@@ -58,7 +59,7 @@ export default function AlbumPage() {
     const matches = entries.filter((x) => x.theyGet > 0).length;
     const leads = entries.filter((x) => x.theyGet === 0).length;
     return { total: entries.length, matches, leads };
-  }, [collection]);
+  }, [collection, isInitializing]);
 
   return (
     <main className="flex flex-col">
@@ -99,7 +100,9 @@ export default function AlbumPage() {
         </div>
       </section>
 
-      {matchBanner.total > 0 ? (
+      {matchBanner === null ? (
+        <div className="mx-4 mt-3 h-[68px] animate-pulse rounded-md border border-line bg-paper" />
+      ) : matchBanner.total > 0 ? (
         <Link
           href="/mapa"
           className="mx-4 mt-3 flex items-center gap-2.5 rounded-md border border-green-100 bg-green-50 p-3"

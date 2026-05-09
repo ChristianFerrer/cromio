@@ -9,31 +9,41 @@ const STORAGE_KEY = "cromio.collection";
 
 type Snapshot = Record<number, number>;
 
+const EMPTY_STATS = {
+  owned: 0,
+  total: TOTAL_STICKERS,
+  missing: TOTAL_STICKERS,
+  repes: 0,
+  pct: 0,
+};
+
 export function useCollection(mockSeed = 247) {
   const { user, loading: authLoading } = useUser();
   const [overrides, setOverrides] = useState<Snapshot>({});
   const [serverMap, setServerMap] = useState<Snapshot | null>(null);
+  const [serverLoading, setServerLoading] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined" || user) return;
+    if (typeof window === "undefined" || authLoading || user) return;
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) setOverrides(JSON.parse(raw));
     } catch {}
-  }, [user]);
+  }, [authLoading, user]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || user) return;
+    if (typeof window === "undefined" || authLoading || user) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
-  }, [overrides, user]);
+  }, [overrides, authLoading, user]);
 
   useEffect(() => {
-    if (!user) {
+    if (authLoading || !user) {
       setServerMap(null);
       return;
     }
     const supabase = createClient();
     if (!supabase) return;
+    setServerLoading(true);
     supabase
       .from("user_stickers")
       .select("sticker_n, count")
@@ -44,11 +54,18 @@ export function useCollection(mockSeed = 247) {
           map[row.sticker_n] = row.count;
         }
         setServerMap(map);
+        setServerLoading(false);
       });
-  }, [user]);
+  }, [authLoading, user]);
+
+  const isInitializing = authLoading || (user && serverMap === null);
 
   const collection = useMemo(() => {
     const map = new Map<number, number>();
+    if (isInitializing) {
+      for (const s of STICKERS) map.set(s.n, 0);
+      return map;
+    }
     if (user) {
       for (const s of STICKERS) {
         map.set(s.n, serverMap?.[s.n] ?? 0);
@@ -62,10 +79,11 @@ export function useCollection(mockSeed = 247) {
       }
     }
     return map;
-  }, [user, serverMap, overrides, mockSeed]);
+  }, [isInitializing, user, serverMap, overrides, mockSeed]);
 
   const adjust = useCallback(
     (n: number, delta: number) => {
+      if (isInitializing) return;
       if (user) {
         setServerMap((prev) => {
           const cur = prev?.[n] ?? 0;
@@ -94,10 +112,11 @@ export function useCollection(mockSeed = 247) {
         });
       }
     },
-    [user, serverMap, mockSeed],
+    [isInitializing, user, serverMap, mockSeed],
   );
 
   const stats = useMemo(() => {
+    if (isInitializing) return EMPTY_STATS;
     let owned = 0;
     let repes = 0;
     collection.forEach((count) => {
@@ -111,13 +130,14 @@ export function useCollection(mockSeed = 247) {
       repes,
       pct: (owned / TOTAL_STICKERS) * 100,
     };
-  }, [collection]);
+  }, [isInitializing, collection]);
 
   return {
     collection,
     stats,
     adjust,
     isAuthenticated: !!user,
-    authLoading,
+    isInitializing: !!isInitializing,
+    serverLoading,
   };
 }
