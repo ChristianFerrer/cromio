@@ -1,19 +1,11 @@
-const EARTH_CIRCUMFERENCE = 40075016.686;
-const PIXELS_PER_TILE_AT_ZOOM_0 = EARTH_CIRCUMFERENCE / 256;
-
-export function zoomForRadius(
-  radiusM: number,
-  lat: number,
-  viewportMinDim: number,
-  targetRadiusFraction = 0.4,
-) {
-  if (viewportMinDim <= 0) return 14;
-  const targetRadiusPx = viewportMinDim * targetRadiusFraction;
-  const cosLat = Math.cos((lat * Math.PI) / 180);
-  const z = Math.log2(
-    (targetRadiusPx * cosLat * PIXELS_PER_TILE_AT_ZOOM_0) / radiusM,
-  );
-  return Math.max(3, Math.min(18, Math.round(z)));
+export function zoomForRadius(radiusM: number): number {
+  if (radiusM <= 200) return 17;
+  if (radiusM <= 500) return 16;
+  if (radiusM <= 1000) return 15;
+  if (radiusM <= 2000) return 14;
+  if (radiusM <= 5000) return 13;
+  if (radiusM <= 10000) return 11;
+  return 9;
 }
 
 export function bearingToLngLat(

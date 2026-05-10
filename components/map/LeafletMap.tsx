@@ -83,8 +83,8 @@ export function LeafletMap({
             <div class="cromio-self-dot"></div>
           </div>
         `,
-        iconSize: [22, 22],
-        iconAnchor: [11, 11],
+        iconSize: [40, 40],
+        iconAnchor: [20, 20],
       });
       userMarkerRef.current = L.marker([centerLat, centerLng], {
         icon,
@@ -166,8 +166,8 @@ export function LeafletMap({
   return (
     <div
       ref={containerRef}
-      className="h-full w-full"
-      style={{ touchAction: "none", background: "#F2EFE9" }}
+      className="relative h-full w-full"
+      style={{ touchAction: "none", background: "#F2EFE9", zIndex: 0 }}
     />
   );
 }

@@ -33,10 +33,7 @@ export default function MapaPage() {
 
   const center: [number, number] = device.coords ?? profileCenter;
 
-  const zoom = useMemo(() => {
-    if (mapDims.w === 0 || mapDims.h === 0) return 14;
-    return zoomForRadius(radius, center[1], Math.min(mapDims.w, mapDims.h));
-  }, [radius, center, mapDims]);
+  const zoom = useMemo(() => zoomForRadius(radius), [radius]);
 
   const matches = useMemo(() => users.filter((u) => u.kind === "match"), [users]);
   const leads = useMemo(() => users.filter((u) => u.kind === "lead"), [users]);
@@ -61,7 +58,10 @@ export default function MapaPage() {
   return (
     <main className="absolute inset-0 overflow-hidden">
       {view === "map" && (
-        <div ref={containerRef} className="absolute inset-0 bg-[#F2EFE9]">
+        <div
+          ref={containerRef}
+          className="absolute inset-0 z-0 bg-[#F2EFE9]"
+        >
           {mapDims.w > 0 && mapDims.h > 0 && (
             <LeafletMap
               centerLng={center[0]}
@@ -75,7 +75,7 @@ export default function MapaPage() {
       )}
 
       {view === "map" && device.permissionDenied && (
-        <div className="absolute left-3 right-3 top-28 z-20 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 shadow-sh2">
+        <div className="absolute left-3 right-3 top-28 z-30 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 shadow-sh2">
           <p className="font-semibold">Ubicación bloqueada</p>
           <p className="mt-1 leading-snug">
             Activa la ubicación en Ajustes → Safari → Ubicación para que el mapa te
@@ -84,7 +84,7 @@ export default function MapaPage() {
         </div>
       )}
 
-      <div className="absolute left-3 right-3 top-14 z-20 flex items-center gap-2">
+      <div className="absolute left-3 right-3 top-14 z-30 flex items-center gap-2">
         <div className="flex h-10 flex-1 items-center gap-2.5 rounded-md border border-black/5 bg-white/95 px-3.5 shadow-sh2 backdrop-blur">
           <Search size={16} strokeWidth={2} className="text-text-2" />
           <span className="text-sm font-medium">
@@ -107,7 +107,7 @@ export default function MapaPage() {
       </div>
 
       {view === "map" && radius === 200 && (
-        <div className="absolute left-1/2 top-28 z-20 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink px-3.5 py-2 text-xs font-bold text-gold-light shadow-sh3 animate-slide-down">
+        <div className="absolute left-1/2 top-28 z-30 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink px-3.5 py-2 text-xs font-bold text-gold-light shadow-sh3 animate-slide-down">
           <span>🔥</span> Modo hiperlocal · Solo tu manzana
         </div>
       )}
@@ -177,7 +177,7 @@ export default function MapaPage() {
         </div>
       )}
 
-      <div className="absolute bottom-24 left-3 right-3 z-20 rounded-xl border border-black/5 bg-white/95 p-3.5 shadow-sh3 backdrop-blur">
+      <div className="absolute bottom-24 left-3 right-3 z-30 rounded-xl border border-black/5 bg-white/95 p-3.5 shadow-sh3 backdrop-blur">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-mute">
             Radio de búsqueda
