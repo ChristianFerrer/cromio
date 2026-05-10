@@ -44,8 +44,6 @@ export const viewport: Viewport = {
   themeColor: "#0B6E3F",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
   viewportFit: "cover",
 };
 
@@ -54,8 +52,8 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="es"
       className={`${bebas.variable} ${inter.variable} ${mono.variable}`}
+      suppressHydrationWarning
     >
       <body>{children}</body>
     </html>
