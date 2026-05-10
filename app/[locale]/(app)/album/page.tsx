@@ -191,10 +191,14 @@ export default function AlbumPage() {
       <div className="flex gap-2 px-4 pb-2 pt-3">
         {(() => {
           const inScope = tabPool.filter((s) => country === "all" || s.team_code === country);
+          const repeSum = inScope.reduce((s, x) => {
+            const c = collection.get(x.n) ?? 0;
+            return c >= 2 ? s + (c - 1) : s;
+          }, 0);
           const counts = {
             todos: inScope.length,
             falti: inScope.filter((s) => (collection.get(s.n) ?? 0) === 0).length,
-            repe: inScope.filter((s) => (collection.get(s.n) ?? 0) >= 2).length,
+            repe: repeSum,
           };
           return (
             <>

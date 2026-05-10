@@ -1,13 +1,14 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, ArrowRight, Check } from "lucide-react";
+import { MapPin, ArrowRight, Check, Globe } from "lucide-react";
 import { COUNTRIES } from "@/lib/data/countries";
-import { STICKERS_BY_N, TOTAL_STICKERS } from "@/lib/data/stickers";
+import { STICKERS } from "@/lib/data/stickers";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { Flag } from "@/components/cromo/Flag";
 import { Btn } from "@/components/ui/Btn";
+import { Chip } from "@/components/ui/Chip";
 import { createClient } from "@/lib/supabase/client";
 
 type Step = "location" | "identity" | "favorite" | "first-cromos";
@@ -33,7 +34,6 @@ export default function OnboardingPage() {
   const [coords, setCoords] = useState<[number, number] | null>(null);
   const [favorite, setFavorite] = useState<string | null>(null);
   const [added, setAdded] = useState<Added[]>([]);
-  const [num, setNum] = useState("");
   const [alias, setAlias] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [color, setColor] = useState(COLORS[0]);
@@ -296,87 +296,41 @@ export default function OnboardingPage() {
   }
 
   if (step === "first-cromos") {
-    const submitNum = () => {
-      if (!num) return;
-      const n = Number(num);
-      if (n < 1 || n > TOTAL_STICKERS) {
-        setNum("");
-        return;
-      }
+    const adjust = (n: number, delta: number) => {
       setAdded((prev) => {
-        const exists = prev.find((x) => x.n === n);
-        if (exists) {
-          return prev.map((x) => (x.n === n ? { ...x, count: x.count + 1 } : x));
+        const idx = prev.findIndex((x) => x.n === n);
+        if (idx === -1) {
+          if (delta <= 0) return prev;
+          return [...prev, { n, count: delta }];
         }
-        return [...prev, { n, count: 1 }];
+        const nextCount = prev[idx].count + delta;
+        if (nextCount <= 0) return prev.filter((x) => x.n !== n);
+        const next = [...prev];
+        next[idx] = { n, count: nextCount };
+        return next;
       });
-      setNum("");
     };
 
-    const adjust = (n: number, delta: number) => {
-      setAdded((prev) =>
-        prev
-          .map((x) => (x.n === n ? { ...x, count: x.count + delta } : x))
-          .filter((x) => x.count > 0),
-      );
-    };
+    const totalAdded = added.reduce((s, a) => s + a.count, 0);
+    const distinctAdded = added.length;
 
     return (
-      <main className="flex flex-1 flex-col px-6 pt-16">
-        <h1 className="font-display text-3xl">Tus primeros cromos</h1>
-        <p className="mt-1 text-sm text-text-2">
-          Añade {Math.max(0, 5 - added.length)} más para encontrar matches.
+      <main className="flex flex-1 flex-col pt-14">
+        <div className="flex items-center justify-between px-5 pb-3">
+          <h1 className="font-display text-3xl">Tus primeros cromos</h1>
+          <span className="font-display text-2xl text-green-700">
+            {totalAdded}
+          </span>
+        </div>
+        <p className="px-5 text-sm text-text-2">
+          {distinctAdded === 0
+            ? "Selecciona los cromos que ya tienes para encontrar matches."
+            : `${distinctAdded} cromo${distinctAdded === 1 ? "" : "s"} distinto${distinctAdded === 1 ? "" : "s"} · ${totalAdded} en total`}
         </p>
 
-        <div className="mt-4 grid max-h-[40vh] grid-cols-3 gap-3 overflow-y-auto pr-1">
-          {added.map(({ n, count }) => {
-            const sticker = STICKERS_BY_N.get(n);
-            if (!sticker) return null;
-            return (
-              <CromoCard
-                key={n}
-                sticker={sticker}
-                count={count}
-                size="sm"
-                onAdjust={(d) => adjust(n, d)}
-              />
-            );
-          })}
-          {added.length === 0 && (
-            <p className="col-span-3 py-12 text-center text-xs text-text-2">
-              Tipea abajo el número del cromo para añadirlo.
-            </p>
-          )}
-        </div>
+        <FirstCromosPicker added={added} onAdjust={adjust} />
 
-        <div className="mt-4 rounded-md border border-line bg-white px-3.5 py-2 text-center font-display text-2xl">
-          {num ? `#${num}` : "#---"}
-        </div>
-
-        <div className="mt-3 grid grid-cols-3 gap-1.5">
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0", "✓"].map((k) => {
-            const isOk = k === "✓";
-            const isDel = k === "⌫";
-            return (
-              <button
-                key={k}
-                onClick={() => {
-                  if (isDel) setNum((v) => v.slice(0, -1));
-                  else if (isOk) submitNum();
-                  else if (num.length < 4) setNum((v) => v + k);
-                }}
-                disabled={isOk && !num}
-                className={`grid h-12 place-items-center rounded-md font-display text-xl shadow-sh1 disabled:opacity-30 ${
-                  isOk ? "bg-green-500 text-white" : "border border-line bg-white text-text"
-                }`}
-              >
-                {k}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-4 space-y-2 pb-4">
+        <div className="border-t border-line bg-white px-5 pb-[max(env(safe-area-inset-bottom),16px)] pt-3">
           <Btn
             kind="primaryVibrant"
             full
@@ -387,11 +341,11 @@ export default function OnboardingPage() {
           >
             {pending
               ? "Guardando…"
-              : added.length >= 5
+              : distinctAdded >= 5
                 ? "Empezar a buscar matches"
-                : added.length === 0
+                : distinctAdded === 0
                   ? "Saltar y añadir más tarde"
-                  : `Continuar con ${added.length} cromo${added.length > 1 ? "s" : ""}`}
+                  : `Continuar con ${distinctAdded} cromo${distinctAdded > 1 ? "s" : ""}`}
           </Btn>
         </div>
       </main>
@@ -399,4 +353,99 @@ export default function OnboardingPage() {
   }
 
   return null;
+}
+
+type Tab = "selecciones" | "especiales" | "estadios";
+
+function FirstCromosPicker({
+  added,
+  onAdjust,
+}: {
+  added: Added[];
+  onAdjust: (n: number, delta: number) => void;
+}) {
+  const [tab, setTab] = useState<Tab>("selecciones");
+  const [country, setCountry] = useState<string>("all");
+
+  const addedMap = useMemo(() => {
+    const map = new Map<number, number>();
+    for (const a of added) map.set(a.n, a.count);
+    return map;
+  }, [added]);
+
+  const tabPool = useMemo(() => {
+    if (tab === "especiales") return STICKERS.filter((s) => s.rarity !== "common");
+    if (tab === "estadios") return STICKERS.filter((s) => s.type === "host_city");
+    return STICKERS.filter(
+      (s) => s.type === "team_badge" || s.type === "team_photo" || s.type === "player",
+    );
+  }, [tab]);
+
+  const tabCountries = useMemo(() => {
+    const codes = new Set(
+      tabPool.map((s) => s.team_code).filter(Boolean) as string[],
+    );
+    return COUNTRIES.filter((c) => codes.has(c.code));
+  }, [tabPool]);
+
+  const list = useMemo(
+    () => tabPool.filter((s) => country === "all" || s.team_code === country),
+    [tabPool, country],
+  );
+
+  return (
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex gap-5 border-b border-line px-5">
+        {(["selecciones", "especiales", "estadios"] as const).map((id) => (
+          <button
+            key={id}
+            onClick={() => {
+              setTab(id);
+              if (id !== "selecciones") setCountry("all");
+            }}
+            className={`-mb-px py-2 text-[14px] capitalize transition-colors ${
+              tab === id
+                ? "border-b-2 border-text font-bold text-text"
+                : "border-b-2 border-transparent font-medium text-mute"
+            }`}
+          >
+            {id}
+          </button>
+        ))}
+      </div>
+
+      <div className="scroll-hide flex gap-2 overflow-x-auto px-4 pb-1 pt-3">
+        <Chip active={country === "all"} onClick={() => setCountry("all")}>
+          <Globe size={14} strokeWidth={2} /> Todos
+        </Chip>
+        {tabCountries.map((c) => (
+          <Chip
+            key={c.code}
+            active={country === c.code}
+            onClick={() => setCountry(c.code)}
+          >
+            <Flag country={c} size={20} />
+            {c.short}
+          </Chip>
+        ))}
+      </div>
+
+      <div className="grid flex-1 grid-cols-3 gap-3 overflow-y-auto px-4 pb-4 pt-2">
+        {list.map((s) => (
+          <CromoCard
+            key={s.n}
+            sticker={s}
+            count={addedMap.get(s.n) ?? 0}
+            size="sm"
+            onAdjust={(d) => onAdjust(s.n, d)}
+          />
+        ))}
+        {list.length === 0 && (
+          <p className="col-span-3 py-10 text-center text-xs text-text-2">
+            Sin cromos para esta selección
+          </p>
+        )}
+      </div>
+    </div>
+  );
 }
