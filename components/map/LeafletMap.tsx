@@ -140,7 +140,7 @@ export function LeafletMap({
     if (!radiusCircleRef.current) {
       radiusCircleRef.current = L.circle([centerLat, centerLng], {
         radius: radiusM,
-        color: "rgba(17,124,78,0.4)",
+        color: "rgba(0,122,71,0.45)",
         weight: 1,
         fillColor: CROMIO_COLORS.green[500],
         fillOpacity: 0.06,

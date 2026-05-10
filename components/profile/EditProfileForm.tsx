@@ -10,15 +10,15 @@ import { Btn } from "@/components/ui/Btn";
 import { IconBtn } from "@/components/ui/IconBtn";
 
 const COLORS = [
-  "#1FAE5A",
-  "#117C4E",
+  "#01F78B", // Cromio mint (logo)
+  "#0F97BD", // Cromio teal (logo)
+  "#007A47", // Cromio green dark
   "#2D7DD8",
   "#7B5BD8",
   "#D7263D",
   "#E5006D",
   "#D4AF37",
   "#E78C2E",
-  "#3A3A3A",
 ];
 
 const ALIAS_RE = /^[a-z0-9_]{3,24}$/;
