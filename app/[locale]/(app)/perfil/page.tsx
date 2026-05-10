@@ -131,6 +131,13 @@ export default async function PerfilPage() {
           <ChevronRight size={16} className="text-text-2" />
         </Link>
         <Link
+          href="/perfil/lista-deseos"
+          className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm"
+        >
+          <span>Lista de deseos</span>
+          <ChevronRight size={16} className="text-text-2" />
+        </Link>
+        <Link
           href="/perfil/bloqueos"
           className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm"
         >

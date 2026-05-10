@@ -1,11 +1,15 @@
 "use client";
 
-import { Share2 } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { Heart, Share2 } from "lucide-react";
 import { Sheet } from "@/components/ui/Sheet";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { STICKERS_BY_N, TOTAL_STICKERS } from "@/lib/data/stickers";
 import { COUNTRY_BY_CODE } from "@/lib/data/countries";
 import { shareOrCopy } from "@/lib/share/client";
+import { createClient } from "@/lib/supabase/client";
+import { toggleWishlist } from "@/lib/wishlist/actions";
+import { pushAppToast } from "@/lib/notifications/toast";
 
 export function CromoPreviewSheet({
   n,
@@ -33,6 +37,59 @@ export function CromoPreviewSheet({
     .filter(Boolean)
     .join(" · ");
 
+  const [wanted, setWanted] = useState(false);
+  const [wishKnown, setWishKnown] = useState(false);
+  const [, startWish] = useTransition();
+
+  useEffect(() => {
+    const supabase = createClient();
+    if (!supabase) {
+      setWishKnown(true);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        if (!cancelled) setWishKnown(true);
+        return;
+      }
+      const { data } = await supabase
+        .from("user_wishlist")
+        .select("sticker_n")
+        .eq("user_id", user.id)
+        .eq("sticker_n", sticker.n)
+        .maybeSingle();
+      if (cancelled) return;
+      setWanted(!!data);
+      setWishKnown(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [sticker.n]);
+
+  const onToggleWish = () => {
+    const next = !wanted;
+    setWanted(next);
+    startWish(async () => {
+      const r = await toggleWishlist(sticker.n);
+      if (r?.error) {
+        setWanted(!next);
+        pushAppToast({ kind: "error", body: "No se pudo actualizar la lista de deseos." });
+        return;
+      }
+      pushAppToast({
+        kind: "success",
+        body: next
+          ? `#${sticker.n} añadido a tu lista de deseos.`
+          : `#${sticker.n} quitado de tu lista de deseos.`,
+      });
+    });
+  };
+
   return (
     <Sheet title={`Cromo #${sticker.n}`} onClose={onClose}>
       <div className="flex gap-4">
@@ -49,19 +106,39 @@ export function CromoPreviewSheet({
           <Row label="Rareza" value={prettyRarity(sticker.rarity)} />
         </dl>
       </div>
-      <button
-        type="button"
-        onClick={() =>
-          shareOrCopy({
-            title: shareText,
-            text: "Mira este cromo del Mundial 2026 en Cromio.",
-            path: `/album?cromo=${sticker.n}`,
-          })
-        }
-        className="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-line bg-white py-2.5 text-sm font-semibold text-text hover:bg-paper"
-      >
-        <Share2 size={14} strokeWidth={2.2} /> Compartir cromo
-      </button>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          onClick={onToggleWish}
+          disabled={!wishKnown}
+          aria-pressed={wanted}
+          className={`flex items-center justify-center gap-2 rounded-md border py-2.5 text-sm font-semibold transition-colors disabled:opacity-50 ${
+            wanted
+              ? "border-red-200 bg-red-50 text-red-700"
+              : "border-line bg-white text-text hover:bg-paper"
+          }`}
+        >
+          <Heart
+            size={14}
+            strokeWidth={2.2}
+            fill={wanted ? "currentColor" : "none"}
+          />
+          {wanted ? "En tu lista de deseos" : "Añadir a deseos"}
+        </button>
+        <button
+          type="button"
+          onClick={() =>
+            shareOrCopy({
+              title: shareText,
+              text: "Mira este cromo del Mundial 2026 en Cromio.",
+              path: `/album?cromo=${sticker.n}`,
+            })
+          }
+          className="flex items-center justify-center gap-2 rounded-md border border-line bg-white py-2.5 text-sm font-semibold text-text hover:bg-paper"
+        >
+          <Share2 size={14} strokeWidth={2.2} /> Compartir
+        </button>
+      </div>
     </Sheet>
   );
 }
