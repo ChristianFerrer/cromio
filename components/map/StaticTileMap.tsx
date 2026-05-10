@@ -4,11 +4,11 @@ import Link from "next/link";
 import type { NearbyUser } from "@/hooks/useNearbyUsers";
 
 const TILE_SIZE = 256;
-const ZOOM = 14;
 const EARTH_CIRCUMFERENCE = 40075016.686;
+const PIXELS_PER_TILE_AT_ZOOM_0 = EARTH_CIRCUMFERENCE / TILE_SIZE;
 
-function lngLatToWorldPx(lng: number, lat: number) {
-  const n = 2 ** ZOOM;
+function lngLatToWorldPx(lng: number, lat: number, zoom: number) {
+  const n = 2 ** zoom;
   const latRad = (lat * Math.PI) / 180;
   const x = ((lng + 180) / 360) * n * TILE_SIZE;
   const y =
@@ -20,10 +20,9 @@ function lngLatToWorldPx(lng: number, lat: number) {
   return { x, y };
 }
 
-function metersPerPixel(lat: number) {
+function metersPerPixel(lat: number, zoom: number) {
   return (
-    (Math.cos((lat * Math.PI) / 180) * EARTH_CIRCUMFERENCE) /
-    (TILE_SIZE * 2 ** ZOOM)
+    (Math.cos((lat * Math.PI) / 180) * PIXELS_PER_TILE_AT_ZOOM_0) / 2 ** zoom
   );
 }
 
@@ -44,6 +43,7 @@ function bearingToLngLat(
 export function StaticTileMap({
   centerLng,
   centerLat,
+  zoom,
   users,
   radiusM,
   width,
@@ -51,12 +51,13 @@ export function StaticTileMap({
 }: {
   centerLng: number;
   centerLat: number;
+  zoom: number;
   users: NearbyUser[];
   radiusM: number;
   width: number;
   height: number;
 }) {
-  const center = lngLatToWorldPx(centerLng, centerLat);
+  const center = lngLatToWorldPx(centerLng, centerLat, zoom);
   const centerTileX = Math.floor(center.x / TILE_SIZE);
   const centerTileY = Math.floor(center.y / TILE_SIZE);
 
@@ -64,20 +65,22 @@ export function StaticTileMap({
   const tilesY = Math.ceil(height / TILE_SIZE) + 2;
   const startX = centerTileX - Math.floor(tilesX / 2);
   const startY = centerTileY - Math.floor(tilesY / 2);
+  const maxTile = 2 ** zoom;
 
   const tiles: Array<{ tx: number; ty: number; left: number; top: number }> = [];
   for (let dy = 0; dy < tilesY; dy++) {
     for (let dx = 0; dx < tilesX; dx++) {
       const tx = startX + dx;
       const ty = startY + dy;
+      if (tx < 0 || tx >= maxTile || ty < 0 || ty >= maxTile) continue;
       const left = width / 2 + tx * TILE_SIZE - center.x;
       const top = height / 2 + ty * TILE_SIZE - center.y;
       tiles.push({ tx, ty, left, top });
     }
   }
 
-  const mpp = metersPerPixel(centerLat);
-  const radiusPx = Math.min(radiusM / mpp, Math.max(width, height) * 1.5);
+  const mpp = metersPerPixel(centerLat, zoom);
+  const radiusPx = radiusM / mpp;
   const radarSize = radiusPx * 2;
 
   return (
@@ -87,13 +90,13 @@ export function StaticTileMap({
     >
       {tiles.map((t) => (
         <img
-          key={`${t.tx}-${t.ty}`}
-          src={`/tiles/${ZOOM}/${t.tx}/${t.ty}.png`}
+          key={`${t.tx}-${t.ty}-${zoom}`}
+          src={`/tiles/${zoom}/${t.tx}/${t.ty}.png`}
           alt=""
           width={TILE_SIZE}
           height={TILE_SIZE}
           decoding="async"
-          loading="lazy"
+          loading="eager"
           draggable={false}
           className="absolute select-none"
           style={{
@@ -108,54 +111,63 @@ export function StaticTileMap({
       ))}
 
       <div
-        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-        style={{
-          left: width / 2,
-          top: height / 2,
-          width: radarSize,
-          height: radarSize,
-          border: "2px dashed rgba(31,174,90,0.6)",
-          background:
-            "radial-gradient(circle, rgba(31,174,90,0.18), rgba(31,174,90,0.08) 60%, transparent 75%)",
-        }}
-      />
+        className="pointer-events-none absolute"
+        style={{ left: width / 2, top: height / 2 }}
+      >
+        <div
+          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{
+            width: radarSize,
+            height: radarSize,
+            border: "2px dashed rgba(31,174,90,0.6)",
+            background:
+              "radial-gradient(circle, rgba(31,174,90,0.16), rgba(31,174,90,0.06) 60%, transparent 75%)",
+          }}
+        />
 
-      <div
-        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 animate-radar-pulse rounded-full"
-        style={{
-          left: width / 2,
-          top: height / 2,
-          width: radarSize,
-          height: radarSize,
-          border: "2px solid rgba(31,174,90,0.55)",
-          transformOrigin: "center",
-        }}
-      />
-      <div
-        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 animate-radar-pulse rounded-full"
-        style={{
-          left: width / 2,
-          top: height / 2,
-          width: radarSize,
-          height: radarSize,
-          border: "2px solid rgba(31,174,90,0.45)",
-          transformOrigin: "center",
-          animationDelay: "1.3s",
-        }}
-      />
+        <div
+          className="absolute"
+          style={{
+            width: radarSize,
+            height: radarSize,
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <div
+            className="absolute inset-0 animate-radar-pulse rounded-full"
+            style={{
+              border: "2px solid rgba(31,174,90,0.55)",
+            }}
+          />
+        </div>
+        <div
+          className="absolute"
+          style={{
+            width: radarSize,
+            height: radarSize,
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <div
+            className="absolute inset-0 animate-radar-pulse rounded-full"
+            style={{
+              border: "2px solid rgba(31,174,90,0.45)",
+              animationDelay: "1.3s",
+            }}
+          />
+        </div>
 
-      <div
-        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-500"
-        style={{
-          left: width / 2,
-          top: height / 2,
-          width: 18,
-          height: 18,
-          border: "3px solid #fff",
-          boxShadow:
-            "0 0 0 4px rgba(31,174,90,0.25), 0 4px 10px rgba(0,0,0,0.2)",
-        }}
-      />
+        <div
+          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-500"
+          style={{
+            width: 18,
+            height: 18,
+            border: "3px solid #fff",
+            boxShadow:
+              "0 0 0 4px rgba(31,174,90,0.25), 0 4px 10px rgba(0,0,0,0.2)",
+          }}
+        />
+      </div>
 
       {users.map((u) => {
         if (u.distance_m > radiusM) return null;
@@ -165,7 +177,7 @@ export function StaticTileMap({
           u.bearing_deg,
           u.distance_m,
         );
-        const upx = lngLatToWorldPx(ulng, ulat);
+        const upx = lngLatToWorldPx(ulng, ulat, zoom);
         const left = width / 2 + (upx.x - center.x);
         const top = height / 2 + (upx.y - center.y);
         const color = u.kind === "match" ? "#1FAE5A" : "#2D7DD8";
@@ -196,4 +208,18 @@ export function StaticTileMap({
       })}
     </div>
   );
+}
+
+export function zoomForRadius(
+  radiusM: number,
+  lat: number,
+  viewportMinDim: number,
+  targetRadiusFraction = 0.4,
+) {
+  const targetRadiusPx = viewportMinDim * targetRadiusFraction;
+  const cosLat = Math.cos((lat * Math.PI) / 180);
+  const z = Math.log2(
+    (targetRadiusPx * cosLat * PIXELS_PER_TILE_AT_ZOOM_0) / radiusM,
+  );
+  return Math.max(3, Math.min(18, Math.round(z)));
 }

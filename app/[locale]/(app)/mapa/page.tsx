@@ -9,7 +9,7 @@ import { useDeviceLocation } from "@/hooks/useDeviceLocation";
 import { fmtDistance } from "@/lib/matches";
 import { MatchArrows } from "@/components/match/MatchArrows";
 import { AlbumProgress } from "@/components/match/AlbumProgress";
-import { StaticTileMap } from "@/components/map/StaticTileMap";
+import { StaticTileMap, zoomForRadius } from "@/components/map/StaticTileMap";
 
 const RADII = [200, 500, 1000, 2000, 5000, 10000, 50000];
 const FREE_MAX = 2000;
@@ -32,6 +32,11 @@ export default function MapaPage() {
   const device = useDeviceLocation(view === "map");
 
   const center: [number, number] = device.coords ?? profileCenter;
+
+  const zoom = useMemo(() => {
+    if (mapDims.w === 0 || mapDims.h === 0) return 14;
+    return zoomForRadius(radius, center[1], Math.min(mapDims.w, mapDims.h));
+  }, [radius, center, mapDims]);
 
   const matches = useMemo(() => users.filter((u) => u.kind === "match"), [users]);
   const leads = useMemo(() => users.filter((u) => u.kind === "lead"), [users]);
@@ -61,6 +66,7 @@ export default function MapaPage() {
             <StaticTileMap
               centerLng={center[0]}
               centerLat={center[1]}
+              zoom={zoom}
               users={users}
               radiusM={radius}
               width={mapDims.w}
