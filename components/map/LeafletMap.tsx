@@ -28,6 +28,7 @@ export function LeafletMap({
   const userMarkerRef = useRef<L.Marker | null>(null);
   const userMarkersRef = useRef<L.Marker[]>([]);
   const sweepRef = useRef<HTMLDivElement | null>(null);
+  const pulseRef = useRef<HTMLDivElement | null>(null);
   const programmaticMoveRef = useRef(false);
 
   useEffect(() => {
@@ -76,7 +77,8 @@ export function LeafletMap({
   useEffect(() => {
     const map = mapRef.current;
     const sweepEl = sweepRef.current;
-    if (!map || !sweepEl) return;
+    const pulseEl = pulseRef.current;
+    if (!map || !sweepEl || !pulseEl) return;
 
     const update = () => {
       const center = map.latLngToContainerPoint([centerLat, centerLng]);
@@ -84,12 +86,19 @@ export function LeafletMap({
       const edgeLng = centerLng + radiusM / 111320 / cosLat;
       const edge = map.latLngToContainerPoint([centerLat, edgeLng]);
       const radiusPx = Math.abs(edge.x - center.x);
+      const diameter = radiusPx * 2;
 
       sweepEl.style.left = `${center.x}px`;
       sweepEl.style.top = `${center.y}px`;
-      sweepEl.style.width = `${radiusPx * 2}px`;
-      sweepEl.style.height = `${radiusPx * 2}px`;
+      sweepEl.style.width = `${diameter}px`;
+      sweepEl.style.height = `${diameter}px`;
       sweepEl.style.opacity = radiusPx > 6 ? "1" : "0";
+
+      pulseEl.style.left = `${center.x}px`;
+      pulseEl.style.top = `${center.y}px`;
+      pulseEl.style.width = `${diameter}px`;
+      pulseEl.style.height = `${diameter}px`;
+      pulseEl.style.opacity = radiusPx > 6 ? "1" : "0";
     };
 
     update();
@@ -113,13 +122,9 @@ export function LeafletMap({
     if (!userMarkerRef.current) {
       const icon = L.divIcon({
         className: "",
-        html: `
-          <div class="cromio-self-pulse">
-            <div class="cromio-self-dot"></div>
-          </div>
-        `,
-        iconSize: [40, 40],
-        iconAnchor: [20, 20],
+        html: `<div class="cromio-self-dot"></div>`,
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
       });
       userMarkerRef.current = L.marker([centerLat, centerLng], {
         icon,
@@ -134,11 +139,10 @@ export function LeafletMap({
     if (!radiusCircleRef.current) {
       radiusCircleRef.current = L.circle([centerLat, centerLng], {
         radius: radiusM,
-        color: "rgba(31,174,90,0.6)",
+        color: "rgba(17,124,78,0.85)",
         weight: 2,
-        dashArray: "6 6",
         fillColor: CROMIO_COLORS.green[500],
-        fillOpacity: 0.08,
+        fillOpacity: 0.06,
         interactive: false,
       }).addTo(map);
     } else {
@@ -205,6 +209,19 @@ export function LeafletMap({
       style={{ touchAction: "none", background: "#F2EFE9", zIndex: 0 }}
     >
       <div ref={containerRef} className="absolute inset-0" />
+      <div
+        ref={pulseRef}
+        className="cromio-radar-pulse-wrapper"
+        style={{
+          position: "absolute",
+          pointerEvents: "none",
+          transform: "translate(-50%, -50%)",
+          zIndex: 440,
+        }}
+      >
+        <div className="cromio-radar-pulse" />
+        <div className="cromio-radar-pulse cromio-radar-pulse--late" />
+      </div>
       <div
         ref={sweepRef}
         className="cromio-radar-sweep-wrapper"
