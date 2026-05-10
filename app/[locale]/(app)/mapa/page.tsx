@@ -25,7 +25,7 @@ export default function MapaPage() {
     h: 0,
   });
 
-  const { users, center: profileCenter, isAuthenticated } = useNearbyUsers(
+  const { users, center: profileCenter, isAuthenticated, isDemoFallback } = useNearbyUsers(
     radius,
     collection,
   );
@@ -80,6 +80,16 @@ export default function MapaPage() {
           <p className="mt-1 leading-snug">
             Activa la ubicación en Ajustes → Safari → Ubicación para que el mapa te
             siga en vivo. Mientras tanto centramos en tu zona guardada.
+          </p>
+        </div>
+      )}
+
+      {view === "map" && isAuthenticated && isDemoFallback && !device.permissionDenied && (
+        <div className="absolute left-3 right-3 top-28 z-30 rounded-md border border-match-interest/30 bg-match-interest/10 p-3 text-xs text-match-interest shadow-sh2">
+          <p className="font-semibold">Coleccionistas de demostración</p>
+          <p className="mt-1 leading-snug text-text-2">
+            Cromio acaba de lanzarse. Mientras llegan coleccionistas reales en tu
+            zona, mostramos pines de ejemplo para que veas el flujo.
           </p>
         </div>
       )}
