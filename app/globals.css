@@ -88,6 +88,33 @@ body {
 
 /* Cardinal letters that briefly fade in around the user dot when the
    user taps it (radar orientation hint). */
+/* Lightweight prose styles for /sobre /terminos /privacidad. */
+.cromio-legal h2 {
+  font-family: var(--font-bebas), system-ui;
+  letter-spacing: 0.01em;
+  font-size: 22px;
+  margin: 28px 0 8px;
+  color: var(--y-text);
+}
+.cromio-legal h3 {
+  font-weight: 700;
+  font-size: 15px;
+  margin: 18px 0 6px;
+}
+.cromio-legal p {
+  margin: 0 0 12px;
+}
+.cromio-legal ul {
+  margin: 0 0 14px;
+  padding-left: 20px;
+  list-style: disc;
+}
+.cromio-legal li {
+  margin-bottom: 4px;
+}
+.cromio-legal strong { color: var(--y-text); }
+.cromio-legal a { color: var(--y-green-700); font-weight: 600; }
+
 @keyframes cromio-cardinal-pop {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
   20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }

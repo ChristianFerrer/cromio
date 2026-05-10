@@ -139,6 +139,25 @@ export default async function PerfilPage() {
         </Link>
       </section>
 
+      <section className="mt-5 divide-y divide-line rounded-md border border-line bg-white">
+        {(
+          [
+            { href: "/sobre", label: "Sobre Cromio" },
+            { href: "/terminos", label: "Términos y condiciones" },
+            { href: "/privacidad", label: "Política de privacidad" },
+          ] as const
+        ).map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm"
+          >
+            <span>{item.label}</span>
+            <ChevronRight size={16} className="text-text-2" />
+          </Link>
+        ))}
+      </section>
+
       <form action={signOut}>
         <button
           type="submit"
