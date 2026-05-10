@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { ChevronLeft, Send, Check, CheckCheck, Clock } from "lucide-react";
+import { ChevronLeft, Send, CheckCheck, Clock } from "lucide-react";
 import type { ChatMessage } from "@/lib/chat/queries";
 import { sendMessage, markChatRead } from "@/lib/chat/actions";
 import { createClient } from "@/lib/supabase/client";
@@ -69,58 +69,107 @@ export function ChatRoom({
     const supabase = createClient();
     if (!supabase) return;
 
-    const channel = supabase
-      .channel(`chat:${chatId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "messages",
-          filter: `chat_id=eq.${chatId}`,
-        },
-        (payload) => {
-          const incoming = payload.new as ChatMessage;
-          setMessages((prev) => {
-            // Replace any matching optimistic by sender+body+near time, else dedupe
-            if (prev.some((m) => m.id === incoming.id)) return prev;
-            const tmpIdx = prev.findIndex(
-              (m) =>
-                m.id.startsWith("tmp-") &&
-                m.sender_id === incoming.sender_id &&
-                m.body === incoming.body,
-            );
-            if (tmpIdx >= 0) {
-              const next = [...prev];
-              next[tmpIdx] = incoming;
-              return next;
+    let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    const refetch = async () => {
+      const { data } = await supabase
+        .from("messages")
+        .select(
+          "id, chat_id, sender_id, body, created_at, read_by_recipient_at",
+        )
+        .eq("chat_id", chatId)
+        .order("created_at", { ascending: true });
+      if (cancelled || !data) return;
+      const real = data as ChatMessage[];
+      const realKey = new Set(real.map((m) => `${m.sender_id}:${m.body}`));
+      setMessages((prev) => {
+        const stillPending = prev.filter(
+          (m) =>
+            m.id.startsWith("tmp-") &&
+            !realKey.has(`${m.sender_id}:${m.body}`),
+        );
+        return [...real, ...stillPending];
+      });
+    };
+
+    const setup = async () => {
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (token) supabase.realtime.setAuth(token);
+      if (cancelled) return;
+
+      channel = supabase
+        .channel(`room-messages-${chatId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "messages",
+            filter: `chat_id=eq.${chatId}`,
+          },
+          (payload) => {
+            const incoming = payload.new as ChatMessage;
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === incoming.id)) return prev;
+              const tmpIdx = prev.findIndex(
+                (m) =>
+                  m.id.startsWith("tmp-") &&
+                  m.sender_id === incoming.sender_id &&
+                  m.body === incoming.body,
+              );
+              if (tmpIdx >= 0) {
+                const next = [...prev];
+                next[tmpIdx] = incoming;
+                return next;
+              }
+              return [...prev, incoming];
+            });
+            if (incoming.sender_id !== meId) {
+              markChatRead(chatId);
             }
-            return [...prev, incoming];
-          });
-          if (incoming.sender_id !== meId) {
-            markChatRead(chatId);
-          }
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "messages",
-          filter: `chat_id=eq.${chatId}`,
-        },
-        (payload) => {
-          const updated = payload.new as ChatMessage;
-          setMessages((prev) =>
-            prev.map((m) => (m.id === updated.id ? updated : m)),
-          );
-        },
-      )
-      .subscribe();
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "messages",
+            filter: `chat_id=eq.${chatId}`,
+          },
+          (payload) => {
+            const updated = payload.new as ChatMessage;
+            setMessages((prev) =>
+              prev.map((m) => (m.id === updated.id ? updated : m)),
+            );
+          },
+        )
+        .subscribe((status) => {
+          if (status === "SUBSCRIBED") refetch();
+        });
+    };
+
+    setup();
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        refetch();
+        markChatRead(chatId);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", onVisibility);
+
+    const pollId = window.setInterval(refetch, 8000);
 
     return () => {
-      supabase.removeChannel(channel);
+      cancelled = true;
+      window.clearInterval(pollId);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", onVisibility);
+      if (channel) supabase.removeChannel(channel);
     };
   }, [chatId, meId]);
 
