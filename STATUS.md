@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 21:28 UTC** · branch `claude/admin-dashboard`_
+_Last updated: **2026-05-10 21:29 UTC** · branch `claude/admin-dashboard`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -132,19 +132,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- e2beaf9 feat(admin): audit log view, profile audit trigger, nightly events retention _(12 minutes ago)_
-- 1314972 feat(admin): dashboard — KPIs, time series, funnel and breakdowns _(15 minutes ago)_
-- a9c4502 feat(admin): user CRUD — list with filters, detail, ban / role / reset _(18 minutes ago)_
-- dc8c948 feat(analytics): events table + client tracker + business-event triggers _(22 minutes ago)_
-- 5e681f1 feat(admin): role + guard + entry points + /banned scaffolding _(24 minutes ago)_
-- ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(89 minutes ago)_
+- cb5e399 refactor(admin): split components, rename guards, drop hex literals _(69 seconds ago)_
+- e2beaf9 feat(admin): audit log view, profile audit trigger, nightly events retention _(14 minutes ago)_
+- 1314972 feat(admin): dashboard — KPIs, time series, funnel and breakdowns _(16 minutes ago)_
+- a9c4502 feat(admin): user CRUD — list with filters, detail, ban / role / reset _(19 minutes ago)_
+- dc8c948 feat(analytics): events table + client tracker + business-event triggers _(23 minutes ago)_
+- 5e681f1 feat(admin): role + guard + entry points + /banned scaffolding _(26 minutes ago)_
+- ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(2 hours ago)_
 - 68f4856 feat(brand): green palette anchored on logo + new teal palette _(2 hours ago)_
 - 49c98b9 feat(brand): cromio_bg.png as the app logo across favicon + headers _(2 hours ago)_
 - d023680 Add files via upload _(2 hours ago)_
 - c0cfeab fix(mapa): radar above tiles, dot + pins above radar _(2 hours ago)_
-- d724c58 feat(mapa): radar to background z-index + teardrop pins _(2 hours ago)_
+- d724c58 feat(mapa): radar to background z-index + teardrop pins _(3 hours ago)_
 - e7d4768 feat(mapa): Whistle-style radar — minimal scope + recenter button _(3 hours ago)_
 - c6316aa fix(mapa): grid alpha 0.4, user dot promoted above the radar _(3 hours ago)_
 - 66ff06a fix(mapa): original-style pulse + solid rings + quadrant cross _(3 hours ago)_
-- a3b4039 feat(mapa): radar rings track filter steps + drop cardinal cross _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->
