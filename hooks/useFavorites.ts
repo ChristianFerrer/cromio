@@ -7,12 +7,15 @@ import { useUser } from "./useUser";
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function useFavorites() {
-  const { user } = useUser();
+  const { user, loading: authLoading } = useUser();
   const [favs, setFavs] = useState<Set<string>>(new Set());
   const [loaded, setLoaded] = useState(false);
 
   // Load from Supabase
   useEffect(() => {
+    // While auth is still resolving, keep loaded=false so consumers
+    // don't briefly treat the empty initial state as "no favorites".
+    if (authLoading) return;
     if (!user) {
       setFavs(new Set());
       setLoaded(true);
@@ -23,6 +26,11 @@ export function useFavorites() {
       setLoaded(true);
       return;
     }
+    // Reset on user change so a stale loaded=true from the previous
+    // identity doesn't let consumers render an empty state for one
+    // frame before the new user's favourites arrive.
+    setLoaded(false);
+    setFavs(new Set());
     let cancelled = false;
     supabase
       .from("user_favorites")
@@ -36,7 +44,7 @@ export function useFavorites() {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, authLoading]);
 
   // Realtime: keep favorites in sync across devices
   useEffect(() => {
