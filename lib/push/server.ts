@@ -3,13 +3,22 @@ import webpush from "web-push";
 import { createClient } from "@/lib/supabase/server";
 
 let configured = false;
+let warned = false;
 
 function configure() {
   if (configured) return true;
   const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const privateKey = process.env.VAPID_PRIVATE_KEY;
   const subject = process.env.VAPID_SUBJECT ?? "mailto:hi@cromio.app";
-  if (!publicKey || !privateKey) return false;
+  if (!publicKey || !privateKey) {
+    if (!warned) {
+      console.warn(
+        "[cromio] push disabled: missing NEXT_PUBLIC_VAPID_PUBLIC_KEY and/or VAPID_PRIVATE_KEY env vars",
+      );
+      warned = true;
+    }
+    return false;
+  }
   webpush.setVapidDetails(subject, publicKey, privateKey);
   configured = true;
   return true;

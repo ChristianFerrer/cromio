@@ -48,9 +48,23 @@ async function subscribeAndSave(userAgent: string) {
   return sub;
 }
 
+type StandaloneNavigator = Navigator & { standalone?: boolean };
+
+function detectIosNotInstalled() {
+  if (typeof window === "undefined") return false;
+  const ua = navigator.userAgent;
+  const isIos = /iPad|iPhone|iPod/.test(ua);
+  if (!isIos) return false;
+  const standalone =
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (navigator as StandaloneNavigator).standalone === true;
+  return !standalone;
+}
+
 export function EnablePush() {
   const { user, loading } = useUser();
   const [supported, setSupported] = useState(false);
+  const [iosInstallHint, setIosInstallHint] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [dismissed, setDismissed] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -64,6 +78,7 @@ export function EnablePush() {
       !!VAPID_PUBLIC_KEY;
     setSupported(ok);
     if (ok) setPermission(Notification.permission);
+    setIosInstallHint(!ok && detectIosNotInstalled());
     setDismissed(localStorage.getItem(DISMISS_KEY) === "1");
   }, []);
 
@@ -126,10 +141,36 @@ export function EnablePush() {
   }, []);
 
   if (loading || !user) return null;
+  if (dismissed) return null;
+
+  if (iosInstallHint) {
+    return (
+      <div className="pointer-events-auto fixed inset-x-3 bottom-24 z-[60] mx-auto flex max-w-[406px] items-start gap-3 rounded-md border border-black/5 bg-white/95 p-3 shadow-sh3 backdrop-blur-xl">
+        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-green-500 text-white">
+          <Bell size={16} strokeWidth={2.2} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold text-text">Recibe notificaciones en iPhone</p>
+          <p className="text-xs text-text-2">
+            Toca <span className="font-semibold">Compartir</span> en Safari y elige{" "}
+            <span className="font-semibold">Añadir a pantalla de inicio</span>. Abre Cromio
+            desde el icono para activar mensajes y matches.
+          </p>
+        </div>
+        <button
+          onClick={dismiss}
+          className="grid h-7 w-7 shrink-0 place-items-center rounded text-text-2"
+          aria-label="Cerrar"
+        >
+          <X size={14} strokeWidth={2.2} />
+        </button>
+      </div>
+    );
+  }
+
   if (!supported) return null;
   if (permission === "granted") return null;
   if (permission === "denied") return null;
-  if (dismissed) return null;
 
   return (
     <div className="pointer-events-auto fixed inset-x-3 bottom-24 z-[60] mx-auto flex max-w-[406px] items-center gap-3 rounded-md border border-black/5 bg-white/95 p-3 shadow-sh3 backdrop-blur-xl">

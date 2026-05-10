@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { notifyNewNearbyMatches } from "@/lib/push/nearby";
 
 export async function saveHomeLocation(lng: number, lat: number) {
   if (!Number.isFinite(lng) || !Number.isFinite(lat)) return;
@@ -20,7 +21,10 @@ export async function saveHomeLocation(lng: number, lat: number) {
 
   if (error) {
     console.error("[cromio] saveHomeLocation failed:", error);
+    return;
   }
+
+  void notifyNewNearbyMatches(user.id);
 }
 
 const ALIAS_RE = /^[a-z0-9_]{3,24}$/;

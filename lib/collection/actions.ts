@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { notifyNewNearbyMatches } from "@/lib/push/nearby";
 
 export async function adjustStickerCount(stickerN: number, delta: number) {
   const supabase = await createClient();
@@ -28,6 +29,9 @@ export async function adjustStickerCount(stickerN: number, delta: number) {
 
   if (error) return { error: error.message };
   revalidatePath("/album");
+
+  void notifyNewNearbyMatches(user.id);
+
   return { count: next };
 }
 
