@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "./useUser";
 import { MOCK_USERS } from "@/lib/data/mock-users";
@@ -78,6 +78,11 @@ export function useNearbyUsers(
   const [center, setCenter] = useState<[number, number]>(BARCELONA_EIXAMPLE);
   const [loading, setLoading] = useState(false);
   const [isDemoFallback, setIsDemoFallback] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const refresh = useCallback(() => {
+    setRefreshKey((k) => k + 1);
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
@@ -92,6 +97,7 @@ export function useNearbyUsers(
     const supabase = createClient();
     if (!supabase) return;
     setLoading(true);
+    let cancelled = false;
 
     Promise.all([
       supabase.rpc("get_my_location"),
@@ -100,6 +106,8 @@ export function useNearbyUsers(
         p_radius_m: radiusM,
       }),
     ]).then(([locResult, usersResult]) => {
+      if (cancelled) return;
+
       const locRow = locResult.data?.[0];
       if (locRow?.lng != null && locRow?.lat != null) {
         setCenter([locRow.lng, locRow.lat]);
@@ -144,7 +152,50 @@ export function useNearbyUsers(
       }
       setLoading(false);
     });
-  }, [user, authLoading, radiusM, collection]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, authLoading, radiusM, collection, refreshKey]);
+
+  // Polling fallback: refresh every 30s while authenticated
+  useEffect(() => {
+    if (!user) return;
+    const id = window.setInterval(refresh, 30000);
+    return () => window.clearInterval(id);
+  }, [user, refresh]);
+
+  // Realtime: refresh when any profile or user_stickers row changes
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!user) return;
+    const supabase = createClient();
+    if (!supabase) return;
+
+    const debouncedRefresh = () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(refresh, 600);
+    };
+
+    const channel = supabase
+      .channel("nearby-users-watch")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_stickers" },
+        debouncedRefresh,
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        debouncedRefresh,
+      )
+      .subscribe();
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      supabase.removeChannel(channel);
+    };
+  }, [user, refresh]);
 
   return {
     users,
@@ -152,6 +203,7 @@ export function useNearbyUsers(
     loading,
     isAuthenticated: !!user,
     isDemoFallback,
+    refresh,
   };
 }
 

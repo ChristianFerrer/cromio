@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, MapIcon, List, Lock, Crosshair } from "lucide-react";
+import { Search, MapIcon, List, Lock, Crosshair, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useCollection } from "@/hooks/useCollection";
 import { useNearbyUsers } from "@/hooks/useNearbyUsers";
@@ -25,10 +25,14 @@ export default function MapaPage() {
     h: 0,
   });
 
-  const { users, center: profileCenter, isAuthenticated, isDemoFallback } = useNearbyUsers(
-    radius,
-    collection,
-  );
+  const {
+    users,
+    center: profileCenter,
+    isAuthenticated,
+    isDemoFallback,
+    loading: usersLoading,
+    refresh: refreshUsers,
+  } = useNearbyUsers(radius, collection);
   const device = useDeviceLocation(view === "map");
 
   const center: [number, number] = device.coords ?? profileCenter;
@@ -114,6 +118,20 @@ export default function MapaPage() {
             </button>
           ))}
         </div>
+        {isAuthenticated && (
+          <button
+            onClick={refreshUsers}
+            className="grid h-10 w-10 place-items-center rounded-md border border-black/5 bg-white/95 shadow-sh2 backdrop-blur"
+            aria-label="Refrescar usuarios cercanos"
+            disabled={usersLoading}
+          >
+            <RefreshCw
+              size={14}
+              strokeWidth={2}
+              className={usersLoading ? "animate-spin text-green-700" : "text-text-2"}
+            />
+          </button>
+        )}
       </div>
 
       {view === "map" && radius === 200 && (
