@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 23:04 UTC** · branch `main`_
+_Last updated: **2026-05-10 23:13 UTC** · branch `claude/review-project-status-ibne5`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,10 +140,12 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 7b289e5 fix(ux): no flash of empty state when entering /favoritos and /mapa list _(18 minutes ago)_
-- 65e8834 feat(cromo-card): repe → full red card + position in bottom-right _(28 minutes ago)_
-- c4be251 Merge pull request #4 from ChristianFerrer/claude/admin-dashboard _(36 minutes ago)_
-- 0e438ef feat(nav): rename bottom-nav label Favoritos → Contactos (#5) _(37 minutes ago)_
+- 486d13f fix(ux): useFavorites no longer flashes loaded=true while auth resolves _(10 minutes ago)_
+- 8286204 feat(push): nearby-match server-side trigger + iOS hint + diagnostics (#6) _(13 minutes ago)_
+- 7b289e5 fix(ux): no flash of empty state when entering /favoritos and /mapa list _(28 minutes ago)_
+- 65e8834 feat(cromo-card): repe → full red card + position in bottom-right _(38 minutes ago)_
+- c4be251 Merge pull request #4 from ChristianFerrer/claude/admin-dashboard _(45 minutes ago)_
+- 0e438ef feat(nav): rename bottom-nav label Favoritos → Contactos (#5) _(47 minutes ago)_
 - 841d769 docs(claude): CLAUDE.md with project conventions for future sessions _(2 hours ago)_
 - a4d4050 refactor(admin): split components, rename guards, drop hex literals _(2 hours ago)_
 - 61f8950 feat(admin): audit log view, profile audit trigger, nightly events retention _(2 hours ago)_
@@ -151,8 +153,6 @@ Or manually: `git config core.hooksPath .githooks`.
 - e772b85 feat(admin): user CRUD — list with filters, detail, ban / role / reset _(2 hours ago)_
 - 593d056 feat(analytics): events table + client tracker + business-event triggers _(2 hours ago)_
 - 708f0b6 feat(admin): role + guard + entry points + /banned scaffolding _(2 hours ago)_
-- 311cd0c feat(cromo-card): big centered code + flag left + type pill right + red duplicates _(39 minutes ago)_
-- 1a7e2df feat(album): expand host_city cromos from 3 to 16 (#3) _(60 minutes ago)_
-- 677add3 feat(layout): ban gate before onboarding redirect _(64 minutes ago)_
-- e78167c chore(a11y+i18n): global focus-visible ring, tablist semantics, i18n keys _(73 minutes ago)_
+- 311cd0c feat(cromo-card): big centered code + flag left + type pill right + red duplicates _(48 minutes ago)_
+- 1a7e2df feat(album): expand host_city cromos from 3 to 16 (#3) _(70 minutes ago)_
 <!-- AUTO:COMMITS:END -->
