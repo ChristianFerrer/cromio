@@ -5,6 +5,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { NearbyUser } from "@/hooks/useNearbyUsers";
 import { bearingToLngLat } from "@/lib/map/math";
+import { CROMIO_COLORS } from "@/lib/design/colors";
 
 type Props = {
   centerLng: number;
@@ -136,7 +137,7 @@ export function LeafletMap({
         color: "rgba(31,174,90,0.6)",
         weight: 2,
         dashArray: "6 6",
-        fillColor: "#1FAE5A",
+        fillColor: CROMIO_COLORS.green[500],
         fillOpacity: 0.08,
         interactive: false,
       }).addTo(map);
@@ -161,7 +162,8 @@ export function LeafletMap({
         u.bearing_deg,
         u.distance_m,
       );
-      const color = u.kind === "match" ? "#1FAE5A" : "#2D7DD8";
+      const color =
+        u.kind === "match" ? CROMIO_COLORS.green[500] : CROMIO_COLORS.match.interest;
       const initials = u.alias.slice(0, 2).toUpperCase();
 
       const icon = L.divIcon({
@@ -183,8 +185,8 @@ export function LeafletMap({
               font-family:var(--font-bebas),system-ui;font-size:11px;
               display:flex;gap:3px;white-space:nowrap;
             ">
-              <span style="color:#117C4E">▼${u.you_get_count}</span>
-              <span style="color:#D7263D">▲${u.they_get_count}</span>
+              <span style="color:${CROMIO_COLORS.trade.get}">▼${u.you_get_count}</span>
+              <span style="color:${CROMIO_COLORS.trade.give}">▲${u.they_get_count}</span>
             </div>
           </a>
         `,

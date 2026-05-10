@@ -31,7 +31,7 @@ export default {
           DEFAULT: "#E8E6DE",
           strong: "#D8D5C9",
         },
-        mute: "#8A8779",
+        mute: "#6B6858",
         text: {
           DEFAULT: "#1A1A1A",
           2: "#5C5A50",
@@ -45,6 +45,11 @@ export default {
           green: "#5BE491",
           red: "#FF6B7A",
           interest: "#2D7DD8",
+        },
+        trade: {
+          // Used for ▲ entregas (give) markers on banners and arrows.
+          give: "#D7263D",
+          get: "#117C4E",
         },
       },
       fontFamily: {

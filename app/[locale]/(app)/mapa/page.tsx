@@ -7,6 +7,7 @@ import { useNearbyUsers } from "@/hooks/useNearbyUsers";
 import { useDeviceLocation } from "@/hooks/useDeviceLocation";
 import { fmtDistance } from "@/lib/matches";
 import { saveHomeLocation } from "@/lib/profile/actions";
+import { CROMIO_COLORS } from "@/lib/design/colors";
 import { MatchArrows } from "@/components/match/MatchArrows";
 import { LeafletMap, zoomForRadius } from "@/components/map/LeafletMapClient";
 
@@ -166,7 +167,7 @@ export default function MapaPage() {
               [
                 { id: "all", label: "Todo", color: "var(--y-ink)" },
                 { id: "match", label: "Matches", color: "var(--y-green-700)" },
-                { id: "lead", label: "Te interesa", color: "#2D7DD8" },
+                { id: "lead", label: "Te interesa", color: CROMIO_COLORS.match.interest },
               ] as const
             ).map((c) => {
               const active = listFilter === c.id;
@@ -263,7 +264,7 @@ export default function MapaPage() {
 
 function UserListRow({ u }: { u: ReturnType<typeof useNearbyUsers>["users"][number] }) {
   const isLead = u.kind === "lead";
-  const avatarColor = isLead ? "#2D7DD8" : "#1FAE5A";
+  const avatarColor = isLead ? CROMIO_COLORS.match.interest : CROMIO_COLORS.green[500];
   return (
     <Link
       href={`/match/${u.id}`}

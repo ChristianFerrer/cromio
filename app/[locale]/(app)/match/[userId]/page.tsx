@@ -11,6 +11,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useUser } from "@/hooks/useUser";
 import { startChatWith } from "@/lib/chat/actions";
 import { createClient } from "@/lib/supabase/client";
+import { CROMIO_COLORS } from "@/lib/design/colors";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { Btn } from "@/components/ui/Btn";
 import { Badge } from "@/components/ui/Badge";
@@ -145,9 +146,11 @@ export default function MatchDetailPage({
   const isLead = match.theyGet.length === 0 && match.youGet.length > 0;
   const kindLabel = isLead ? "Te interesa" : "Match";
   const bannerBg = isLead
-    ? "linear-gradient(135deg, #2D7DD8 0%, #1B5DA8 100%)"
+    ? `linear-gradient(135deg, ${CROMIO_COLORS.match.interest} 0%, #1B5DA8 100%)`
     : "linear-gradient(135deg, #1F8A4D 0%, #166B3B 100%)";
-  const accentColor = isLead ? "#2D7DD8" : profile.color ?? "#1FAE5A";
+  const accentColor = isLead
+    ? CROMIO_COLORS.match.interest
+    : profile.color ?? CROMIO_COLORS.green[500];
   const distanceLabel = distanceM != null ? fmtDistance(distanceM) : null;
 
   const renderCromoEntries = (
@@ -231,7 +234,7 @@ export default function MatchDetailPage({
         style={{ background: bannerBg }}
       >
         <div className="flex items-baseline gap-1.5">
-          <span className="text-lg leading-none" style={{ color: "#5BE491" }}>▼</span>
+          <span className="text-lg leading-none text-match-green">▼</span>
           <div className="flex flex-col">
             <span className="text-[10px] font-bold uppercase tracking-wider text-white">
               Recibes
@@ -243,7 +246,7 @@ export default function MatchDetailPage({
         </div>
         <div className="self-stretch bg-white/10" />
         <div className="flex items-baseline gap-1.5">
-          <span className="text-lg leading-none" style={{ color: "#FF6B7A" }}>▲</span>
+          <span className="text-lg leading-none text-match-red">▲</span>
           <div className="flex flex-col">
             <span className="text-[10px] font-bold uppercase tracking-wider text-white">
               Entregas
@@ -276,7 +279,7 @@ export default function MatchDetailPage({
               Sin cromos por entregar
             </p>
           )}
-          {renderCromoEntries(match.theyGet, theySel, setTheySel, "#D7263D")}
+          {renderCromoEntries(match.theyGet, theySel, setTheySel, CROMIO_COLORS.trade.give)}
         </div>
       </div>
 

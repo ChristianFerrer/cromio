@@ -16,7 +16,7 @@ export function MatchArrows({
         <span style={{ fontSize: size * 0.85 }}>▼</span>
         {recibes}
       </span>
-      <span className="inline-flex items-center gap-1 text-[#D7263D]">
+      <span className="inline-flex items-center gap-1 text-trade-give">
         <span style={{ fontSize: size * 0.85 }}>▲</span>
         {entregas}
       </span>

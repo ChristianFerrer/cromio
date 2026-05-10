@@ -139,14 +139,13 @@ export default function AlbumPage() {
       ) : (
         <Link
           href="/mapa"
-          className="mx-4 mt-3 flex items-center gap-2.5 rounded-md border p-3"
-          style={{ background: "rgba(212,175,55,.10)", borderColor: "rgba(212,175,55,.35)" }}
+          className="mx-4 mt-3 flex items-center gap-2.5 rounded-md border border-gold/40 bg-gold/10 p-3"
         >
           <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-gold text-white">
             <Search size={18} strokeWidth={2.4} />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[13.5px] font-bold" style={{ color: "#7a5d10" }}>
+            <span className="block text-[13.5px] font-bold text-gold-dark">
               No hay usuarios con cromos de tu interés
             </span>
             <span className="mt-0.5 block text-xs text-text-2">
