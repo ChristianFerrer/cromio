@@ -24,10 +24,19 @@ export const metadata: Metadata = {
   description:
     "Encuentra coleccionistas del álbum Panini Mundial 2026 cerca de ti. Intercambia cromos en persona.",
   manifest: "/manifest.webmanifest",
+  applicationName: "Cromio",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Cromio",
+    startupImage: ["/icon.svg"],
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon-maskable.svg",
+  },
+  formatDetection: {
+    telephone: false,
   },
 };
 

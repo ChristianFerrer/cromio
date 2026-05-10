@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 15:15 UTC** · branch `main`_
+_Last updated: **2026-05-10 15:18 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -63,25 +63,47 @@ Generate VAPID keys with `npx web-push generate-vapid-keys --json`.
 
 ## What works
 
-- Auth (email + Google), automatic locale (es/en).
-- Album: load + adjust counts, persisted in `user_stickers` with optimistic UI.
-- Mapa: Leaflet map with radar sweep, real-time nearby collectors, rotating tile cache, hyperlocal banner at 200m radius. Auto-saves device GPS to `profiles.home_location` (50m debounce).
-- Chat: WhatsApp-style ticks (clock → ✓✓ gray → ✓✓ blue), day separators, message grouping, optimistic send, Realtime INSERT + UPDATE listeners with refetch on focus / interval safety net.
-- Notifications: in-app toasts for new messages and new nearby matches/leads, red badges in BottomNav (chat + mapa).
-- Web Push: full pipeline (VAPID, `/sw.js`, `push_subscriptions` table, `sendMessage` triggers a push to the recipient).
+- Auth (email + Google), automatic locale (es/en). All `(app)` routes
+  hard-redirect to `/login` when anonymous, and to `/onboarding` when
+  the profile has no `home_location`. No demo data anywhere.
+- Onboarding (location → identity → favorite team → first cromos),
+  saving alias, display name, color and `home_location` in one shot.
+- Profile: real avatar (or color disc), rating, trades_count, album
+  stats. `/perfil/editar` updates alias / display_name / color and
+  uploads avatar to a Supabase Storage `avatars` bucket (public read,
+  owner-scoped writes). Push toggle on /perfil for per-device control.
+- Album: load + adjust counts, persisted in `user_stickers` with
+  optimistic UI; banner derived from a real `find_nearby_users` call.
+- Mapa: Leaflet map with radar sweep, real-time nearby collectors,
+  rotating tile cache, hyperlocal banner at 200m radius. Auto-saves
+  device GPS to `profiles.home_location` (50m debounce).
+- Chat: WhatsApp-style ticks (clock → ✓✓ gray → ✓✓ blue), day
+  separators, message grouping, optimistic send, Realtime INSERT +
+  UPDATE listeners with refetch on focus / interval safety net.
+- Chat states: meeting proposals (place + time), Aceptar/Rechazar
+  banner, "Hecho" → completed, ★1–5 rating sheet. `chat_ratings`
+  + trigger keep `profiles.rating` and `profiles.trades_count` live.
+- Favoritos: real profile lookups, alias search, distance + match
+  counts via `find_nearby_users`.
+- Notifications: in-app toasts (messages, matches/leads, generic
+  success/error/info via `pushAppToast`), red badges in BottomNav
+  (chat + mapa). Skeletons on /chat, /chat/[id] and /perfil.
+- Web Push: full pipeline (VAPID, `/sw.js`, `push_subscriptions`
+  table, `sendMessage` and meeting actions trigger pushes).
+- Install banner: iOS Safari → "Añadir a pantalla de inicio"
+  instructions, Chromium → `beforeinstallprompt` button. Manifest
+  declares shortcuts for /mapa, /album, /chat.
 
 ## What is still pending
 
-- Onboarding flow for OAuth users without alias/color/avatar.
-- Editable profile (alias, color, avatar via Supabase Storage).
-- Skeletons in Favoritos / Chat list / Mapa list.
-- Global toast for errors (network, action failure).
-- Meeting sheet + chat state transitions (`pending → confirmed → completed`).
-- Rating sheet (★1–5) after a trade completes; updates `profiles.rating` / `trades_count`.
-- iOS "Add to Home Screen" install banner + screenshots in `manifest.webmanifest`.
-- Service Worker offline shell (currently SW handles push only).
+- Service Worker offline shell (currently SW handles push only;
+  no precache/runtime caching of the app shell or tile cache).
+- Real PNG splash screens + screenshots in `manifest.webmanifest`.
 - Pro tier (Stripe Checkout, radius unlock, badges).
 - Marketplace / individual cromo trades.
+- Per-cromo deep-link from a map pin into chat with preview.
+- Report / block flow for users.
+- View Transitions API for route changes.
 
 ## How this file stays current
 
@@ -99,19 +121,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 3a74e7b feat(ux): global toast bus + skeleton loaders _(3 minutes ago)_
-- 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(6 minutes ago)_
-- edbaace feat(onboarding): identity step + redirect when home_location is null _(9 minutes ago)_
-- bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(11 minutes ago)_
-- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(37 minutes ago)_
-- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(40 minutes ago)_
-- f5cad0f fix(chat): make realtime + read receipts actually work _(68 minutes ago)_
-- 3609c65 feat(chat): WhatsApp-style states with read receipts and day separators _(78 minutes ago)_
-- 3b05cb5 fix: hide bottom nav inside chat detail and match detail _(85 minutes ago)_
+- 463fea7 feat(chat): meeting proposals + rating after trade _(2 minutes ago)_
+- 3a74e7b feat(ux): global toast bus + skeleton loaders _(6 minutes ago)_
+- 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(8 minutes ago)_
+- edbaace feat(onboarding): identity step + redirect when home_location is null _(11 minutes ago)_
+- bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(13 minutes ago)_
+- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(39 minutes ago)_
+- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(42 minutes ago)_
+- f5cad0f fix(chat): make realtime + read receipts actually work _(70 minutes ago)_
+- 3609c65 feat(chat): WhatsApp-style states with read receipts and day separators _(80 minutes ago)_
+- 3b05cb5 fix: hide bottom nav inside chat detail and match detail _(88 minutes ago)_
 - 9503f5c feat: remove demo fallback so map only shows real users _(3 hours ago)_
 - 0587155 feat: auto-save device GPS into profile.home_location on map view _(6 hours ago)_
 - 67d0342 feat: realtime nearby users + 30s polling + manual refresh button _(7 hours ago)_
 - b78f47e feat: demo fallback users on map when no real collectors are nearby yet _(7 hours ago)_
 - 8fd26a0 feat: add clockwise rotating radar sweep over the search radius _(7 hours ago)_
-- 7208a5b fix: map z-index isolation + zoom table + bigger user pin _(7 hours ago)_
 <!-- AUTO:COMMITS:END -->

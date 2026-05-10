@@ -23,6 +23,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
 import { subscribeAppToast } from "@/lib/notifications/toast";
 import { EnablePush } from "./EnablePush";
+import { InstallPwaBanner } from "./InstallPwaBanner";
 
 type Toast =
   | {
@@ -309,6 +310,7 @@ export function NotificationsRoot({
       {children}
       <ToastStack toasts={toasts} dismiss={dismissToast} />
       <EnablePush />
+      <InstallPwaBanner />
     </Ctx.Provider>
   );
 }
