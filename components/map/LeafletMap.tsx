@@ -138,8 +138,8 @@ export function LeafletMap({
     if (!radiusCircleRef.current) {
       radiusCircleRef.current = L.circle([centerLat, centerLng], {
         radius: radiusM,
-        color: "rgba(17,124,78,0.85)",
-        weight: 2,
+        color: "rgba(17,124,78,0.2)",
+        weight: 1,
         fillColor: CROMIO_COLORS.green[500],
         fillOpacity: 0.06,
         interactive: false,
@@ -242,67 +242,60 @@ export function LeafletMap({
             <clipPath id="cromio-radar-grid-clip">
               <circle cx="50" cy="50" r="50" />
             </clipPath>
+            {/* Cardinal cross: opaque at center, transparent at the
+                radar edge so the lines fade naturally into the scope. */}
+            <linearGradient
+              id="cromio-radar-cross-v"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="0%" stopColor="rgba(17,124,78,0)" />
+              <stop offset="50%" stopColor="rgba(17,124,78,0.55)" />
+              <stop offset="100%" stopColor="rgba(17,124,78,0)" />
+            </linearGradient>
+            <linearGradient
+              id="cromio-radar-cross-h"
+              x1="0"
+              y1="0"
+              x2="1"
+              y2="0"
+            >
+              <stop offset="0%" stopColor="rgba(17,124,78,0)" />
+              <stop offset="50%" stopColor="rgba(17,124,78,0.55)" />
+              <stop offset="100%" stopColor="rgba(17,124,78,0)" />
+            </linearGradient>
           </defs>
           <g
             clipPath="url(#cromio-radar-grid-clip)"
-            stroke="rgba(17,124,78,0.55)"
+            stroke="rgba(17,124,78,0.2)"
             fill="none"
           >
             {/* Concentric range rings (25% / 50% / 75% of radius) */}
-            <circle cx="50" cy="50" r="12.5" strokeWidth="0.35" strokeDasharray="0.8 1.4" />
-            <circle cx="50" cy="50" r="25" strokeWidth="0.35" strokeDasharray="0.8 1.4" />
-            <circle cx="50" cy="50" r="37.5" strokeWidth="0.4" strokeDasharray="1 1.6" />
-            {/* Cardinal crosshair (N-S, E-W) */}
-            <line x1="50" y1="0" x2="50" y2="100" strokeWidth="0.4" />
-            <line x1="0" y1="50" x2="100" y2="50" strokeWidth="0.4" />
-            {/* Diagonal axes (lighter) */}
-            <line
-              x1="14.6"
-              y1="14.6"
-              x2="85.4"
-              y2="85.4"
-              strokeWidth="0.3"
-              opacity="0.55"
-            />
-            <line
-              x1="85.4"
-              y1="14.6"
-              x2="14.6"
-              y2="85.4"
-              strokeWidth="0.3"
-              opacity="0.55"
-            />
-            {/* Cardinal tick marks at the outer ring */}
-            {([
-              [50, 1.5, "N"],
-              [98.5, 50, "E"],
-              [50, 98.5, "S"],
-              [1.5, 50, "O"],
-            ] as Array<[number, number, string]>).map(([cx, cy, label]) => (
-              <circle
-                key={label}
-                cx={cx}
-                cy={cy}
-                r="0.9"
-                fill="rgba(17,124,78,0.85)"
-                stroke="none"
-              />
-            ))}
+            <circle cx="50" cy="50" r="12.5" strokeWidth="0.18" strokeDasharray="0.8 1.4" />
+            <circle cx="50" cy="50" r="25" strokeWidth="0.18" strokeDasharray="0.8 1.4" />
+            <circle cx="50" cy="50" r="37.5" strokeWidth="0.2" strokeDasharray="1 1.6" />
           </g>
-          {/* Cardinal labels (N/E/S/O) */}
-          <g
-            fontFamily="var(--font-bebas), system-ui"
-            fontSize="3.6"
-            fill="rgba(17,124,78,0.7)"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            letterSpacing="0.3"
-          >
-            <text x="50" y="4.8">N</text>
-            <text x="95.2" y="50">E</text>
-            <text x="50" y="95.2">S</text>
-            <text x="4.8" y="50">O</text>
-          </g>
+          {/* Cardinal crosshair with fade-out gradient toward the edges */}
+          <line
+            x1="50"
+            y1="0"
+            x2="50"
+            y2="100"
+            stroke="url(#cromio-radar-cross-v)"
+            strokeWidth="0.22"
+            clipPath="url(#cromio-radar-grid-clip)"
+          />
+          <line
+            x1="0"
+            y1="50"
+            x2="100"
+            y2="50"
+            stroke="url(#cromio-radar-cross-h)"
+            strokeWidth="0.22"
+            clipPath="url(#cromio-radar-grid-clip)"
+          />
         </svg>
       </div>
       <div
