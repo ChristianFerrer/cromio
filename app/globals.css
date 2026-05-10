@@ -109,7 +109,8 @@ body {
   padding: 2px 6px !important;
 }
 
-/* Rotating sweep — long fading trail behind the leading arm. */
+/* Rotating sweep — Whistle-style cone: ~90° wide, bright leading
+   edge, soft fade backwards into the scope. */
 .cromio-radar-sweep {
   position: absolute;
   inset: 0;
@@ -117,11 +118,10 @@ body {
   background: conic-gradient(
     from 0deg,
     rgba(31, 174, 90, 0) 0deg,
-    rgba(31, 174, 90, 0) 200deg,
-    rgba(31, 174, 90, 0.06) 260deg,
-    rgba(31, 174, 90, 0.18) 320deg,
-    rgba(31, 174, 90, 0.42) 350deg,
-    rgba(31, 174, 90, 0.68) 359.5deg,
+    rgba(31, 174, 90, 0) 270deg,
+    rgba(31, 174, 90, 0.1) 290deg,
+    rgba(31, 174, 90, 0.32) 320deg,
+    rgba(31, 174, 90, 0.6) 348deg,
     rgba(31, 174, 90, 0.85) 360deg
   );
   -webkit-mask-image: radial-gradient(circle, #000 0%, #000 96%, transparent 100%);

@@ -13,8 +13,8 @@ type Props = {
   zoom: number;
   users: NearbyUser[];
   radiusM: number;
-  /** Inner range rings to draw (in metres). Each must be < radiusM. */
-  innerRings?: number[];
+  /** Bumped by the parent to force the map to re-center on the user. */
+  recenterToken?: number;
 };
 
 export function LeafletMap({
@@ -23,7 +23,7 @@ export function LeafletMap({
   zoom,
   users,
   radiusM,
-  innerRings = [],
+  recenterToken,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -31,7 +31,6 @@ export function LeafletMap({
   const userMarkersRef = useRef<L.Marker[]>([]);
   const sweepRef = useRef<HTMLDivElement | null>(null);
   const pulseRef = useRef<HTMLDivElement | null>(null);
-  const gridRef = useRef<HTMLDivElement | null>(null);
   const dotRef = useRef<HTMLDivElement | null>(null);
   const programmaticMoveRef = useRef(false);
 
@@ -78,13 +77,26 @@ export function LeafletMap({
     }, 600);
   }, [centerLat, centerLng, zoom]);
 
+  // Force-recenter when the parent bumps the token (user pressed
+  // "Centrar en mi ubicación" after panning).
+  useEffect(() => {
+    if (!recenterToken) return;
+    const map = mapRef.current;
+    if (!map) return;
+    programmaticMoveRef.current = true;
+    map.setView([centerLat, centerLng], zoom, { animate: true, duration: 0.5 });
+    setTimeout(() => {
+      programmaticMoveRef.current = false;
+    }, 600);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recenterToken]);
+
   useEffect(() => {
     const map = mapRef.current;
     const sweepEl = sweepRef.current;
     const pulseEl = pulseRef.current;
-    const gridEl = gridRef.current;
     const dotEl = dotRef.current;
-    if (!map || !sweepEl || !pulseEl || !gridEl || !dotEl) return;
+    if (!map || !sweepEl || !pulseEl || !dotEl) return;
 
     const update = () => {
       const center = map.latLngToContainerPoint([centerLat, centerLng]);
@@ -95,7 +107,7 @@ export function LeafletMap({
       const diameter = radiusPx * 2;
       const visible = radiusPx > 6 ? "1" : "0";
 
-      for (const el of [sweepEl, pulseEl, gridEl]) {
+      for (const el of [sweepEl, pulseEl]) {
         el.style.left = `${center.x}px`;
         el.style.top = `${center.y}px`;
         el.style.width = `${diameter}px`;
@@ -210,55 +222,6 @@ export function LeafletMap({
       >
         <div className="cromio-radar-pulse" />
         <div className="cromio-radar-pulse cromio-radar-pulse--late" />
-      </div>
-      <div
-        ref={gridRef}
-        aria-hidden
-        style={{
-          position: "absolute",
-          pointerEvents: "none",
-          transform: "translate(-50%, -50%)",
-          zIndex: 445,
-        }}
-      >
-        <svg
-          viewBox="0 0 100 100"
-          width="100%"
-          height="100%"
-          preserveAspectRatio="xMidYMid meet"
-        >
-          <defs>
-            <clipPath id="cromio-radar-grid-clip">
-              <circle cx="50" cy="50" r="50" />
-            </clipPath>
-          </defs>
-          <g
-            clipPath="url(#cromio-radar-grid-clip)"
-            stroke="rgba(17,124,78,0.4)"
-            fill="none"
-          >
-            {/* Cardinal cross splits the scope into 4 quadrants. */}
-            <line x1="50" y1="0" x2="50" y2="100" strokeWidth="0.22" />
-            <line x1="0" y1="50" x2="100" y2="50" strokeWidth="0.22" />
-
-            {/* Range rings — one per filter step smaller than the
-                currently selected radius. Continuous strokes. */}
-            {innerRings
-              .filter((r) => r > 0 && r < radiusM)
-              .map((r) => {
-                const rv = (r / radiusM) * 50;
-                return (
-                  <circle
-                    key={r}
-                    cx="50"
-                    cy="50"
-                    r={rv}
-                    strokeWidth={rv > 25 ? 0.22 : 0.2}
-                  />
-                );
-              })}
-          </g>
-        </svg>
       </div>
       <div
         ref={sweepRef}

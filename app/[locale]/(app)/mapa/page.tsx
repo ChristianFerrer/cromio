@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, MapIcon, List, Lock, RefreshCw, X } from "lucide-react";
+import { MapIcon, List, Lock, RefreshCw, X, LocateFixed } from "lucide-react";
 import Link from "next/link";
 import { useNearbyUsers } from "@/hooks/useNearbyUsers";
 import { useDeviceLocation } from "@/hooks/useDeviceLocation";
@@ -22,6 +22,7 @@ export default function MapaPage() {
     location: false,
     empty: false,
   });
+  const [recenterToken, setRecenterToken] = useState(0);
   // Re-show the empty banner whenever the radius changes (the message
   // depends on radius so dismissing for 200m shouldn't hide it for 5km).
   useEffect(() => {
@@ -97,7 +98,7 @@ export default function MapaPage() {
               zoom={zoom}
               users={users}
               radiusM={radius}
-              innerRings={RADII.filter((r) => r < radius)}
+              recenterToken={recenterToken}
             />
           )}
         </div>
@@ -149,13 +150,7 @@ export default function MapaPage() {
           </div>
         )}
 
-      <div className="absolute left-3 right-3 top-14 z-30 flex items-center gap-2">
-        <div className="flex h-10 flex-1 items-center gap-2.5 rounded-md border border-black/5 bg-white/95 px-3.5 shadow-sh2 backdrop-blur">
-          <Search size={16} strokeWidth={2} className="text-text-2" />
-          <span className="text-sm font-medium">
-            {isAuthenticated ? "Tu zona" : "Tu ubicación"}
-          </span>
-        </div>
+      <div className="absolute right-3 top-14 z-30 flex items-center gap-2">
         <div className="flex h-10 gap-0.5 rounded-md border border-black/5 bg-white/95 p-0.5 shadow-sh2 backdrop-blur">
           {(["map", "list"] as const).map((v) => (
             <button
@@ -164,6 +159,8 @@ export default function MapaPage() {
               className={`grid h-full w-10 place-items-center rounded-[10px] text-xs font-semibold transition-colors ${
                 view === v ? "bg-ink text-white" : "bg-transparent text-text-2"
               }`}
+              aria-label={v === "map" ? "Vista mapa" : "Vista lista"}
+              aria-pressed={view === v}
             >
               {v === "map" ? <MapIcon size={14} strokeWidth={2} /> : <List size={14} strokeWidth={2} />}
             </button>
@@ -254,6 +251,16 @@ export default function MapaPage() {
             </p>
           )}
         </div>
+      )}
+
+      {view === "map" && (
+        <button
+          onClick={() => setRecenterToken((t) => t + 1)}
+          aria-label="Centrar en mi ubicación"
+          className="absolute bottom-44 right-3 z-30 grid h-11 w-11 place-items-center rounded-full border border-black/5 bg-white/95 shadow-sh3 backdrop-blur transition-transform active:scale-95"
+        >
+          <LocateFixed size={18} strokeWidth={2} className="text-text" />
+        </button>
       )}
 
       <div className="absolute bottom-24 left-3 right-3 z-30 rounded-xl border border-black/5 bg-white/95 p-3.5 shadow-sh3 backdrop-blur">
