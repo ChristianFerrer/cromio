@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 21:10 UTC** · branch `claude/admin-dashboard`_
+_Last updated: **2026-05-10 21:14 UTC** · branch `claude/admin-dashboard`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -132,10 +132,11 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- dc8c948 feat(analytics): events table + client tracker + business-event triggers _(4 minutes ago)_
-- 5e681f1 feat(admin): role + guard + entry points + /banned scaffolding _(6 minutes ago)_
-- ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(71 minutes ago)_
-- 68f4856 feat(brand): green palette anchored on logo + new teal palette _(77 minutes ago)_
+- a9c4502 feat(admin): user CRUD — list with filters, detail, ban / role / reset _(4 minutes ago)_
+- dc8c948 feat(analytics): events table + client tracker + business-event triggers _(8 minutes ago)_
+- 5e681f1 feat(admin): role + guard + entry points + /banned scaffolding _(10 minutes ago)_
+- ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(74 minutes ago)_
+- 68f4856 feat(brand): green palette anchored on logo + new teal palette _(81 minutes ago)_
 - 49c98b9 feat(brand): cromio_bg.png as the app logo across favicon + headers _(2 hours ago)_
 - d023680 Add files via upload _(2 hours ago)_
 - c0cfeab fix(mapa): radar above tiles, dot + pins above radar _(2 hours ago)_
@@ -146,5 +147,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - a3b4039 feat(mapa): radar rings track filter steps + drop cardinal cross _(3 hours ago)_
 - 9725a18 fix(mapa): rings 60%, single louder pulse, drop the tint _(3 hours ago)_
 - 07b9390 fix(mapa): radar grid thinner @ 20%, cardinals with edge-fade gradient _(3 hours ago)_
-- 559329c feat(mapa): radar scope look — range rings, cardinals, sweep arm _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->
