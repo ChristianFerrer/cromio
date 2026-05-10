@@ -5,10 +5,10 @@ import { COUNTRY_BY_CODE } from "@/lib/data/countries";
 import { Flag } from "./Flag";
 
 const SIZES = {
-  sm: { w: 78, h: 110, num: 22, pos: 8, name: 9 },
-  md: { w: 102, h: 144, num: 30, pos: 9, name: 11 },
-  lg: { w: 140, h: 200, num: 42, pos: 11, name: 14 },
-  xl: { w: 200, h: 286, num: 60, pos: 13, name: 16 },
+  sm: { ratio: "78/110", num: "clamp(18px, 6.5vw, 28px)", pos: 9, name: 10, flag: 18, fixed: null },
+  md: { ratio: "102/144", num: "clamp(22px, 7.5vw, 34px)", pos: 10, name: 12, flag: 22, fixed: null },
+  lg: { ratio: "140/200", num: "42px", pos: 11, name: 14, flag: 28, fixed: { w: 140, h: 200 } },
+  xl: { ratio: "200/286", num: "60px", pos: 13, name: 16, flag: 40, fixed: { w: 200, h: 286 } },
 } as const;
 
 export function CromoCard({
@@ -34,14 +34,21 @@ export function CromoCard({
   const accent = country?.flag.colors[0] ?? "#0B6E3F";
   const isSpecial = sticker.rarity !== "common";
 
+  const wrapperStyle: React.CSSProperties = dim.fixed
+    ? { width: dim.fixed.w }
+    : { width: "100%" };
+
+  const cardStyle: React.CSSProperties = dim.fixed
+    ? { width: dim.fixed.w, height: dim.fixed.h }
+    : { width: "100%", aspectRatio: dim.ratio };
+
   return (
-    <div className="flex flex-col items-stretch" style={{ width: dim.w }}>
+    <div className="flex flex-col items-stretch" style={wrapperStyle}>
       <button
         onClick={onClick}
         className="relative flex shrink-0 overflow-hidden rounded-card text-left transition-transform active:scale-[0.97]"
         style={{
-          width: dim.w,
-          height: dim.h,
+          ...cardStyle,
           background: have ? `linear-gradient(160deg, ${accent}22, #fff)` : "#F5F4EE",
           border: selectBorder
             ? `2px solid ${selectBorder}`
@@ -61,14 +68,14 @@ export function CromoCard({
         />
 
         <div className="relative flex h-full w-full flex-col p-2">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-1">
             <span
               className="font-display tabular leading-none"
               style={{ fontSize: dim.num, color: have ? accent : "#8A8779" }}
             >
               {sticker.code}
             </span>
-            {country && <Flag country={country} size={dim.w * 0.22} />}
+            {country && <Flag country={country} size={dim.flag} />}
           </div>
 
           <div className="mt-auto flex flex-col gap-0.5">
@@ -109,9 +116,10 @@ export function CromoCard({
             <span
               className="absolute left-1 bottom-1 rounded-full px-1 py-0.5 font-display text-[9px]"
               style={{
-                background: sticker.rarity === "legendary"
-                  ? "linear-gradient(135deg, #F0DA8E, #D4AF37)"
-                  : "rgba(212,175,55,.18)",
+                background:
+                  sticker.rarity === "legendary"
+                    ? "linear-gradient(135deg, #F0DA8E, #D4AF37)"
+                    : "rgba(212,175,55,.18)",
                 color: sticker.rarity === "legendary" ? "#3A2C00" : "#8C7220",
               }}
             >
