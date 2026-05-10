@@ -205,7 +205,7 @@ export default function AlbumPage() {
                 Me faltan · {counts.falti}
               </Chip>
               <Chip active={filter === "repe"} onClick={() => setFilter("repe")}>
-                Repes · {counts.repe}
+                Repetidas · {counts.repe}
               </Chip>
             </>
           );

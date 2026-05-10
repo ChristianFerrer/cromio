@@ -13,7 +13,7 @@ export default async function PerfilPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const [{ data: profile }, { count: ownedCount }, { count: dupesCount }] = await Promise.all([
+  const [{ data: profile }, { data: userStickers }] = await Promise.all([
     supabase
       .from("profiles")
       .select(
@@ -23,18 +23,17 @@ export default async function PerfilPage() {
       .maybeSingle(),
     supabase
       .from("user_stickers")
-      .select("sticker_n", { count: "exact", head: true })
+      .select("count")
       .eq("user_id", user.id)
       .gte("count", 1),
-    supabase
-      .from("user_stickers")
-      .select("sticker_n", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .gte("count", 2),
   ]);
 
-  const owned = ownedCount ?? 0;
-  const repes = dupesCount ?? 0;
+  let owned = 0;
+  let repes = 0;
+  for (const row of userStickers ?? []) {
+    if (row.count >= 1) owned++;
+    if (row.count >= 2) repes += row.count - 1;
+  }
   const pct = owned > 0 ? (owned / TOTAL_STICKERS) * 100 : 0;
   const missing = TOTAL_STICKERS - owned;
   const initials = (profile?.alias ?? user.email ?? "?").slice(0, 2).toUpperCase();
@@ -95,7 +94,7 @@ export default async function PerfilPage() {
         <div className="mt-3 flex justify-around border-t border-line pt-3 text-center text-xs">
           <div>
             <div className="font-display text-lg">{repes}</div>
-            <div className="text-text-2">Repes</div>
+            <div className="text-text-2">Repetidas</div>
           </div>
           <div>
             <div className="font-display text-lg">{missing}</div>

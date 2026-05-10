@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 15:50 UTC** · branch `main`_
+_Last updated: **2026-05-10 16:01 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -121,19 +121,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- e500ad1 fix(favoritos): server-side favorites in user_favorites + UX _(5 minutes ago)_
-- 506976b feat(pwa): install banner (iOS + Chromium) + manifest shortcuts _(33 minutes ago)_
-- 463fea7 feat(chat): meeting proposals + rating after trade _(35 minutes ago)_
-- 3a74e7b feat(ux): global toast bus + skeleton loaders _(38 minutes ago)_
-- 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(41 minutes ago)_
-- edbaace feat(onboarding): identity step + redirect when home_location is null _(44 minutes ago)_
-- bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(46 minutes ago)_
-- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(72 minutes ago)_
-- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(75 minutes ago)_
+- 5514dea fix(push): TDZ crash on permission grant + friendly error toasts _(10 minutes ago)_
+- e500ad1 fix(favoritos): server-side favorites in user_favorites + UX _(15 minutes ago)_
+- 506976b feat(pwa): install banner (iOS + Chromium) + manifest shortcuts _(43 minutes ago)_
+- 463fea7 feat(chat): meeting proposals + rating after trade _(45 minutes ago)_
+- 3a74e7b feat(ux): global toast bus + skeleton loaders _(49 minutes ago)_
+- 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(52 minutes ago)_
+- edbaace feat(onboarding): identity step + redirect when home_location is null _(54 minutes ago)_
+- bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(57 minutes ago)_
+- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(82 minutes ago)_
+- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(85 minutes ago)_
 - f5cad0f fix(chat): make realtime + read receipts actually work _(2 hours ago)_
 - 3609c65 feat(chat): WhatsApp-style states with read receipts and day separators _(2 hours ago)_
 - 3b05cb5 fix: hide bottom nav inside chat detail and match detail _(2 hours ago)_
 - 9503f5c feat: remove demo fallback so map only shows real users _(4 hours ago)_
 - 0587155 feat: auto-save device GPS into profile.home_location on map view _(7 hours ago)_
-- 67d0342 feat: realtime nearby users + 30s polling + manual refresh button _(7 hours ago)_
 <!-- AUTO:COMMITS:END -->
