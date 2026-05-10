@@ -597,7 +597,7 @@ function FirstCromosPicker({
   }, [added]);
 
   const tabPool = useMemo(() => {
-    if (tab === "especiales") return STICKERS.filter((s) => s.rarity !== "common");
+    if (tab === "especiales") return STICKERS.filter((s) => s.type === "foil_intro");
     if (tab === "estadios") return STICKERS.filter((s) => s.type === "host_city");
     return STICKERS.filter(
       (s) => s.type === "team_badge" || s.type === "team_photo" || s.type === "player",
