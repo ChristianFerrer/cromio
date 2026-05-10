@@ -58,3 +58,48 @@ body {
 .tabular {
   font-variant-numeric: tabular-nums;
 }
+
+/* Map self-pulse animation (around the user's own pin) */
+.cromio-self-pulse {
+  position: relative;
+  width: 22px;
+  height: 22px;
+}
+.cromio-self-pulse::before,
+.cromio-self-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(31, 174, 90, 0.55);
+  animation: self-pulse 2.4s ease-out infinite;
+}
+.cromio-self-pulse::after {
+  animation-delay: 1.2s;
+  border-color: rgba(31, 174, 90, 0.4);
+}
+.cromio-self-dot {
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: #1fae5a;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 4px rgba(31, 174, 90, 0.25),
+    0 4px 10px rgba(0, 0, 0, 0.2);
+}
+@keyframes self-pulse {
+  0% { transform: scale(0.4); opacity: 0.85; }
+  80% { opacity: 0.1; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Override Leaflet defaults to not bleed Cromio's tokens */
+.leaflet-container {
+  background: #f2efe9 !important;
+  font-family: inherit !important;
+}
+.leaflet-control-attribution {
+  font-size: 9px !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  padding: 2px 6px !important;
+}

@@ -9,7 +9,7 @@ import { useDeviceLocation } from "@/hooks/useDeviceLocation";
 import { fmtDistance } from "@/lib/matches";
 import { MatchArrows } from "@/components/match/MatchArrows";
 import { AlbumProgress } from "@/components/match/AlbumProgress";
-import { StaticTileMap, zoomForRadius } from "@/components/map/StaticTileMap";
+import { LeafletMap, zoomForRadius } from "@/components/map/LeafletMapClient";
 
 const RADII = [200, 500, 1000, 2000, 5000, 10000, 50000];
 const FREE_MAX = 2000;
@@ -63,14 +63,12 @@ export default function MapaPage() {
       {view === "map" && (
         <div ref={containerRef} className="absolute inset-0 bg-[#F2EFE9]">
           {mapDims.w > 0 && mapDims.h > 0 && (
-            <StaticTileMap
+            <LeafletMap
               centerLng={center[0]}
               centerLat={center[1]}
               zoom={zoom}
               users={users}
               radiusM={radius}
-              width={mapDims.w}
-              height={mapDims.h}
             />
           )}
         </div>
