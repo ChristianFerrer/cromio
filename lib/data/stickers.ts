@@ -77,35 +77,3 @@ function buildStickerSet(): Sticker[] {
 export const STICKERS: Sticker[] = buildStickerSet();
 export const TOTAL_STICKERS = STICKERS.length;
 export const STICKERS_BY_N: Map<number, Sticker> = new Map(STICKERS.map((s) => [s.n, s]));
-
-export function buildMockCollection(seed = 0): Map<number, number> {
-  const map = new Map<number, number>();
-  STICKERS.forEach((s, i) => {
-    if (seed === 0) {
-      map.set(s.n, 0);
-      return;
-    }
-    const r = ((i * 9301 + seed * 49297) % 233280) / 233280;
-    let count = 0;
-    if (r < 0.30) count = 0;
-    else if (r < 0.78) count = 1;
-    else if (r < 0.93) count = 2;
-    else count = 3;
-    map.set(s.n, count);
-  });
-  return map;
-}
-
-export function userStatsFor(seed: number) {
-  const total = STICKERS.length;
-  if (seed === 0) return { owned: 0, total, missing: total, repes: 0, pct: 0 };
-  const map = buildMockCollection(seed);
-  let owned = 0;
-  let repes = 0;
-  STICKERS.forEach((s) => {
-    const cnt = map.get(s.n) ?? 0;
-    if (cnt >= 1) owned++;
-    if (cnt >= 2) repes += cnt - 1;
-  });
-  return { owned, total, missing: total - owned, repes, pct: (owned / total) * 100 };
-}

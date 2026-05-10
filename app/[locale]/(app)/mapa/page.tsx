@@ -1,22 +1,19 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, MapIcon, List, Lock, Crosshair, RefreshCw } from "lucide-react";
+import { Search, MapIcon, List, Lock, RefreshCw } from "lucide-react";
 import Link from "next/link";
-import { useCollection } from "@/hooks/useCollection";
 import { useNearbyUsers } from "@/hooks/useNearbyUsers";
 import { useDeviceLocation } from "@/hooks/useDeviceLocation";
 import { fmtDistance } from "@/lib/matches";
 import { saveHomeLocation } from "@/lib/profile/actions";
 import { MatchArrows } from "@/components/match/MatchArrows";
-import { AlbumProgress } from "@/components/match/AlbumProgress";
 import { LeafletMap, zoomForRadius } from "@/components/map/LeafletMapClient";
 
 const RADII = [200, 500, 1000, 2000, 5000, 10000, 50000];
 const FREE_MAX = 2000;
 
 export default function MapaPage() {
-  const { collection } = useCollection(247);
   const [radius, setRadius] = useState(1000);
   const [view, setView] = useState<"map" | "list">("map");
   const [listFilter, setListFilter] = useState<"all" | "match" | "lead">("all");
@@ -30,10 +27,9 @@ export default function MapaPage() {
     users,
     center: profileCenter,
     isAuthenticated,
-    isDemoFallback,
     loading: usersLoading,
     refresh: refreshUsers,
-  } = useNearbyUsers(radius, collection);
+  } = useNearbyUsers(radius);
   const device = useDeviceLocation(view === "map");
 
   const center: [number, number] = device.coords ?? profileCenter;
@@ -106,16 +102,6 @@ export default function MapaPage() {
         </div>
       )}
 
-      {view === "map" && isAuthenticated && isDemoFallback && !device.permissionDenied && (
-        <div className="absolute left-3 right-3 top-28 z-30 rounded-md border border-match-interest/30 bg-match-interest/10 p-3 text-xs text-match-interest shadow-sh2">
-          <p className="font-semibold">Coleccionistas de demostración</p>
-          <p className="mt-1 leading-snug text-text-2">
-            Cromio acaba de lanzarse. Mientras llegan coleccionistas reales en tu
-            zona, mostramos pines de ejemplo para que veas el flujo.
-          </p>
-        </div>
-      )}
-
       {view === "map" &&
         isAuthenticated &&
         !usersLoading &&
@@ -135,7 +121,7 @@ export default function MapaPage() {
         <div className="flex h-10 flex-1 items-center gap-2.5 rounded-md border border-black/5 bg-white/95 px-3.5 shadow-sh2 backdrop-blur">
           <Search size={16} strokeWidth={2} className="text-text-2" />
           <span className="text-sm font-medium">
-            {isAuthenticated ? "Tu zona" : "Eixample, Barcelona"}
+            {isAuthenticated ? "Tu zona" : "Tu ubicación"}
           </span>
         </div>
         <div className="flex h-10 gap-0.5 rounded-md border border-black/5 bg-white/95 p-0.5 shadow-sh2 backdrop-blur">
@@ -303,7 +289,6 @@ function UserListRow({ u }: { u: ReturnType<typeof useNearbyUsers>["users"][numb
         <div className="mt-0.5 text-xs text-text-2">
           {fmtDistance(u.distance_m)} · ★{u.rating} · {u.trades_count} intercambios
         </div>
-        <AlbumProgress pct={50} className="mt-1.5" />
       </div>
       <MatchArrows
         recibes={isLead ? 0 : u.you_get_count}

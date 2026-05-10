@@ -9,7 +9,7 @@ import { signOut } from "@/lib/auth/actions";
 import { Btn } from "@/components/ui/Btn";
 
 export default function PerfilPage() {
-  const { stats } = useCollection(247);
+  const { stats } = useCollection();
   const { user, loading } = useUser();
 
   const initial = user?.email?.[0]?.toUpperCase() ?? "T";

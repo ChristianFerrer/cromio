@@ -1,11 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { buildMockCollection, STICKERS, TOTAL_STICKERS } from "@/lib/data/stickers";
+import { STICKERS, TOTAL_STICKERS } from "@/lib/data/stickers";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "./useUser";
-
-const STORAGE_KEY = "cromio.collection";
 
 type Snapshot = Record<number, number>;
 
@@ -17,24 +15,10 @@ const EMPTY_STATS = {
   pct: 0,
 };
 
-export function useCollection(mockSeed = 247) {
+export function useCollection() {
   const { user, loading: authLoading } = useUser();
-  const [overrides, setOverrides] = useState<Snapshot>({});
   const [serverMap, setServerMap] = useState<Snapshot | null>(null);
   const [serverLoading, setServerLoading] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || authLoading || user) return;
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setOverrides(JSON.parse(raw));
-    } catch {}
-  }, [authLoading, user]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || authLoading || user) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
-  }, [overrides, authLoading, user]);
 
   useEffect(() => {
     if (authLoading || !user) {
@@ -58,61 +42,35 @@ export function useCollection(mockSeed = 247) {
       });
   }, [authLoading, user]);
 
-  const isInitializing = authLoading || (user && serverMap === null);
+  const isInitializing = authLoading || (!!user && serverMap === null);
 
   const collection = useMemo(() => {
     const map = new Map<number, number>();
-    if (isInitializing) {
-      for (const s of STICKERS) map.set(s.n, 0);
-      return map;
-    }
-    if (user) {
-      for (const s of STICKERS) {
-        map.set(s.n, serverMap?.[s.n] ?? 0);
-      }
-    } else {
-      const base = buildMockCollection(mockSeed);
-      for (const s of STICKERS) {
-        const baseCount = base.get(s.n) ?? 0;
-        const delta = overrides[s.n] ?? 0;
-        map.set(s.n, Math.max(0, baseCount + delta));
-      }
+    for (const s of STICKERS) {
+      map.set(s.n, isInitializing || !user ? 0 : serverMap?.[s.n] ?? 0);
     }
     return map;
-  }, [isInitializing, user, serverMap, overrides, mockSeed]);
+  }, [isInitializing, user, serverMap]);
 
   const adjust = useCallback(
     (n: number, delta: number) => {
-      if (isInitializing) return;
-      if (user) {
-        setServerMap((prev) => {
-          const cur = prev?.[n] ?? 0;
-          const next = Math.max(0, cur + delta);
-          return { ...(prev ?? {}), [n]: next };
+      if (isInitializing || !user) return;
+      const cur = serverMap?.[n] ?? 0;
+      const next = Math.max(0, cur + delta);
+      setServerMap((prev) => ({ ...(prev ?? {}), [n]: next }));
+      const supabase = createClient();
+      if (!supabase) return;
+      supabase
+        .from("user_stickers")
+        .upsert(
+          { user_id: user.id, sticker_n: n, count: next },
+          { onConflict: "user_id,sticker_n" },
+        )
+        .then(({ error }) => {
+          if (error) console.error("[cromio] user_stickers upsert failed:", error);
         });
-        const supabase = createClient();
-        if (!supabase) return;
-        const cur = serverMap?.[n] ?? 0;
-        const nextValue = Math.max(0, cur + delta);
-        supabase
-          .from("user_stickers")
-          .upsert(
-            { user_id: user.id, sticker_n: n, count: nextValue },
-            { onConflict: "user_id,sticker_n" },
-          )
-          .then(({ error }) => {
-            if (error) console.error("upsert failed", error);
-          });
-      } else {
-        setOverrides((prev) => {
-          const baseCount = buildMockCollection(mockSeed).get(n) ?? 0;
-          const cur = prev[n] ?? 0;
-          const next = Math.max(-baseCount, cur + delta);
-          return { ...prev, [n]: next };
-        });
-      }
     },
-    [isInitializing, user, serverMap, mockSeed],
+    [isInitializing, user, serverMap],
   );
 
   const stats = useMemo(() => {
@@ -137,7 +95,7 @@ export function useCollection(mockSeed = 247) {
     stats,
     adjust,
     isAuthenticated: !!user,
-    isInitializing: !!isInitializing,
+    isInitializing,
     serverLoading,
   };
 }

@@ -3,8 +3,7 @@
 import { use, useEffect, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { ChevronLeft, MessageCircle, Flag as FlagIcon } from "lucide-react";
-import { MOCK_USERS_BY_ID } from "@/lib/data/mock-users";
-import { buildMockCollection, STICKERS_BY_N } from "@/lib/data/stickers";
+import { STICKERS_BY_N } from "@/lib/data/stickers";
 import { buildMatch, fmtDistance } from "@/lib/matches";
 import type { CollectionEntry, MatchResult } from "@/lib/types";
 import { useCollection } from "@/hooks/useCollection";
@@ -36,24 +35,26 @@ export default function MatchDetailPage({
 }) {
   const { userId } = use(params);
   const isUuid = UUID_RE.test(userId);
-  const mockUser = MOCK_USERS_BY_ID[userId];
 
-  const { collection } = useCollection(247);
+  const { collection } = useCollection();
   const { has, toggle } = useFavorites();
   const { user: me } = useUser();
   const [chatPending, startChatTransition] = useTransition();
 
-  const [realProfile, setRealProfile] = useState<ProfileLite | null>(null);
-  const [realMatch, setRealMatch] = useState<MatchResult | null>(null);
-  const [realLoading, setRealLoading] = useState(false);
-  const [realDistanceM, setRealDistanceM] = useState<number | null>(null);
+  const [profile, setProfile] = useState<ProfileLite | null>(null);
+  const [match, setMatch] = useState<MatchResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [distanceM, setDistanceM] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!isUuid || mockUser) return;
+    if (!isUuid) {
+      setLoading(false);
+      return;
+    }
     const supabase = createClient();
     if (!supabase) return;
 
-    setRealLoading(true);
+    setLoading(true);
     (async () => {
       const [profileRes, theirStickersRes] = await Promise.all([
         supabase
@@ -65,7 +66,7 @@ export default function MatchDetailPage({
       ]);
 
       if (!profileRes.data) {
-        setRealLoading(false);
+        setLoading(false);
         return;
       }
 
@@ -73,9 +74,9 @@ export default function MatchDetailPage({
       for (const row of theirStickersRes.data ?? []) {
         theirCol.set(row.sticker_n, row.count);
       }
-      const m = buildMatch(collection, theirCol);
+      setMatch(buildMatch(collection, theirCol));
 
-      setRealProfile({
+      setProfile({
         id: profileRes.data.id,
         alias: profileRes.data.alias,
         display_name: profileRes.data.display_name,
@@ -85,7 +86,6 @@ export default function MatchDetailPage({
         trades_count: profileRes.data.trades_count,
         pro: profileRes.data.plan === "pro",
       });
-      setRealMatch(m);
 
       if (me) {
         const { data: dist } = await supabase.rpc("find_nearby_users", {
@@ -95,36 +95,12 @@ export default function MatchDetailPage({
         const found = (dist as { user_id: string; distance_m: number }[] | null)?.find(
           (r) => r.user_id === userId,
         );
-        if (found) setRealDistanceM(found.distance_m);
+        if (found) setDistanceM(found.distance_m);
       }
 
-      setRealLoading(false);
+      setLoading(false);
     })();
-  }, [userId, isUuid, mockUser, collection, me]);
-
-  const mockUserIdx = mockUser
-    ? Object.keys(MOCK_USERS_BY_ID).indexOf(mockUser.id) + 1
-    : -1;
-
-  const mockMatch = useMemo<MatchResult | null>(() => {
-    if (!mockUser) return null;
-    return buildMatch(collection, buildMockCollection(mockUserIdx));
-  }, [mockUser, collection, mockUserIdx]);
-
-  const profile: ProfileLite | null = mockUser
-    ? {
-        id: mockUser.id,
-        alias: mockUser.alias,
-        display_name: null,
-        avatar_url: null,
-        color: mockUser.color,
-        rating: mockUser.rating,
-        trades_count: mockUser.trades,
-        pro: mockUser.pro,
-      }
-    : realProfile;
-
-  const match = mockMatch ?? realMatch;
+  }, [userId, isUuid, collection, me]);
 
   const isFav = profile ? has(profile.id) : false;
 
@@ -138,7 +114,15 @@ export default function MatchDetailPage({
     }
   }, [match]);
 
-  if (!profile && !realLoading) {
+  if (!isUuid) {
+    return (
+      <main className="grid h-dvh place-items-center px-5 pt-14">
+        <p className="text-sm text-text-2">Usuario no válido</p>
+      </main>
+    );
+  }
+
+  if (!profile && !loading) {
     return (
       <main className="grid h-dvh place-items-center px-5 pt-14">
         <p className="text-sm text-text-2">Usuario no encontrado</p>
@@ -164,14 +148,14 @@ export default function MatchDetailPage({
     ? "linear-gradient(135deg, #2D7DD8 0%, #1B5DA8 100%)"
     : "linear-gradient(135deg, #1F8A4D 0%, #166B3B 100%)";
   const accentColor = isLead ? "#2D7DD8" : profile.color ?? "#1FAE5A";
-  const distanceLabel =
-    realDistanceM != null
-      ? fmtDistance(realDistanceM)
-      : mockUser
-        ? fmtDistance(mockUser.distM)
-        : null;
+  const distanceLabel = distanceM != null ? fmtDistance(distanceM) : null;
 
-  const renderCromoEntries = (entries: CollectionEntry[], selSet: Set<number>, setSel: (s: Set<number>) => void, color: string) =>
+  const renderCromoEntries = (
+    entries: CollectionEntry[],
+    selSet: Set<number>,
+    setSel: (s: Set<number>) => void,
+    color: string,
+  ) =>
     entries.map((c) => {
       const stickerData = STICKERS_BY_N.get(c.n) ?? c;
       const sel = selSet.has(c.n);
@@ -196,8 +180,6 @@ export default function MatchDetailPage({
         </button>
       );
     });
-
-  const canStartChat = !!me && !mockUser && isUuid;
 
   return (
     <main className="flex min-h-dvh flex-col pb-24">
@@ -299,40 +281,20 @@ export default function MatchDetailPage({
       </div>
 
       <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur">
-        {!me ? (
-          <Link
-            href="/login"
-            className="flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-green-500 text-base font-bold text-white shadow-sh2"
-          >
-            <MessageCircle size={18} strokeWidth={2} />
-            Inicia sesión para chatear
-          </Link>
-        ) : canStartChat ? (
-          <Btn
-            kind="primaryVibrant"
-            full
-            size="lg"
-            disabled={chatPending}
-            icon={<MessageCircle size={18} strokeWidth={2} />}
-            onClick={() => {
-              startChatTransition(async () => {
-                await startChatWith(profile.id);
-              });
-            }}
-          >
-            {chatPending ? "Abriendo chat…" : isLead ? "Proponer intercambio" : "Iniciar chat"}
-          </Btn>
-        ) : (
-          <Btn
-            kind="primaryVibrant"
-            full
-            size="lg"
-            disabled
-            icon={<MessageCircle size={18} strokeWidth={2} />}
-          >
-            Usuario de demostración
-          </Btn>
-        )}
+        <Btn
+          kind="primaryVibrant"
+          full
+          size="lg"
+          disabled={chatPending}
+          icon={<MessageCircle size={18} strokeWidth={2} />}
+          onClick={() => {
+            startChatTransition(async () => {
+              await startChatWith(profile.id);
+            });
+          }}
+        >
+          {chatPending ? "Abriendo chat…" : isLead ? "Proponer intercambio" : "Iniciar chat"}
+        </Btn>
       </div>
     </main>
   );

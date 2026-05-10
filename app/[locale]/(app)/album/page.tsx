@@ -1,15 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Search, Bell, Plus, Globe, MapPin, ArrowRight, ChevronRight } from "lucide-react";
+import { Search, Bell, Plus, Globe, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { COUNTRIES, COUNTRY_BY_CODE } from "@/lib/data/countries";
+import { COUNTRIES } from "@/lib/data/countries";
 import { STICKERS, TOTAL_STICKERS } from "@/lib/data/stickers";
-import { MOCK_USERS } from "@/lib/data/mock-users";
-import { buildMockCollection } from "@/lib/data/stickers";
-import { buildMatch } from "@/lib/matches";
 import { useCollection } from "@/hooks/useCollection";
+import { useUser } from "@/hooks/useUser";
+import { createClient } from "@/lib/supabase/client";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { Flag } from "@/components/cromo/Flag";
 import { Chip } from "@/components/ui/Chip";
@@ -19,10 +18,14 @@ type Filter = "todos" | "falti" | "repe";
 
 export default function AlbumPage() {
   const t = useTranslations();
-  const { collection, stats, adjust, isInitializing } = useCollection(247);
+  const { collection, stats, adjust, isInitializing } = useCollection();
+  const { user } = useUser();
   const [tab, setTab] = useState<Tab>("selecciones");
   const [filter, setFilter] = useState<Filter>("todos");
   const [country, setCountry] = useState<string>("all");
+  const [matchBanner, setMatchBanner] = useState<
+    { total: number; matches: number; leads: number } | null
+  >(null);
 
   const tabPool = useMemo(() => {
     if (tab === "especiales") {
@@ -50,16 +53,27 @@ export default function AlbumPage() {
       });
   }, [tabPool, country, filter, collection]);
 
-  const matchBanner = useMemo(() => {
-    if (isInitializing) return null;
-    const entries = MOCK_USERS.map((u, i) => {
-      const m = buildMatch(collection, buildMockCollection(i + 1));
-      return { youGet: m.youGet.length, theyGet: m.theyGet.length };
-    }).filter((x) => x.youGet > 0);
-    const matches = entries.filter((x) => x.theyGet > 0).length;
-    const leads = entries.filter((x) => x.theyGet === 0).length;
-    return { total: entries.length, matches, leads };
-  }, [collection, isInitializing]);
+  useEffect(() => {
+    if (!user) {
+      setMatchBanner({ total: 0, matches: 0, leads: 0 });
+      return;
+    }
+    const supabase = createClient();
+    if (!supabase) return;
+    let cancelled = false;
+    supabase
+      .rpc("find_nearby_users", { p_user_id: user.id, p_radius_m: 5000 })
+      .then(({ data }) => {
+        if (cancelled) return;
+        const rows = (data ?? []) as Array<{ kind: "match" | "lead" }>;
+        const matches = rows.filter((r) => r.kind === "match").length;
+        const leads = rows.filter((r) => r.kind === "lead").length;
+        setMatchBanner({ total: matches + leads, matches, leads });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [user, stats.owned]);
 
   return (
     <main className="flex flex-col">

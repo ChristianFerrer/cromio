@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Auto-refresh STATUS.md before every commit so it stays in sync.
+set -e
+
+if [ -f scripts/update-status.mjs ]; then
+  node scripts/update-status.mjs
+  if ! git diff --quiet -- STATUS.md 2>/dev/null; then
+    git add STATUS.md
+  fi
+fi

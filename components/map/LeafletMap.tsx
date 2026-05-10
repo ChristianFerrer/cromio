@@ -163,15 +163,6 @@ export function LeafletMap({
       );
       const color = u.kind === "match" ? "#1FAE5A" : "#2D7DD8";
       const initials = u.alias.slice(0, 2).toUpperCase();
-      const demoBadge = u.is_demo
-        ? `<div style="
-            position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);
-            background:linear-gradient(135deg,#F0DA8E,#D4AF37);
-            color:#3A2C00;border-radius:4px;padding:0 5px;
-            font-family:var(--font-bebas),system-ui;font-size:9px;letter-spacing:.06em;
-            box-shadow:0 1px 3px rgba(0,0,0,.2);
-          ">DEMO</div>`
-        : "";
 
       const icon = L.divIcon({
         className: "",
@@ -184,7 +175,6 @@ export function LeafletMap({
               box-shadow:0 4px 10px rgba(0,0,0,.22);
               display:flex;align-items:center;justify-content:center;
               font-family:var(--font-bebas),system-ui;font-size:16px;font-weight:700;
-              ${u.is_demo ? "outline:2px dashed rgba(212,175,55,0.8);outline-offset:2px;" : ""}
             ">${initials}</div>
             <div style="
               position:absolute;top:-8px;left:50%;transform:translateX(-50%);
@@ -196,7 +186,6 @@ export function LeafletMap({
               <span style="color:#117C4E">▼${u.you_get_count}</span>
               <span style="color:#D7263D">▲${u.they_get_count}</span>
             </div>
-            ${demoBadge}
           </a>
         `,
         iconSize: [44, 44],

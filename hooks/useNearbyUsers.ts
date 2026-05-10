@@ -3,9 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "./useUser";
-import { MOCK_USERS } from "@/lib/data/mock-users";
-import { buildMockCollection } from "@/lib/data/stickers";
-import { buildMatch } from "@/lib/matches";
 
 const BARCELONA_EIXAMPLE: [number, number] = [2.1645, 41.3917];
 
@@ -22,62 +19,13 @@ export type NearbyUser = {
   you_get_count: number;
   they_get_count: number;
   kind: "match" | "lead";
-  is_demo?: boolean;
 };
 
-function bearingFromString(input: string): number {
-  let hash = 0;
-  for (let i = 0; i < input.length; i++) {
-    hash = ((hash << 5) - hash + input.charCodeAt(i)) | 0;
-  }
-  return ((Math.abs(hash) % 360) + 360) % 360;
-}
-
-function buildMockNearby(
-  radiusM: number,
-  collection: Map<number, number>,
-  isDemo: boolean,
-): NearbyUser[] {
-  const out: NearbyUser[] = [];
-  for (const m of MOCK_USERS) {
-    if (m.distM > radiusM) continue;
-    const idx = MOCK_USERS.indexOf(m) + 1;
-    const match = buildMatch(collection, buildMockCollection(idx));
-    const kind: "match" | "lead" | null =
-      match.youGet.length > 0 && match.theyGet.length > 0
-        ? "match"
-        : match.youGet.length > 0
-          ? "lead"
-          : null;
-    if (!kind) continue;
-    out.push({
-      id: m.id,
-      alias: m.alias,
-      display_name: null,
-      avatar_url: null,
-      color: m.color,
-      rating: m.rating,
-      trades_count: m.trades,
-      distance_m: m.distM,
-      bearing_deg: bearingFromString(m.id),
-      you_get_count: match.youGet.length,
-      they_get_count: match.theyGet.length,
-      kind,
-      is_demo: isDemo,
-    });
-  }
-  return out;
-}
-
-export function useNearbyUsers(
-  radiusM: number,
-  collection: Map<number, number>,
-) {
+export function useNearbyUsers(radiusM: number) {
   const { user, loading: authLoading } = useUser();
   const [users, setUsers] = useState<NearbyUser[]>([]);
   const [center, setCenter] = useState<[number, number]>(BARCELONA_EIXAMPLE);
   const [loading, setLoading] = useState(false);
-  const [isDemoFallback, setIsDemoFallback] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const refresh = useCallback(() => {
@@ -85,12 +33,10 @@ export function useNearbyUsers(
   }, []);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      setUsers(buildMockNearby(radiusM, collection, false));
+    if (authLoading || !user) {
+      setUsers([]);
       setCenter(BARCELONA_EIXAMPLE);
       setLoading(false);
-      setIsDemoFallback(false);
       return;
     }
 
@@ -127,45 +73,36 @@ export function useNearbyUsers(
         kind: "match" | "lead";
       }>;
 
-      if (rows.length === 0) {
-        setUsers([]);
-        setIsDemoFallback(false);
-      } else {
-        setUsers(
-          rows.map((r) => ({
-            id: r.user_id,
-            alias: r.alias,
-            display_name: r.display_name,
-            avatar_url: r.avatar_url,
-            color: r.color ?? "#1FAE5A",
-            rating: r.rating,
-            trades_count: r.trades_count,
-            distance_m: r.distance_m,
-            bearing_deg: r.bearing_deg,
-            you_get_count: r.you_get?.length ?? 0,
-            they_get_count: r.they_get?.length ?? 0,
-            kind: r.kind,
-            is_demo: false,
-          })),
-        );
-        setIsDemoFallback(false);
-      }
+      setUsers(
+        rows.map((r) => ({
+          id: r.user_id,
+          alias: r.alias,
+          display_name: r.display_name,
+          avatar_url: r.avatar_url,
+          color: r.color ?? "#1FAE5A",
+          rating: r.rating,
+          trades_count: r.trades_count,
+          distance_m: r.distance_m,
+          bearing_deg: r.bearing_deg,
+          you_get_count: r.you_get?.length ?? 0,
+          they_get_count: r.they_get?.length ?? 0,
+          kind: r.kind,
+        })),
+      );
       setLoading(false);
     });
 
     return () => {
       cancelled = true;
     };
-  }, [user, authLoading, radiusM, collection, refreshKey]);
+  }, [user, authLoading, radiusM, refreshKey]);
 
-  // Polling fallback: refresh every 30s while authenticated
   useEffect(() => {
     if (!user) return;
     const id = window.setInterval(refresh, 30000);
     return () => window.clearInterval(id);
   }, [user, refresh]);
 
-  // Realtime: refresh when any profile or user_stickers row changes
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     if (!user) return;
@@ -202,7 +139,6 @@ export function useNearbyUsers(
     center,
     loading,
     isAuthenticated: !!user,
-    isDemoFallback,
     refresh,
   };
 }

@@ -36,19 +36,6 @@ export interface CollectionEntry extends Sticker {
   count: number;
 }
 
-export interface MockUser {
-  id: string;
-  alias: string;
-  color: string;
-  distM: number;
-  rating: number;
-  trades: number;
-  pro: boolean;
-  bio: string;
-  online: boolean;
-  position: { x: number; y: number };
-}
-
 export type MatchKind = "match" | "lead";
 
 export interface MatchResult {
