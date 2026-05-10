@@ -94,15 +94,26 @@ export default function MapaPage() {
     }
 
     map.on("error", (e) => {
-      console.error("[cromio] MapLibre runtime error:", e);
+      const message =
+        (e as { error?: { message?: string }; message?: string })?.error?.message ??
+        (e as { message?: string })?.message ??
+        "tiles_failed";
+      console.error("[cromio] MapLibre runtime error:", message, e);
       if (!mapRef.current) return;
-      setMapError(
-        (e as { error?: { message?: string } })?.error?.message ?? "tiles_failed",
-      );
+      setMapError(message);
     });
     map.on("load", () => {
+      console.log("[cromio] MapLibre loaded successfully");
       setMapError(null);
       map.resize();
+    });
+    map.on("data", (e) => {
+      if (
+        e.dataType === "source" &&
+        (e as { isSourceLoaded?: boolean }).isSourceLoaded
+      ) {
+        setMapError(null);
+      }
     });
 
     mapRef.current = map;
@@ -191,12 +202,32 @@ export default function MapaPage() {
             className="absolute inset-0 bg-[#EFEDE3]"
           />
           {mapError && (
-            <div className="absolute inset-x-6 top-44 z-30 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
-              <p className="font-semibold">Mapa no disponible</p>
-              <p className="mt-1 leading-snug">
-                No se pudieron cargar los tiles. Verifica tu conexión o desactiva el modo
-                de bajo consumo.
+            <div className="absolute inset-x-6 top-44 z-30 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 shadow-sh2">
+              <div className="flex items-start justify-between gap-2">
+                <p className="font-semibold">Mapa: error al cargar tiles</p>
+                <button
+                  onClick={() => setMapError(null)}
+                  className="-mt-1 text-amber-900/70 hover:text-amber-900"
+                  aria-label="Cerrar aviso"
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="mt-1 break-words leading-snug">
+                <code className="font-mono text-[10px]">{mapError}</code>
               </p>
+              <button
+                onClick={() => {
+                  setMapError(null);
+                  if (mapRef.current) {
+                    mapRef.current.remove();
+                    mapRef.current = null;
+                  }
+                }}
+                className="mt-2 rounded bg-amber-200 px-2 py-1 text-[11px] font-semibold text-amber-900"
+              >
+                Reintentar
+              </button>
             </div>
           )}
           <RadarOverlay />
