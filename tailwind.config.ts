@@ -9,11 +9,11 @@ export default {
     extend: {
       colors: {
         green: {
-          50: "#F1FAF4",
-          100: "#E6F4EC",
-          500: "#1FAE5A",
-          700: "#117C4E",
-          900: "#0B6E3F",
+          50: "#EBFDF2",
+          100: "#D5F7E1",
+          500: "#10C56A",
+          700: "#089258",
+          900: "#066B40",
         },
         ink: {
           DEFAULT: "#0E0E0E",
@@ -21,9 +21,9 @@ export default {
         },
         charcoal: "#3A3A3A",
         gold: {
-          DEFAULT: "#D4AF37",
-          light: "#F0DA8E",
-          dark: "#8C7220",
+          DEFAULT: "#F5C518",
+          light: "#FDE68A",
+          dark: "#A88008",
         },
         bone: "#FAFAF7",
         paper: "#F5F4EE",
@@ -38,18 +38,18 @@ export default {
         },
         wc: {
           mx: "#E5006D",
-          us: "#1E5FBF",
-          ca: "#E63946",
+          us: "#1659D6",
+          ca: "#EF1F3C",
         },
         match: {
-          green: "#5BE491",
-          red: "#FF6B7A",
-          interest: "#2D7DD8",
+          green: "#3AF080",
+          red: "#FF3D5C",
+          interest: "#1E78FF",
         },
         trade: {
           // Used for ▲ entregas (give) markers on banners and arrows.
-          give: "#D7263D",
-          get: "#117C4E",
+          give: "#EF1F3C",
+          get: "#089258",
         },
       },
       fontFamily: {
@@ -69,7 +69,7 @@ export default {
         sh1: "0 1px 2px rgba(11,28,18,.06), 0 2px 6px rgba(11,28,18,.04)",
         sh2: "0 4px 14px rgba(11,28,18,.08), 0 1px 3px rgba(11,28,18,.05)",
         sh3: "0 10px 30px rgba(11,28,18,.12), 0 4px 10px rgba(11,28,18,.06)",
-        gold: "0 8px 24px rgba(212,175,55,.35), 0 2px 6px rgba(212,175,55,.25)",
+        gold: "0 8px 24px rgba(245,197,24,.40), 0 2px 6px rgba(245,197,24,.30)",
       },
       keyframes: {
         "radar-spin": { to: { transform: "rotate(360deg)" } },

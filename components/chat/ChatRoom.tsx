@@ -330,7 +330,7 @@ export function ChatRoom({
           href={`/match/${other.id}`}
           aria-label={`Ver perfil de ${other.display_name ?? other.alias}`}
           className="grid h-10 w-10 place-items-center rounded-full font-display text-base text-white"
-          style={{ background: other.color ?? "#1FAE5A" }}
+          style={{ background: other.color ?? "#10C56A" }}
         >
           {initials}
         </Link>
@@ -373,7 +373,7 @@ export function ChatRoom({
           <div className="mt-6 flex flex-col items-center px-4 text-center">
             <div
               className="grid h-14 w-14 place-items-center rounded-full text-white"
-              style={{ background: other.color ?? "#1FAE5A" }}
+              style={{ background: other.color ?? "#10C56A" }}
             >
               <span className="font-display text-base">{initials}</span>
             </div>
@@ -405,7 +405,7 @@ export function ChatRoom({
               mine={item.mine}
               isLastFromSender={item.isLastFromSender}
               otherInitials={initials}
-              otherColor={other.color ?? "#1FAE5A"}
+              otherColor={other.color ?? "#10C56A"}
               showAvatar={item.showAvatar}
               onCromoClick={(n) => setPreviewN(n)}
             />
@@ -733,7 +733,7 @@ function RateChatSheet({
             onClick={() => setStars(s)}
             onMouseEnter={() => setHover(s)}
             className="text-3xl transition-transform hover:scale-110"
-            style={{ color: s <= display ? "#D4AF37" : "#D8D5C9" }}
+            style={{ color: s <= display ? "#F5C518" : "#D8D5C9" }}
             aria-label={`${s} estrella${s === 1 ? "" : "s"}`}
             aria-checked={stars === s}
             role="radio"
