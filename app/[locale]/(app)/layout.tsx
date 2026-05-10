@@ -18,9 +18,14 @@ export default async function AppLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("home_location")
+    .select("home_location, banned_at")
     .eq("id", user.id)
     .maybeSingle();
+  // Banned users get bounced to /banned regardless of onboarding state —
+  // otherwise a baneado without home_location loops back to /onboarding.
+  // /banned itself short-circuits to /album once the ban is lifted, so a
+  // false positive is harmless.
+  if (profile?.banned_at) redirect("/banned");
   if (!profile?.home_location) redirect("/onboarding");
 
   const initialUnread = await loadUnreadByChat();
