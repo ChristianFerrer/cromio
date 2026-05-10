@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { TOTAL_STICKERS } from "@/lib/data/stickers";
 
 export type ChatRow = {
   id: string;
@@ -18,6 +19,9 @@ export type ChatRow = {
     created_at: string;
   } | null;
   unread_count: number;
+  other_completion_pct: number;
+  you_get_count: number;
+  they_get_count: number;
 };
 
 export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
@@ -54,34 +58,69 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
   if (chats.length === 0) return [];
 
   const ids = chats.map((c) => c.id);
+  const otherIds = chats.map((c) => (c.user_a === user.id ? c.user_b : c.user_a));
 
-  const { data: lastMessages } = await supabase
-    .from("messages")
-    .select("chat_id, sender_id, body, created_at")
-    .in("chat_id", ids)
-    .order("created_at", { ascending: false });
+  const [{ data: lastMessages }, { data: unread }, { data: myStickers }, { data: otherStickers }] =
+    await Promise.all([
+      supabase
+        .from("messages")
+        .select("chat_id, sender_id, body, created_at")
+        .in("chat_id", ids)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("messages")
+        .select("chat_id")
+        .in("chat_id", ids)
+        .neq("sender_id", user.id)
+        .is("read_by_recipient_at", null),
+      supabase.from("user_stickers").select("sticker_n, count").eq("user_id", user.id),
+      supabase
+        .from("user_stickers")
+        .select("user_id, sticker_n, count")
+        .in("user_id", otherIds),
+    ]);
 
   const lastByChat = new Map<string, NonNullable<ChatRow["last_message"]> & { chat_id: string }>();
   for (const m of lastMessages ?? []) {
     if (!lastByChat.has(m.chat_id)) lastByChat.set(m.chat_id, m as never);
   }
 
-  const { data: unread } = await supabase
-    .from("messages")
-    .select("chat_id")
-    .in("chat_id", ids)
-    .neq("sender_id", user.id)
-    .is("read_by_recipient_at", null);
-
   const unreadByChat = new Map<string, number>();
   for (const m of unread ?? []) {
     unreadByChat.set(m.chat_id, (unreadByChat.get(m.chat_id) ?? 0) + 1);
+  }
+
+  const myCol = new Map<number, number>();
+  for (const s of myStickers ?? []) myCol.set(s.sticker_n, s.count);
+
+  const colByUser = new Map<string, Map<number, number>>();
+  for (const s of otherStickers ?? []) {
+    let m = colByUser.get(s.user_id);
+    if (!m) {
+      m = new Map();
+      colByUser.set(s.user_id, m);
+    }
+    m.set(s.sticker_n, s.count);
   }
 
   return chats.map((c) => {
     const otherRaw = (c.user_a === user.id ? c.b : c.a) as ChatRow["other_user"] | ChatRow["other_user"][];
     const other = Array.isArray(otherRaw) ? otherRaw[0] : otherRaw;
     const last = lastByChat.get(c.id);
+
+    const theirCol = colByUser.get(other.id) ?? new Map<number, number>();
+    let otherUnique = 0;
+    let youGet = 0;
+    let theyGet = 0;
+    for (let n = 1; n <= TOTAL_STICKERS; n++) {
+      const mine = myCol.get(n) ?? 0;
+      const theirs = theirCol.get(n) ?? 0;
+      if (theirs >= 1) otherUnique++;
+      if (mine === 0 && theirs >= 2) youGet++;
+      if (mine >= 2 && theirs === 0) theyGet++;
+    }
+    const otherCompletionPct = Math.round((otherUnique / TOTAL_STICKERS) * 100);
+
     return {
       id: c.id,
       state: c.state,
@@ -92,6 +131,9 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
         ? { body: last.body, sender_id: last.sender_id, created_at: last.created_at }
         : null,
       unread_count: unreadByChat.get(c.id) ?? 0,
+      other_completion_pct: otherCompletionPct,
+      you_get_count: youGet,
+      they_get_count: theyGet,
     };
   });
 }
