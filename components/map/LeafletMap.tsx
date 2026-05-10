@@ -230,10 +230,11 @@ export function LeafletMap({
       style={{ touchAction: "none", background: "#F2EFE9", zIndex: 0 }}
     >
       <div ref={containerRef} className="absolute inset-0" />
-      {/* Radar overlays sit between Leaflet's tilePane (200) and the
-          overlayPane (400) so they read as a *background* effect on
-          the map — perimeter circle, other-user pins (markerPane 600)
-          and tooltips all float above. */}
+      {/* Stack inside the Leaflet container:
+            tiles(200) → overlayPane(400, perimeter circle)
+            → pulse(410) → sweep(420)
+            → markerPane(600, other-user pins)
+            → dot(700, the "you are here" dot — always on top). */}
       <div
         ref={pulseRef}
         className="cromio-radar-pulse-wrapper"
@@ -241,7 +242,7 @@ export function LeafletMap({
           position: "absolute",
           pointerEvents: "none",
           transform: "translate(-50%, -50%)",
-          zIndex: 210,
+          zIndex: 410,
         }}
       >
         <div className="cromio-radar-pulse" />
@@ -254,7 +255,7 @@ export function LeafletMap({
           position: "absolute",
           pointerEvents: "none",
           transform: "translate(-50%, -50%)",
-          zIndex: 220,
+          zIndex: 420,
         }}
       >
         <div className="cromio-radar-sweep" />
@@ -266,7 +267,7 @@ export function LeafletMap({
           position: "absolute",
           pointerEvents: "none",
           transform: "translate(-50%, -50%)",
-          zIndex: 230,
+          zIndex: 700,
         }}
       >
         <div className="cromio-self-dot" />
