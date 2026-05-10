@@ -27,17 +27,31 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
   } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const { data: chats } = await supabase
-    .from("chats")
-    .select(
-      `id, state, last_message_at, created_at, user_a, user_b,
-       a:profiles!chats_user_a_fkey (id, alias, display_name, avatar_url, color),
-       b:profiles!chats_user_b_fkey (id, alias, display_name, avatar_url, color)`,
-    )
-    .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-    .order("last_message_at", { ascending: false, nullsFirst: false });
+  const [{ data: chatsRaw }, { data: blocks }] = await Promise.all([
+    supabase
+      .from("chats")
+      .select(
+        `id, state, last_message_at, created_at, user_a, user_b,
+         a:profiles!chats_user_a_fkey (id, alias, display_name, avatar_url, color),
+         b:profiles!chats_user_b_fkey (id, alias, display_name, avatar_url, color)`,
+      )
+      .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
+      .order("last_message_at", { ascending: false, nullsFirst: false }),
+    supabase
+      .from("user_blocks")
+      .select("blocked_id")
+      .eq("blocker_id", user.id),
+  ]);
 
-  if (!chats || chats.length === 0) return [];
+  if (!chatsRaw || chatsRaw.length === 0) return [];
+
+  const blockedIds = new Set((blocks ?? []).map((b) => b.blocked_id));
+  const chats = chatsRaw.filter((c) => {
+    const other = c.user_a === user.id ? c.user_b : c.user_a;
+    return !blockedIds.has(other);
+  });
+
+  if (chats.length === 0) return [];
 
   const ids = chats.map((c) => c.id);
 

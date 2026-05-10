@@ -2,7 +2,15 @@
 
 import { use, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, MessageCircle, Flag as FlagIcon } from "lucide-react";
+import {
+  ChevronLeft,
+  MessageCircle,
+  Flag as FlagIcon,
+  MoreVertical,
+  ShieldOff,
+  ShieldX,
+  AlertTriangle,
+} from "lucide-react";
 import { STICKERS_BY_N } from "@/lib/data/stickers";
 import { buildMatch, fmtDistance } from "@/lib/matches";
 import type { CollectionEntry, MatchResult } from "@/lib/types";
@@ -10,12 +18,16 @@ import { useCollection } from "@/hooks/useCollection";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useUser } from "@/hooks/useUser";
 import { startChatWith } from "@/lib/chat/actions";
+import { blockUser, unblockUser } from "@/lib/moderation/actions";
 import { createClient } from "@/lib/supabase/client";
 import { CROMIO_COLORS } from "@/lib/design/colors";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { Btn } from "@/components/ui/Btn";
 import { IconBtn } from "@/components/ui/IconBtn";
 import { Badge } from "@/components/ui/Badge";
+import { Sheet } from "@/components/ui/Sheet";
+import { ReportUserSheet } from "@/components/moderation/ReportUserSheet";
+import { pushAppToast } from "@/lib/notifications/toast";
 
 type ProfileLite = {
   id: string;
@@ -48,6 +60,10 @@ export default function MatchDetailPage({
   const [match, setMatch] = useState<MatchResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [distanceM, setDistanceM] = useState<number | null>(null);
+  const [blocked, setBlocked] = useState(false);
+  const [showActions, setShowActions] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [actionPending, startActionTransition] = useTransition();
 
   useEffect(() => {
     if (!isUuid) {
@@ -99,6 +115,14 @@ export default function MatchDetailPage({
           (r) => r.user_id === userId,
         );
         if (found) setDistanceM(found.distance_m);
+
+        const { data: blockRow } = await supabase
+          .from("user_blocks")
+          .select("blocked_id")
+          .eq("blocker_id", me.id)
+          .eq("blocked_id", userId)
+          .maybeSingle();
+        setBlocked(!!blockRow);
       }
 
       setLoading(false);
@@ -201,18 +225,39 @@ export default function MatchDetailPage({
         <span className="font-display text-2xl uppercase tracking-wider">
           {kindLabel}
         </span>
-        <IconBtn
-          ariaLabel={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
-          onClick={() => toggle(profile.id)}
-        >
-          <FlagIcon
-            size={16}
-            strokeWidth={2}
-            className={isFav ? "text-green-700" : ""}
-            fill={isFav ? "currentColor" : "none"}
-          />
-        </IconBtn>
+        <div className="flex items-center gap-1.5">
+          <IconBtn
+            ariaLabel={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
+            onClick={() => toggle(profile.id)}
+          >
+            <FlagIcon
+              size={16}
+              strokeWidth={2}
+              className={isFav ? "text-green-700" : ""}
+              fill={isFav ? "currentColor" : "none"}
+            />
+          </IconBtn>
+          <IconBtn
+            ariaLabel="Más opciones"
+            onClick={() => setShowActions(true)}
+          >
+            <MoreVertical size={16} strokeWidth={2} />
+          </IconBtn>
+        </div>
       </div>
+
+      {blocked && (
+        <div className="mx-3 mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+          <ShieldX size={14} className="mt-0.5 shrink-0" strokeWidth={2.2} />
+          <div className="flex-1">
+            <p className="font-semibold">Has bloqueado a este coleccionista.</p>
+            <p className="mt-0.5 leading-snug">
+              No aparecerá en tu mapa, búsquedas ni favoritos. Puedes desbloquearlo
+              desde el menú ⋮ de arriba.
+            </p>
+          </div>
+        </div>
+      )}
 
       <section className="mt-3 flex flex-col items-center px-5 pb-4">
         <div
@@ -321,6 +366,98 @@ export default function MatchDetailPage({
           {chatPending ? "Abriendo chat…" : isLead ? "Proponer intercambio" : "Iniciar chat"}
         </Btn>
       </div>
+
+      {showActions && (
+        <Sheet
+          title={`Opciones de @${profile.alias}`}
+          onClose={() => setShowActions(false)}
+        >
+          <div className="space-y-1.5">
+            {blocked ? (
+              <button
+                type="button"
+                onClick={() => {
+                  startActionTransition(async () => {
+                    const r = await unblockUser(profile.id);
+                    if (r?.error) {
+                      pushAppToast({ kind: "error", body: "No se pudo desbloquear." });
+                      return;
+                    }
+                    setBlocked(false);
+                    pushAppToast({ kind: "success", body: `Has desbloqueado a @${profile.alias}.` });
+                    setShowActions(false);
+                  });
+                }}
+                disabled={actionPending}
+                className="flex w-full items-center gap-3 rounded-md border border-line bg-white p-3 text-left hover:bg-paper disabled:opacity-50"
+              >
+                <ShieldOff size={18} strokeWidth={2} className="text-text-2" />
+                <div className="flex-1">
+                  <p className="text-sm font-bold">Desbloquear</p>
+                  <p className="text-[11px] text-text-2">Volverá a aparecer en tu mapa.</p>
+                </div>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  if (
+                    !window.confirm(
+                      `¿Bloquear a @${profile.alias}? Dejaréis de veros en mapa, búsqueda y favoritos.`,
+                    )
+                  )
+                    return;
+                  startActionTransition(async () => {
+                    const r = await blockUser(profile.id);
+                    if (r?.error) {
+                      pushAppToast({ kind: "error", body: "No se pudo bloquear." });
+                      return;
+                    }
+                    setBlocked(true);
+                    pushAppToast({ kind: "info", body: `Bloqueaste a @${profile.alias}.` });
+                    setShowActions(false);
+                  });
+                }}
+                disabled={actionPending}
+                className="flex w-full items-center gap-3 rounded-md border border-line bg-white p-3 text-left hover:bg-paper disabled:opacity-50"
+              >
+                <ShieldX size={18} strokeWidth={2} className="text-text-2" />
+                <div className="flex-1">
+                  <p className="text-sm font-bold">Bloquear</p>
+                  <p className="text-[11px] text-text-2">
+                    Dejaréis de apareceros en mapa y búsqueda.
+                  </p>
+                </div>
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                setShowActions(false);
+                setShowReport(true);
+              }}
+              className="flex w-full items-center gap-3 rounded-md border border-red-100 bg-red-50/40 p-3 text-left hover:bg-red-50"
+            >
+              <AlertTriangle size={18} strokeWidth={2} className="text-red-600" />
+              <div className="flex-1">
+                <p className="text-sm font-bold text-red-700">Denunciar</p>
+                <p className="text-[11px] text-red-700/80">
+                  Reporte a moderación. Puedes bloquear también.
+                </p>
+              </div>
+            </button>
+          </div>
+        </Sheet>
+      )}
+
+      {showReport && (
+        <ReportUserSheet
+          alias={profile.alias}
+          userId={profile.id}
+          onClose={() => setShowReport(false)}
+          onDone={() => setBlocked(true)}
+        />
+      )}
     </main>
   );
 }
