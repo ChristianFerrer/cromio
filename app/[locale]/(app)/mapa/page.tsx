@@ -5,29 +5,18 @@ import maplibregl, { type Map as MapLibreMap, type Marker } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Search, MapIcon, List, Lock } from "lucide-react";
 import Link from "next/link";
-import { MOCK_USERS } from "@/lib/data/mock-users";
-import { buildMockCollection } from "@/lib/data/stickers";
-import { buildMatch, fmtDistance } from "@/lib/matches";
 import { useCollection } from "@/hooks/useCollection";
+import {
+  type NearbyUser,
+  lngLatFromBearing,
+  useNearbyUsers,
+} from "@/hooks/useNearbyUsers";
+import { fmtDistance } from "@/lib/matches";
 import { Chip } from "@/components/ui/Chip";
 import { MatchArrows } from "@/components/match/MatchArrows";
-import { AlbumProgress } from "@/components/match/AlbumProgress";
 
-const BARCELONA_EIXAMPLE: [number, number] = [2.1645, 41.3917];
 const RADII = [200, 500, 1000, 2000, 5000, 10000, 50000];
 const FREE_MAX = 2000;
-
-function metersToLngLatOffset(
-  center: [number, number],
-  pos: { x: number; y: number },
-  radiusM: number,
-): [number, number] {
-  const angle = ((pos.x + pos.y) * Math.PI * 2) / 100;
-  const distM = (radiusM * (40 + ((pos.x * pos.y) % 50))) / 100;
-  const dLng = (Math.cos(angle) * distM) / (111_320 * Math.cos((center[1] * Math.PI) / 180));
-  const dLat = (Math.sin(angle) * distM) / 110_540;
-  return [center[0] + dLng, center[1] + dLat];
-}
 
 export default function MapaPage() {
   const { collection } = useCollection(247);
@@ -38,26 +27,15 @@ export default function MapaPage() {
   const mapRef = useRef<MapLibreMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
 
-  const userEntries = useMemo(() => {
-    return MOCK_USERS.map((u) => {
-      const m = buildMatch(collection, buildMockCollection(MOCK_USERS.indexOf(u) + 1));
-      const kind: "match" | "lead" | null =
-        m.youGet.length > 0 && m.theyGet.length > 0
-          ? "match"
-          : m.youGet.length > 0
-            ? "lead"
-            : null;
-      return { u, match: m, kind };
-    })
-      .filter((e) => e.kind && e.u.distM <= radius)
-      .sort((a, b) => {
-        if (a.kind !== b.kind) return a.kind === "match" ? -1 : 1;
-        return (
-          (b.match.youGet.length + b.match.theyGet.length) -
-          (a.match.youGet.length + a.match.theyGet.length)
-        );
-      });
-  }, [collection, radius]);
+  const { users, center, isAuthenticated } = useNearbyUsers(radius, collection);
+
+  const matches = useMemo(() => users.filter((u) => u.kind === "match"), [users]);
+  const leads = useMemo(() => users.filter((u) => u.kind === "lead"), [users]);
+  const counts = {
+    all: users.length,
+    match: matches.length,
+    lead: leads.length,
+  };
 
   useEffect(() => {
     if (view !== "map" || !containerRef.current || mapRef.current) return;
@@ -66,7 +44,7 @@ export default function MapaPage() {
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: styleUrl,
-      center: BARCELONA_EIXAMPLE,
+      center,
       zoom: 14,
       attributionControl: { compact: true },
     });
@@ -75,7 +53,13 @@ export default function MapaPage() {
       map.remove();
       mapRef.current = null;
     };
-  }, [view]);
+  }, [view, center]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.easeTo({ center, duration: 600 });
+  }, [center]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -89,14 +73,14 @@ export default function MapaPage() {
       userPin.className =
         "h-4 w-4 rounded-full bg-green-500 border-[3px] border-white shadow-md";
       const userMarker = new maplibregl.Marker({ element: userPin })
-        .setLngLat(BARCELONA_EIXAMPLE)
+        .setLngLat(center)
         .addTo(map);
       markersRef.current.push(userMarker);
 
-      userEntries.forEach((entry) => {
-        const lngLat = metersToLngLatOffset(BARCELONA_EIXAMPLE, entry.u.position, radius);
+      users.forEach((entry) => {
+        const lngLat = lngLatFromBearing(center, entry.bearing_deg, entry.distance_m);
         const el = document.createElement("a");
-        el.href = `/match/${entry.u.id}`;
+        el.href = `/match/${entry.id}`;
         const color = entry.kind === "match" ? "#1FAE5A" : "#2D7DD8";
         el.style.cursor = "pointer";
         el.innerHTML = `
@@ -110,7 +94,7 @@ export default function MapaPage() {
               <span style="
                 transform:rotate(45deg);color:#fff;
                 font-family:var(--font-bebas),system-ui;font-size:18px;
-              ">${entry.u.alias.slice(0, 2).toUpperCase()}</span>
+              ">${entry.alias.slice(0, 2).toUpperCase()}</span>
             </div>
             <div style="
               position:absolute;top:-8px;left:50%;transform:translateX(-50%);
@@ -119,8 +103,8 @@ export default function MapaPage() {
               font-family:var(--font-bebas),system-ui;font-size:11px;
               display:flex;gap:3px;white-space:nowrap;
             ">
-              <span style="color:#117C4E">▼${entry.match.youGet.length}</span>
-              <span style="color:#D7263D">▲${entry.match.theyGet.length}</span>
+              <span style="color:#117C4E">▼${entry.you_get_count}</span>
+              <span style="color:#D7263D">▲${entry.they_get_count}</span>
             </div>
           </div>
         `;
@@ -133,15 +117,7 @@ export default function MapaPage() {
 
     if (map.loaded()) setMarkers();
     else map.once("load", setMarkers);
-  }, [userEntries, radius, view]);
-
-  const matches = userEntries.filter((e) => e.kind === "match");
-  const leads = userEntries.filter((e) => e.kind === "lead");
-  const counts = {
-    all: userEntries.length,
-    match: matches.length,
-    lead: leads.length,
-  };
+  }, [users, view, center]);
 
   return (
     <main className="absolute inset-0 overflow-hidden">
@@ -155,7 +131,9 @@ export default function MapaPage() {
       <div className="absolute left-3 right-3 top-14 z-20 flex items-center gap-2">
         <div className="flex h-10 flex-1 items-center gap-2.5 rounded-md border border-black/5 bg-white/95 px-3.5 shadow-sh2 backdrop-blur">
           <Search size={16} strokeWidth={2} className="text-text-2" />
-          <span className="text-sm font-medium">Eixample, Barcelona</span>
+          <span className="text-sm font-medium">
+            {isAuthenticated ? "Tu zona" : "Eixample, Barcelona"}
+          </span>
         </div>
         <div className="flex h-10 gap-0.5 rounded-md border border-black/5 bg-white/95 p-0.5 shadow-sh2 backdrop-blur">
           {(["map", "list"] as const).map((v) => (
@@ -218,8 +196,8 @@ export default function MapaPage() {
               <h2 className="mb-2.5 mt-2 px-1 font-display text-lg text-ink">
                 Matches <span className="text-sm text-green-700">· {matches.length}</span>
               </h2>
-              {matches.map((e) => (
-                <UserListRow key={e.u.id} entry={e} />
+              {matches.map((u) => (
+                <UserListRow key={u.id} u={u} />
               ))}
             </>
           )}
@@ -228,14 +206,16 @@ export default function MapaPage() {
               <h2 className="mb-2.5 mt-4 px-1 font-display text-lg text-ink">
                 Te interesa <span className="text-sm text-match-interest">· {leads.length}</span>
               </h2>
-              {leads.map((e) => (
-                <UserListRow key={e.u.id} entry={e} />
+              {leads.map((u) => (
+                <UserListRow key={u.id} u={u} />
               ))}
             </>
           )}
-          {userEntries.length === 0 && (
+          {users.length === 0 && (
             <p className="py-10 text-center text-sm text-text-2">
-              Sin matches en este radio. Amplía el radio o añade más cromos.
+              {isAuthenticated
+                ? "Sin matches en este radio. Amplía el radio o añade más cromos."
+                : "Sin matches en este radio. Amplía el radio o añade más cromos."}
             </p>
           )}
         </div>
@@ -303,24 +283,9 @@ function RadarOverlay() {
   );
 }
 
-function UserListRow({
-  entry,
-}: {
-  entry: ReturnType<typeof buildMatch> extends infer _ ? {
-    u: (typeof MOCK_USERS)[number];
-    match: ReturnType<typeof buildMatch>;
-    kind: "match" | "lead" | null;
-  } : never;
-}) {
-  const { u, match, kind } = entry;
-  const isLead = kind === "lead";
+function UserListRow({ u }: { u: NearbyUser }) {
+  const isLead = u.kind === "lead";
   const avatarColor = isLead ? "#2D7DD8" : "#1FAE5A";
-  const pct = (() => {
-    const map = buildMockCollection(MOCK_USERS.indexOf(u) + 1);
-    let owned = 0;
-    map.forEach((c) => c >= 1 && owned++);
-    return Math.round((owned / map.size) * 1000) / 10;
-  })();
   return (
     <Link
       href={`/match/${u.id}`}
@@ -337,11 +302,6 @@ function UserListRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-bold text-text">{u.alias}</span>
-          {u.pro && (
-            <span className="rounded bg-gold/20 px-1 py-0.5 text-[9px] font-bold uppercase tracking-wider text-gold-dark">
-              Pro
-            </span>
-          )}
           {isLead && (
             <span className="rounded bg-match-interest/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-match-interest">
               Te interesa
@@ -349,15 +309,10 @@ function UserListRow({
           )}
         </div>
         <div className="mt-0.5 text-xs text-text-2">
-          {fmtDistance(u.distM)} · ★{u.rating} · {u.trades} intercambios
+          {fmtDistance(u.distance_m)} · ★{u.rating} · {u.trades_count} intercambios
         </div>
-        <AlbumProgress pct={pct} className="mt-1.5" />
       </div>
-      <MatchArrows
-        recibes={isLead ? 0 : match.youGet.length}
-        entregas={isLead ? 0 : match.theyGet.length}
-        size={18}
-      />
+      <MatchArrows recibes={u.you_get_count} entregas={u.they_get_count} size={18} />
     </Link>
   );
 }
