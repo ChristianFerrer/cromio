@@ -47,6 +47,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|auth|_next|_vercel|manifest.webmanifest|.*\\..*).*)",
+    "/((?!api|auth|tiles|_next|_vercel|manifest.webmanifest|.*\\..*).*)",
   ],
 };

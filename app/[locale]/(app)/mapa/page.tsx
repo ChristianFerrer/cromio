@@ -47,12 +47,7 @@ export default function MapaPage() {
       sources: {
         osm: {
           type: "raster",
-          tiles: [
-            "https://a.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png",
-            "https://b.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png",
-            "https://c.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png",
-            "https://d.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png",
-          ],
+          tiles: ["/tiles/{z}/{x}/{y}.png"],
           tileSize: 256,
           maxzoom: 19,
           attribution:
