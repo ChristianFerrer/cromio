@@ -284,9 +284,9 @@ export default function MapaPage() {
         <button
           onClick={() => setRecenterToken((t) => t + 1)}
           aria-label="Centrar en mi ubicación"
-          className="absolute bottom-44 right-3 z-30 grid h-11 w-11 place-items-center rounded-full border border-black/5 bg-white/95 shadow-sh3 backdrop-blur transition-transform active:scale-95"
+          className="absolute bottom-52 right-3 z-30 grid h-10 w-10 place-items-center rounded-md border border-black/5 bg-white/95 shadow-sh2 backdrop-blur"
         >
-          <LocateFixed size={18} strokeWidth={2} className="text-text" />
+          <LocateFixed size={14} strokeWidth={2} className="text-text-2" />
         </button>
       )}
 
