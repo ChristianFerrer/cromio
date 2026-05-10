@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { disablePushOnThisDevice } from "@/components/notifications/EnablePush";
 import { savePushSubscription } from "@/lib/push/actions";
+import { pushAppToast } from "@/lib/notifications/toast";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
@@ -54,27 +55,51 @@ export function ProfileSettings() {
       if (enabled) {
         await disablePushOnThisDevice();
         setEnabled(false);
-      } else {
-        const perm = await Notification.requestPermission();
-        if (perm !== "granted") return;
-        const reg = await navigator.serviceWorker.register("/sw.js");
-        const ready = await navigator.serviceWorker.ready;
-        const existing = await ready.pushManager.getSubscription();
-        const sub =
-          existing ??
-          (await ready.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY!),
-          }));
-        await savePushSubscription({
-          endpoint: sub.endpoint,
-          p256dh: abToB64Url(sub.getKey("p256dh")),
-          auth: abToB64Url(sub.getKey("auth")),
-          userAgent: navigator.userAgent,
-        });
-        setEnabled(true);
-        void reg;
+        pushAppToast({ kind: "info", body: "Notificaciones desactivadas" });
+        return;
       }
+      if (!VAPID_PUBLIC_KEY) {
+        pushAppToast({
+          kind: "error",
+          title: "Falta configurar VAPID",
+          body: "Pídele al admin que configure las claves de notificaciones.",
+        });
+        return;
+      }
+      const perm = await Notification.requestPermission();
+      if (perm === "denied") {
+        pushAppToast({
+          kind: "info",
+          title: "Notificaciones bloqueadas",
+          body: "Ajustes del navegador → Permisos → Notificaciones.",
+        });
+        return;
+      }
+      if (perm !== "granted") return;
+      await navigator.serviceWorker.register("/sw.js");
+      const ready = await navigator.serviceWorker.ready;
+      const existing = await ready.pushManager.getSubscription();
+      const sub =
+        existing ??
+        (await ready.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+        }));
+      await savePushSubscription({
+        endpoint: sub.endpoint,
+        p256dh: abToB64Url(sub.getKey("p256dh")),
+        auth: abToB64Url(sub.getKey("auth")),
+        userAgent: navigator.userAgent,
+      });
+      setEnabled(true);
+      pushAppToast({ kind: "success", body: "Notificaciones activadas" });
+    } catch (err) {
+      console.error("[cromio] push toggle failed:", err);
+      pushAppToast({
+        kind: "error",
+        title: "No se pudieron activar",
+        body: "Reintenta o revisa los permisos del navegador.",
+      });
     } finally {
       setBusy(false);
     }

@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Bell, X } from "lucide-react";
 import {
   removePushSubscription,
   savePushSubscription,
 } from "@/lib/push/actions";
 import { useUser } from "@/hooks/useUser";
+import { pushAppToast } from "@/lib/notifications/toast";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 const DISMISS_KEY = "cromio:push-dismissed";
@@ -26,6 +27,25 @@ function arrayBufferToBase64Url(buffer: ArrayBuffer | null) {
   let bin = "";
   for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function subscribeAndSave(userAgent: string) {
+  if (!VAPID_PUBLIC_KEY) throw new Error("missing_vapid_public_key");
+  const reg = await navigator.serviceWorker.ready;
+  const existing = await reg.pushManager.getSubscription();
+  const sub =
+    existing ??
+    (await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    }));
+  await savePushSubscription({
+    endpoint: sub.endpoint,
+    p256dh: arrayBufferToBase64Url(sub.getKey("p256dh")),
+    auth: arrayBufferToBase64Url(sub.getKey("auth")),
+    userAgent,
+  });
+  return sub;
 }
 
 export function EnablePush() {
@@ -53,56 +73,63 @@ export function EnablePush() {
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   }, [supported]);
 
-  // If permission is already granted, make sure the subscription is in DB.
+  // If permission is already granted, make sure the DB has the subscription.
   useEffect(() => {
     if (!supported || !user || permission !== "granted") return;
-    void ensureSubscribed();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    let cancelled = false;
+    (async () => {
+      try {
+        await subscribeAndSave(navigator.userAgent);
+      } catch (err) {
+        if (cancelled) return;
+        console.error("[cromio] push (re)subscribe failed:", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [supported, user, permission]);
 
-  if (loading || !user) return null;
-  if (!supported) return null;
-  if (permission === "granted") return null;
-  if (permission === "denied") return null;
-  if (dismissed) return null;
-
-  const ensureSubscribed = async () => {
-    const reg = await navigator.serviceWorker.ready;
-    const existing = await reg.pushManager.getSubscription();
-    const sub =
-      existing ??
-      (await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY!),
-      }));
-    const json = sub.toJSON();
-    await savePushSubscription({
-      endpoint: sub.endpoint,
-      p256dh: arrayBufferToBase64Url(sub.getKey("p256dh")),
-      auth: arrayBufferToBase64Url(sub.getKey("auth")),
-      userAgent: navigator.userAgent,
-    });
-    return json;
-  };
-
-  const enable = async () => {
+  const enable = useCallback(async () => {
     if (busy) return;
     setBusy(true);
     try {
       const result = await Notification.requestPermission();
       setPermission(result);
       if (result === "granted") {
-        await ensureSubscribed();
+        await subscribeAndSave(navigator.userAgent);
+        pushAppToast({ kind: "success", body: "Notificaciones activadas" });
+      } else if (result === "denied") {
+        pushAppToast({
+          kind: "info",
+          title: "Notificaciones bloqueadas",
+          body: "Ajustes del navegador → Permisos → Notificaciones para reactivarlas.",
+        });
       }
+    } catch (err) {
+      console.error("[cromio] enable push failed:", err);
+      pushAppToast({
+        kind: "error",
+        title: "No se pudieron activar",
+        body: "Reintenta o revisa los permisos del navegador.",
+      });
     } finally {
       setBusy(false);
     }
-  };
+  }, [busy]);
 
-  const dismiss = () => {
+  const dismiss = useCallback(() => {
     setDismissed(true);
-    localStorage.setItem(DISMISS_KEY, "1");
-  };
+    if (typeof window !== "undefined") {
+      localStorage.setItem(DISMISS_KEY, "1");
+    }
+  }, []);
+
+  if (loading || !user) return null;
+  if (!supported) return null;
+  if (permission === "granted") return null;
+  if (permission === "denied") return null;
+  if (dismissed) return null;
 
   return (
     <div className="pointer-events-auto fixed inset-x-3 bottom-24 z-[60] mx-auto flex max-w-[406px] items-center gap-3 rounded-md border border-black/5 bg-white/95 p-3 shadow-sh3 backdrop-blur-xl">
@@ -139,6 +166,11 @@ export async function disablePushOnThisDevice() {
   if (!reg) return;
   const sub = await reg.pushManager.getSubscription();
   if (!sub) return;
-  await sub.unsubscribe();
-  await removePushSubscription(sub.endpoint);
+  const endpoint = sub.endpoint;
+  try {
+    await sub.unsubscribe();
+  } catch (err) {
+    console.error("[cromio] unsubscribe failed:", err);
+  }
+  await removePushSubscription(endpoint);
 }
