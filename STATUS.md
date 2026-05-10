@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 17:17 UTC** · branch `main`_
+_Last updated: **2026-05-10 17:39 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -132,19 +132,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 55121af feat(chat+match): selection handoff, textarea, 0-star rate, day labels _(5 minutes ago)_
-- 1bfea47 feat(onboarding): stepper, back button, real location flow, inline alias _(10 minutes ago)_
-- 67cf293 feat(album): real Search header + AddCromoSheet replaces window.prompt _(12 minutes ago)_
-- 87e28a7 refactor(design): shared color tokens, IconBtn primitive, drop hex literals _(14 minutes ago)_
-- 73f72b6 feat(a11y+responsive): unblock zoom, dynamic html lang, sidebar at md+ _(18 minutes ago)_
-- 6ba0c4d feat(onboarding): album-style picker + Repetidas chip sums extras _(58 minutes ago)_
-- b27b46e fix(album): show total duplicates as Repetidas _(76 minutes ago)_
-- 5514dea fix(push): TDZ crash on permission grant + friendly error toasts _(87 minutes ago)_
+- f8fb9c8 feat(forms+ux): forgot pwd, signup confirm, error.tsx, perfil cleanup _(22 minutes ago)_
+- 55121af feat(chat+match): selection handoff, textarea, 0-star rate, day labels _(27 minutes ago)_
+- 1bfea47 feat(onboarding): stepper, back button, real location flow, inline alias _(32 minutes ago)_
+- 67cf293 feat(album): real Search header + AddCromoSheet replaces window.prompt _(34 minutes ago)_
+- 87e28a7 refactor(design): shared color tokens, IconBtn primitive, drop hex literals _(36 minutes ago)_
+- 73f72b6 feat(a11y+responsive): unblock zoom, dynamic html lang, sidebar at md+ _(40 minutes ago)_
+- 6ba0c4d feat(onboarding): album-style picker + Repetidas chip sums extras _(80 minutes ago)_
+- b27b46e fix(album): show total duplicates as Repetidas _(2 hours ago)_
+- 5514dea fix(push): TDZ crash on permission grant + friendly error toasts _(2 hours ago)_
 - e500ad1 fix(favoritos): server-side favorites in user_favorites + UX _(2 hours ago)_
 - 506976b feat(pwa): install banner (iOS + Chromium) + manifest shortcuts _(2 hours ago)_
 - 463fea7 feat(chat): meeting proposals + rating after trade _(2 hours ago)_
 - 3a74e7b feat(ux): global toast bus + skeleton loaders _(2 hours ago)_
-- 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(2 hours ago)_
-- edbaace feat(onboarding): identity step + redirect when home_location is null _(2 hours ago)_
-- bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(2 hours ago)_
+- 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(3 hours ago)_
+- edbaace feat(onboarding): identity step + redirect when home_location is null _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->
