@@ -218,9 +218,7 @@ export function LeafletMap({
           zIndex: 440,
         }}
       >
-        <div className="cromio-radar-tint" />
         <div className="cromio-radar-pulse" />
-        <div className="cromio-radar-pulse cromio-radar-pulse--late" />
       </div>
       <div
         ref={gridRef}
@@ -269,7 +267,7 @@ export function LeafletMap({
           </defs>
           <g
             clipPath="url(#cromio-radar-grid-clip)"
-            stroke="rgba(17,124,78,0.2)"
+            stroke="rgba(17,124,78,0.6)"
             fill="none"
           >
             {/* Concentric range rings (25% / 50% / 75% of radius) */}

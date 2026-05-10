@@ -80,21 +80,18 @@ body {
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(31, 174, 90, 0.28) 0%,
-    rgba(31, 174, 90, 0.08) 60%,
+    rgba(31, 174, 90, 0.6) 0%,
+    rgba(31, 174, 90, 0.32) 45%,
+    rgba(31, 174, 90, 0.12) 75%,
     rgba(31, 174, 90, 0) 100%
   );
   transform: scale(0);
-  animation: cromio-radar-pulse 3.6s ease-out infinite;
+  animation: cromio-radar-pulse 2.6s ease-out infinite;
   will-change: transform, opacity;
 }
-.cromio-radar-pulse--late {
-  animation-delay: 1.8s;
-  opacity: 0.6;
-}
 @keyframes cromio-radar-pulse {
-  0% { transform: scale(0); opacity: 0.85; }
-  85% { opacity: 0.05; }
+  0% { transform: scale(0); opacity: 1; }
+  80% { opacity: 0.18; }
   100% { transform: scale(1); opacity: 0; }
 }
 
@@ -107,20 +104,6 @@ body {
   font-size: 9px !important;
   background: rgba(255, 255, 255, 0.85) !important;
   padding: 2px 6px !important;
-}
-
-/* Faint radial tint inside the radar so the scope reads as a "screen"
-   rather than just an outline circle. */
-.cromio-radar-tint {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at center,
-    rgba(31, 174, 90, 0.07) 0%,
-    rgba(31, 174, 90, 0.04) 60%,
-    rgba(31, 174, 90, 0.02) 100%
-  );
 }
 
 /* Rotating sweep — long fading trail behind the leading arm. */
