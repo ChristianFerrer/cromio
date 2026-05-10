@@ -1,19 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import maplibregl, { type Map as MapLibreMap, type Marker } from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
 import { Search, MapIcon, List, Lock } from "lucide-react";
 import Link from "next/link";
 import { useCollection } from "@/hooks/useCollection";
-import {
-  type NearbyUser,
-  lngLatFromBearing,
-  useNearbyUsers,
-} from "@/hooks/useNearbyUsers";
+import { useNearbyUsers } from "@/hooks/useNearbyUsers";
 import { fmtDistance } from "@/lib/matches";
-import { Chip } from "@/components/ui/Chip";
 import { MatchArrows } from "@/components/match/MatchArrows";
+import { AlbumProgress } from "@/components/match/AlbumProgress";
+import { StaticTileMap } from "@/components/map/StaticTileMap";
 
 const RADII = [200, 500, 1000, 2000, 5000, 10000, 50000];
 const FREE_MAX = 2000;
@@ -24,8 +19,10 @@ export default function MapaPage() {
   const [view, setView] = useState<"map" | "list">("map");
   const [listFilter, setListFilter] = useState<"all" | "match" | "lead">("all");
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<MapLibreMap | null>(null);
-  const markersRef = useRef<Marker[]>([]);
+  const [mapDims, setMapDims] = useState<{ w: number; h: number }>({
+    w: 0,
+    h: 0,
+  });
 
   const { users, center, isAuthenticated } = useNearbyUsers(radius, collection);
 
@@ -37,197 +34,32 @@ export default function MapaPage() {
     lead: leads.length,
   };
 
-  const [mapError, setMapError] = useState<string | null>(null);
-
   useEffect(() => {
-    if (view !== "map" || !containerRef.current || mapRef.current) return;
-
-    const style: maplibregl.StyleSpecification = {
-      version: 8,
-      sources: {
-        osm: {
-          type: "raster",
-          tiles: ["/tiles/{z}/{x}/{y}.png"],
-          tileSize: 256,
-          maxzoom: 19,
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        },
-      },
-      layers: [
-        {
-          id: "background",
-          type: "background",
-          paint: { "background-color": "#EFEDE3" },
-        },
-        {
-          id: "osm",
-          type: "raster",
-          source: "osm",
-          paint: {
-            "raster-fade-duration": 200,
-            "raster-saturation": -0.15,
-          },
-        },
-      ],
+    if (view !== "map" || !containerRef.current) return;
+    const el = containerRef.current;
+    const update = () => {
+      setMapDims({ w: el.clientWidth, h: el.clientHeight });
     };
-
-    let map: MapLibreMap;
-    try {
-      map = new maplibregl.Map({
-        container: containerRef.current,
-        style,
-        center,
-        zoom: 14,
-        attributionControl: { compact: true },
-        failIfMajorPerformanceCaveat: false,
-      });
-    } catch (err) {
-      console.error("[cromio] MapLibre init failed:", err);
-      setMapError(err instanceof Error ? err.message : "map_init_failed");
-      return;
-    }
-
-    map.on("error", (e) => {
-      const message =
-        (e as { error?: { message?: string }; message?: string })?.error?.message ??
-        (e as { message?: string })?.message ??
-        "tiles_failed";
-      console.error("[cromio] MapLibre runtime error:", message, e);
-      if (!mapRef.current) return;
-      setMapError(message);
-    });
-    map.on("load", () => {
-      console.log("[cromio] MapLibre loaded successfully");
-      setMapError(null);
-      map.resize();
-    });
-    map.on("data", (e) => {
-      if (
-        e.dataType === "source" &&
-        (e as { isSourceLoaded?: boolean }).isSourceLoaded
-      ) {
-        setMapError(null);
-      }
-    });
-
-    mapRef.current = map;
-    return () => {
-      map.remove();
-      mapRef.current = null;
-    };
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [view]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    if (map.loaded()) {
-      map.easeTo({ center, duration: 600 });
-    } else {
-      map.once("load", () => {
-        map.easeTo({ center, duration: 0 });
-      });
-    }
-  }, [center]);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || view !== "map") return;
-
-    const setMarkers = () => {
-      markersRef.current.forEach((m) => m.remove());
-      markersRef.current = [];
-
-      const userPin = document.createElement("div");
-      userPin.className =
-        "h-4 w-4 rounded-full bg-green-500 border-[3px] border-white shadow-md";
-      const userMarker = new maplibregl.Marker({ element: userPin })
-        .setLngLat(center)
-        .addTo(map);
-      markersRef.current.push(userMarker);
-
-      users.forEach((entry) => {
-        const lngLat = lngLatFromBearing(center, entry.bearing_deg, entry.distance_m);
-        const el = document.createElement("a");
-        el.href = `/match/${entry.id}`;
-        const color = entry.kind === "match" ? "#1FAE5A" : "#2D7DD8";
-        el.style.cursor = "pointer";
-        el.innerHTML = `
-          <div style="position:relative;transform:translate(-50%,-100%);">
-            <div style="
-              width:46px;height:46px;border-radius:50% 50% 50% 0;
-              background:${color};transform:rotate(-45deg);
-              border:3px solid #fff;box-shadow:0 6px 14px rgba(0,0,0,.22);
-              display:flex;align-items:center;justify-content:center;
-            ">
-              <span style="
-                transform:rotate(45deg);color:#fff;
-                font-family:var(--font-bebas),system-ui;font-size:18px;
-              ">${entry.alias.slice(0, 2).toUpperCase()}</span>
-            </div>
-            <div style="
-              position:absolute;top:-8px;left:50%;transform:translateX(-50%);
-              background:#fff;border-radius:10px;padding:2px 6px;
-              box-shadow:0 2px 6px rgba(0,0,0,.18);
-              font-family:var(--font-bebas),system-ui;font-size:11px;
-              display:flex;gap:3px;white-space:nowrap;
-            ">
-              <span style="color:#117C4E">▼${entry.you_get_count}</span>
-              <span style="color:#D7263D">▲${entry.they_get_count}</span>
-            </div>
-          </div>
-        `;
-        const marker = new maplibregl.Marker({ element: el, anchor: "bottom" })
-          .setLngLat(lngLat)
-          .addTo(map);
-        markersRef.current.push(marker);
-      });
-    };
-
-    if (map.loaded()) setMarkers();
-    else map.once("load", setMarkers);
-  }, [users, view, center]);
 
   return (
     <main className="absolute inset-0 overflow-hidden">
       {view === "map" && (
-        <>
-          <div
-            ref={containerRef}
-            className="absolute inset-0 bg-[#EFEDE3]"
-          />
-          {mapError && (
-            <div className="absolute inset-x-6 top-44 z-30 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 shadow-sh2">
-              <div className="flex items-start justify-between gap-2">
-                <p className="font-semibold">Mapa: error al cargar tiles</p>
-                <button
-                  onClick={() => setMapError(null)}
-                  className="-mt-1 text-amber-900/70 hover:text-amber-900"
-                  aria-label="Cerrar aviso"
-                >
-                  ✕
-                </button>
-              </div>
-              <p className="mt-1 break-words leading-snug">
-                <code className="font-mono text-[10px]">{mapError}</code>
-              </p>
-              <button
-                onClick={() => {
-                  setMapError(null);
-                  if (mapRef.current) {
-                    mapRef.current.remove();
-                    mapRef.current = null;
-                  }
-                }}
-                className="mt-2 rounded bg-amber-200 px-2 py-1 text-[11px] font-semibold text-amber-900"
-              >
-                Reintentar
-              </button>
-            </div>
+        <div ref={containerRef} className="absolute inset-0 bg-[#F2EFE9]">
+          {mapDims.w > 0 && mapDims.h > 0 && (
+            <StaticTileMap
+              centerLng={center[0]}
+              centerLat={center[1]}
+              users={users}
+              width={mapDims.w}
+              height={mapDims.h}
+            />
           )}
-          {/* RadarOverlay temporalmente deshabilitado para debug del mapa */}
-          {false && <RadarOverlay />}
-        </>
+        </div>
       )}
 
       <div className="absolute left-3 right-3 top-14 z-20 flex items-center gap-2">
@@ -296,7 +128,8 @@ export default function MapaPage() {
           {listFilter !== "lead" && matches.length > 0 && (
             <>
               <h2 className="mb-2.5 mt-2 px-1 font-display text-lg text-ink">
-                Matches <span className="text-sm text-green-700">· {matches.length}</span>
+                Matches{" "}
+                <span className="text-sm text-green-700">· {matches.length}</span>
               </h2>
               {matches.map((u) => (
                 <UserListRow key={u.id} u={u} />
@@ -306,7 +139,8 @@ export default function MapaPage() {
           {listFilter !== "match" && leads.length > 0 && (
             <>
               <h2 className="mb-2.5 mt-4 px-1 font-display text-lg text-ink">
-                Te interesa <span className="text-sm text-match-interest">· {leads.length}</span>
+                Te interesa{" "}
+                <span className="text-sm text-match-interest">· {leads.length}</span>
               </h2>
               {leads.map((u) => (
                 <UserListRow key={u.id} u={u} />
@@ -315,9 +149,7 @@ export default function MapaPage() {
           )}
           {users.length === 0 && (
             <p className="py-10 text-center text-sm text-text-2">
-              {isAuthenticated
-                ? "Sin matches en este radio. Amplía el radio o añade más cromos."
-                : "Sin matches en este radio. Amplía el radio o añade más cromos."}
+              Sin matches en este radio. Amplía el radio o añade más cromos.
             </p>
           )}
         </div>
@@ -360,32 +192,7 @@ export default function MapaPage() {
   );
 }
 
-function RadarOverlay() {
-  return (
-    <div className="pointer-events-none absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2">
-      <div className="relative" style={{ width: 380, height: 380 }}>
-        <div
-          className="absolute inset-0 rounded-full border-2 border-dashed"
-          style={{
-            borderColor: "rgba(31,174,90,.55)",
-            background:
-              "radial-gradient(circle, rgba(31,174,90,.14), rgba(31,174,90,.06) 60%, transparent 75%)",
-          }}
-        />
-        <div
-          className="absolute inset-0 animate-radar-pulse rounded-full border-2"
-          style={{ borderColor: "rgba(31,174,90,.6)" }}
-        />
-        <div
-          className="absolute inset-0 animate-radar-pulse rounded-full border-2"
-          style={{ borderColor: "rgba(31,174,90,.5)", animationDelay: "1.3s" }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function UserListRow({ u }: { u: NearbyUser }) {
+function UserListRow({ u }: { u: ReturnType<typeof useNearbyUsers>["users"][number] }) {
   const isLead = u.kind === "lead";
   const avatarColor = isLead ? "#2D7DD8" : "#1FAE5A";
   return (
@@ -413,8 +220,13 @@ function UserListRow({ u }: { u: NearbyUser }) {
         <div className="mt-0.5 text-xs text-text-2">
           {fmtDistance(u.distance_m)} · ★{u.rating} · {u.trades_count} intercambios
         </div>
+        <AlbumProgress pct={50} className="mt-1.5" />
       </div>
-      <MatchArrows recibes={u.you_get_count} entregas={u.they_get_count} size={18} />
+      <MatchArrows
+        recibes={isLead ? 0 : u.you_get_count}
+        entregas={isLead ? 0 : u.they_get_count}
+        size={18}
+      />
     </Link>
   );
 }
