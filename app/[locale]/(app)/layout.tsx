@@ -1,14 +1,19 @@
 import { BottomNav } from "@/components/BottomNav";
+import { NotificationsRoot } from "@/components/notifications/NotificationsRoot";
+import { loadUnreadByChat } from "@/lib/chat/queries";
 
-export default function AppLayout({
+export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const initialUnread = await loadUnreadByChat();
   return (
-    <div className="relative mx-auto min-h-dvh max-w-[430px] bg-bone pb-20">
-      {children}
-      <BottomNav />
-    </div>
+    <NotificationsRoot initialUnread={initialUnread}>
+      <div className="relative mx-auto min-h-dvh max-w-[430px] bg-bone pb-20">
+        {children}
+        <BottomNav />
+      </div>
+    </NotificationsRoot>
   );
 }

@@ -10,6 +10,7 @@ import {
   MessageCircle,
   User,
 } from "lucide-react";
+import { useNotifications } from "@/components/notifications/NotificationsRoot";
 
 const TABS = [
   { id: "album", href: "/album", icon: BookMarked },
@@ -22,6 +23,7 @@ const TABS = [
 export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations("nav");
+  const { totalUnread, newNearbyCount } = useNotifications();
 
   // Hide on chat detail (/chat/[id]) and match detail (/match/[id]) so the
   // input / sticky CTA can sit at the bottom of the viewport.
@@ -39,6 +41,12 @@ export function BottomNav() {
         {TABS.map(({ id, href, icon: Icon }) => {
           const active =
             pathname === href || pathname.endsWith(href);
+          const badge =
+            id === "chat"
+              ? totalUnread
+              : id === "mapa"
+                ? newNearbyCount
+                : 0;
           return (
             <li key={id}>
               <Link
@@ -49,11 +57,18 @@ export function BottomNav() {
                     : "font-medium text-mute"
                 }`}
               >
-                <Icon
-                  size={22}
-                  strokeWidth={active ? 2.2 : 1.8}
-                  aria-hidden
-                />
+                <span className="relative">
+                  <Icon
+                    size={22}
+                    strokeWidth={active ? 2.2 : 1.8}
+                    aria-hidden
+                  />
+                  {badge > 0 && (
+                    <span className="absolute -right-2 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 font-display text-[10px] leading-none text-white shadow-sh1">
+                      {badge > 9 ? "9+" : badge}
+                    </span>
+                  )}
+                </span>
                 <span>{t(id)}</span>
               </Link>
             </li>

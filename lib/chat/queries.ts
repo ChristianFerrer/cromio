@@ -91,6 +91,26 @@ export type ChatMessage = {
   read_by_recipient_at: string | null;
 };
 
+export async function loadUnreadByChat(): Promise<Record<string, number>> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return {};
+
+  const { data } = await supabase
+    .from("messages")
+    .select("chat_id")
+    .neq("sender_id", user.id)
+    .is("read_by_recipient_at", null);
+
+  const out: Record<string, number> = {};
+  for (const m of data ?? []) {
+    out[m.chat_id] = (out[m.chat_id] ?? 0) + 1;
+  }
+  return out;
+}
+
 export async function loadChatDetail(chatId: string) {
   const supabase = await createClient();
   const {
