@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 21:34 UTC** · branch `main`_
+_Last updated: **2026-05-10 21:38 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,10 +140,13 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- a59d3d9 feat(ux): view transitions + pin entrance + richer empty states _(53 minutes ago)_
-- 23e6d6f feat(pwa): offline shell + tile + asset caching in the service worker _(56 minutes ago)_
-- abd0488 feat(chat): tappable cromo chips inline + preview sheet _(58 minutes ago)_
-- 208aa32 feat(moderation): block + report users + hide blocked across surfaces _(61 minutes ago)_
+- f7101d6 feat(ux): empty states + stagger album + match skeleton + radar cardinals _(4 minutes ago)_
+- 80b612d fix(album): partition tabs by sticker type so totals add up to 980 (#2) _(17 minutes ago)_
+- 2af033c feat(album): rename header subtitle and simplify nearby-users banner (#1) _(25 minutes ago)_
+- a59d3d9 feat(ux): view transitions + pin entrance + richer empty states _(58 minutes ago)_
+- 23e6d6f feat(pwa): offline shell + tile + asset caching in the service worker _(60 minutes ago)_
+- abd0488 feat(chat): tappable cromo chips inline + preview sheet _(63 minutes ago)_
+- 208aa32 feat(moderation): block + report users + hide blocked across surfaces _(65 minutes ago)_
 - ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(2 hours ago)_
 - 68f4856 feat(brand): green palette anchored on logo + new teal palette _(2 hours ago)_
 - 49c98b9 feat(brand): cromio_bg.png as the app logo across favicon + headers _(2 hours ago)_
@@ -152,7 +155,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - d724c58 feat(mapa): radar to background z-index + teardrop pins _(3 hours ago)_
 - e7d4768 feat(mapa): Whistle-style radar — minimal scope + recenter button _(3 hours ago)_
 - c6316aa fix(mapa): grid alpha 0.4, user dot promoted above the radar _(3 hours ago)_
-- 66ff06a fix(mapa): original-style pulse + solid rings + quadrant cross _(3 hours ago)_
-- a3b4039 feat(mapa): radar rings track filter steps + drop cardinal cross _(3 hours ago)_
-- 9725a18 fix(mapa): rings 60%, single louder pulse, drop the tint _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->

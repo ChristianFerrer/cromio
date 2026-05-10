@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   ChevronLeft,
   Clock,
+  Loader2,
   MapPin,
   Send,
   X,
@@ -353,6 +354,7 @@ export function ChatRoom({
         meeting={meeting}
         chatState={chatState}
         myRated={myRated}
+        completePending={pending}
         onPropose={() => setShowProposeSheet(true)}
         onMarkComplete={() => {
           startTransition(async () => {
@@ -505,6 +507,7 @@ function MeetingBanner({
   meeting,
   chatState,
   myRated,
+  completePending,
   onPropose,
   onMarkComplete,
   onRate,
@@ -514,6 +517,7 @@ function MeetingBanner({
   meeting: ChatMeeting;
   chatState: ChatState;
   myRated: boolean;
+  completePending: boolean;
   onPropose: () => void;
   onMarkComplete: () => void;
   onRate: () => void;
@@ -537,7 +541,7 @@ function MeetingBanner({
         {!myRated && (
           <button
             onClick={onRate}
-            className="rounded-md bg-green-500 px-2.5 py-1 font-bold text-white"
+            className="rounded-md bg-green-500 px-2.5 py-1 font-bold text-white transition-transform active:scale-95"
           >
             Valorar
           </button>
@@ -604,15 +608,19 @@ function MeetingBanner({
           <button
             disabled={pending}
             onClick={() => respond(false)}
-            className="rounded-md border border-line bg-white px-2 py-1 text-text-2 disabled:opacity-50"
+            className="inline-flex items-center gap-1 rounded-md border border-line bg-white px-2 py-1 text-text-2 transition-transform active:scale-95 disabled:opacity-50"
+            aria-busy={pending}
           >
+            {pending ? <Loader2 size={12} className="animate-spin" /> : null}
             Rechazar
           </button>
           <button
             disabled={pending}
             onClick={() => respond(true)}
-            className="rounded-md bg-green-500 px-2 py-1 font-bold text-white disabled:opacity-50"
+            className="inline-flex items-center gap-1 rounded-md bg-green-500 px-2 py-1 font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
+            aria-busy={pending}
           >
+            {pending ? <Loader2 size={12} className="animate-spin" /> : null}
             Aceptar
           </button>
         </div>
@@ -623,8 +631,11 @@ function MeetingBanner({
       {chatState === "confirmed" && (
         <button
           onClick={onMarkComplete}
-          className="shrink-0 rounded-md bg-green-500 px-2.5 py-1 font-bold text-white"
+          disabled={completePending}
+          aria-busy={completePending}
+          className="inline-flex shrink-0 items-center gap-1 rounded-md bg-green-500 px-2.5 py-1 font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
         >
+          {completePending ? <Loader2 size={12} className="animate-spin" /> : null}
           Hecho
         </button>
       )}

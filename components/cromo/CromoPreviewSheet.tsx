@@ -1,9 +1,11 @@
 "use client";
 
+import { Share2 } from "lucide-react";
 import { Sheet } from "@/components/ui/Sheet";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { STICKERS_BY_N, TOTAL_STICKERS } from "@/lib/data/stickers";
 import { COUNTRY_BY_CODE } from "@/lib/data/countries";
+import { shareOrCopy } from "@/lib/share/client";
 
 export function CromoPreviewSheet({
   n,
@@ -23,6 +25,14 @@ export function CromoPreviewSheet({
     );
   }
   const country = sticker.team_code ? COUNTRY_BY_CODE[sticker.team_code] : undefined;
+  const shareText = [
+    `Cromo #${sticker.n} (${sticker.code})`,
+    country?.name,
+    sticker.player_name,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <Sheet title={`Cromo #${sticker.n}`} onClose={onClose}>
       <div className="flex gap-4">
@@ -39,6 +49,19 @@ export function CromoPreviewSheet({
           <Row label="Rareza" value={prettyRarity(sticker.rarity)} />
         </dl>
       </div>
+      <button
+        type="button"
+        onClick={() =>
+          shareOrCopy({
+            title: shareText,
+            text: "Mira este cromo del Mundial 2026 en Cromio.",
+            path: `/album?cromo=${sticker.n}`,
+          })
+        }
+        className="mt-4 flex w-full items-center justify-center gap-2 rounded-md border border-line bg-white py-2.5 text-sm font-semibold text-text hover:bg-paper"
+      >
+        <Share2 size={14} strokeWidth={2.2} /> Compartir cromo
+      </button>
     </Sheet>
   );
 }

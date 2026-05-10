@@ -10,7 +10,9 @@ import {
   ShieldOff,
   ShieldX,
   AlertTriangle,
+  Share2,
 } from "lucide-react";
+import { shareOrCopy } from "@/lib/share/client";
 import { STICKERS_BY_N } from "@/lib/data/stickers";
 import { buildMatch, fmtDistance } from "@/lib/matches";
 import type { CollectionEntry, MatchResult } from "@/lib/types";
@@ -393,6 +395,28 @@ export default function MatchDetailPage({
           onClose={() => setShowActions(false)}
         >
           <div className="space-y-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                setShowActions(false);
+                shareOrCopy({
+                  title: `Cromio · @${profile.alias}`,
+                  text: profile.display_name
+                    ? `${profile.display_name} colecciona en Cromio.`
+                    : `@${profile.alias} colecciona en Cromio.`,
+                  path: `/match/${profile.id}`,
+                });
+              }}
+              className="flex w-full items-center gap-3 rounded-md border border-line bg-white p-3 text-left hover:bg-paper"
+            >
+              <Share2 size={18} strokeWidth={2} className="text-text-2" />
+              <div className="flex-1">
+                <p className="text-sm font-bold">Compartir perfil</p>
+                <p className="text-[11px] text-text-2">
+                  Envía el enlace por WhatsApp, Telegram o copia al portapapeles.
+                </p>
+              </div>
+            </button>
             {blocked ? (
               <button
                 type="button"
