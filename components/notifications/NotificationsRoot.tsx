@@ -14,6 +14,7 @@ import { usePathname } from "next/navigation";
 import { MessageCircle, Sparkles, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
+import { EnablePush } from "./EnablePush";
 
 type Toast =
   | {
@@ -274,6 +275,7 @@ export function NotificationsRoot({
     >
       {children}
       <ToastStack toasts={toasts} dismiss={dismissToast} />
+      <EnablePush />
     </Ctx.Provider>
   );
 }

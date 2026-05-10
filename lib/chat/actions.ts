@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { sendPushToUser } from "@/lib/push/server";
 
 export async function startChatWith(userId: string) {
   const supabase = await createClient();
@@ -39,6 +40,28 @@ export async function sendMessage(chatId: string, body: string) {
   });
 
   if (error) return { error: error.message };
+
+  // Find the recipient and send a Web Push notification.
+  const { data: chat } = await supabase
+    .from("chats")
+    .select("user_a, user_b")
+    .eq("id", chatId)
+    .maybeSingle();
+  if (chat) {
+    const recipient = chat.user_a === user.id ? chat.user_b : chat.user_a;
+    const { data: me } = await supabase
+      .from("profiles")
+      .select("alias, display_name")
+      .eq("id", user.id)
+      .maybeSingle();
+    const senderName = me?.display_name || me?.alias || "Coleccionista";
+    void sendPushToUser(recipient, {
+      title: senderName,
+      body: trimmed.length > 120 ? `${trimmed.slice(0, 117)}…` : trimmed,
+      url: `/chat/${chatId}`,
+      tag: `chat-${chatId}`,
+    });
+  }
 
   revalidatePath(`/chat/${chatId}`);
   revalidatePath("/chat");

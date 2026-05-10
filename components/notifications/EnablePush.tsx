@@ -1,0 +1,144 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Bell, X } from "lucide-react";
+import {
+  removePushSubscription,
+  savePushSubscription,
+} from "@/lib/push/actions";
+import { useUser } from "@/hooks/useUser";
+
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+const DISMISS_KEY = "cromio:push-dismissed";
+
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  const out = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+
+function arrayBufferToBase64Url(buffer: ArrayBuffer | null) {
+  if (!buffer) return "";
+  const bytes = new Uint8Array(buffer);
+  let bin = "";
+  for (let i = 0; i < bytes.byteLength; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+export function EnablePush() {
+  const { user, loading } = useUser();
+  const [supported, setSupported] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>("default");
+  const [dismissed, setDismissed] = useState(true);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const ok =
+      "serviceWorker" in navigator &&
+      "PushManager" in window &&
+      "Notification" in window &&
+      !!VAPID_PUBLIC_KEY;
+    setSupported(ok);
+    if (ok) setPermission(Notification.permission);
+    setDismissed(localStorage.getItem(DISMISS_KEY) === "1");
+  }, []);
+
+  // Auto-register the SW so push delivery works once permission is granted.
+  useEffect(() => {
+    if (!supported) return;
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  }, [supported]);
+
+  // If permission is already granted, make sure the subscription is in DB.
+  useEffect(() => {
+    if (!supported || !user || permission !== "granted") return;
+    void ensureSubscribed();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supported, user, permission]);
+
+  if (loading || !user) return null;
+  if (!supported) return null;
+  if (permission === "granted") return null;
+  if (permission === "denied") return null;
+  if (dismissed) return null;
+
+  const ensureSubscribed = async () => {
+    const reg = await navigator.serviceWorker.ready;
+    const existing = await reg.pushManager.getSubscription();
+    const sub =
+      existing ??
+      (await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY!),
+      }));
+    const json = sub.toJSON();
+    await savePushSubscription({
+      endpoint: sub.endpoint,
+      p256dh: arrayBufferToBase64Url(sub.getKey("p256dh")),
+      auth: arrayBufferToBase64Url(sub.getKey("auth")),
+      userAgent: navigator.userAgent,
+    });
+    return json;
+  };
+
+  const enable = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+      if (result === "granted") {
+        await ensureSubscribed();
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const dismiss = () => {
+    setDismissed(true);
+    localStorage.setItem(DISMISS_KEY, "1");
+  };
+
+  return (
+    <div className="pointer-events-auto fixed inset-x-3 bottom-24 z-[60] mx-auto flex max-w-[406px] items-center gap-3 rounded-md border border-black/5 bg-white/95 p-3 shadow-sh3 backdrop-blur-xl">
+      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-green-500 text-white">
+        <Bell size={16} strokeWidth={2.2} />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-bold text-text">Activa las notificaciones</p>
+        <p className="text-xs text-text-2">
+          Mensajes y nuevos matches incluso con la app cerrada.
+        </p>
+      </div>
+      <button
+        onClick={enable}
+        disabled={busy}
+        className="rounded-md bg-green-500 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+      >
+        Activar
+      </button>
+      <button
+        onClick={dismiss}
+        className="grid h-7 w-7 shrink-0 place-items-center rounded text-text-2"
+        aria-label="Cerrar"
+      >
+        <X size={14} strokeWidth={2.2} />
+      </button>
+    </div>
+  );
+}
+
+export async function disablePushOnThisDevice() {
+  if (typeof window === "undefined") return;
+  const reg = await navigator.serviceWorker.getRegistration();
+  if (!reg) return;
+  const sub = await reg.pushManager.getSubscription();
+  if (!sub) return;
+  await sub.unsubscribe();
+  await removePushSubscription(sub.endpoint);
+}
