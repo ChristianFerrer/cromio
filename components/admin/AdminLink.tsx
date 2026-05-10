@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck, ChevronRight } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { getIsAdmin } from "@/lib/admin/guard";
+import { getIsAdmin } from "@/lib/admin/guards";
 
 export async function AdminLink() {
   const isAdmin = await getIsAdmin();

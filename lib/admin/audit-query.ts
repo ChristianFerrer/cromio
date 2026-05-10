@@ -1,5 +1,5 @@
 import "server-only";
-import { requireAdmin } from "@/lib/admin/guard";
+import { requireAdmin } from "@/lib/admin/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type AuditRow = {

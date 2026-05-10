@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { BarChart3, Users, ShieldCheck, ScrollText } from "lucide-react";
 import { getTranslations } from "next-intl/server";
-import { requireAdmin } from "@/lib/admin/guard";
+import { requireAdmin } from "@/lib/admin/guards";
 
 export const dynamic = "force-dynamic";
 

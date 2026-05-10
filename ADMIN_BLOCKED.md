@@ -4,12 +4,17 @@ The admin module needs the following changes in files that the working
 brief lists as off-limits. They are documented here for the owner of the
 parallel session / branch to apply.
 
-## 1. Ban gate in the (app) layout
+## 1. Ban gate in the (app) layout (REQUIRED, blocking)
 
 **File**: `app/[locale]/(app)/layout.tsx`
 
-After loading `profile` (same query that already pulls `home_location`)
-also select `banned_at` and redirect to `/banned` when present:
+The `/banned` page now lives at `app/[locale]/(app)/banned/page.tsx`,
+which means it goes through this layout. The layout must redirect
+banned users to `/banned` **before** the `home_location` check,
+otherwise a banned user with no location is redirected to
+`/onboarding` and gets stuck.
+
+Apply this change:
 
 ```ts
 const { data: profile } = await supabase
@@ -17,24 +22,31 @@ const { data: profile } = await supabase
   .select("home_location, banned_at")
   .eq("id", user.id)
   .maybeSingle();
+// Banned users get bounced to /banned, regardless of onboarding state.
 if (profile?.banned_at) redirect("/banned");
 if (!profile?.home_location) redirect("/onboarding");
 ```
 
-Without this gate a banned user can still load `/album` etc. — the
-admin UI can mark them banned but the rest of the app does not enforce
-it client-side. RLS on `messages`, `chats`, etc. should *also* be
-hardened in a later pass, but the layout redirect is the cheap fix.
+The `/banned` page itself short-circuits: if `banned_at` is null when
+the admin lifts a ban, it redirects to `/album`. So a one-time bounce
+through `/banned` is harmless even with this redirect in place.
 
-## 2. PageViewTracker mount point
+Without this change:
+- Banned users without a stored location land on `/onboarding`.
+- Banned users with a stored location land on `/album` (the ban only
+  forces a sign-out via `auth.admin.signOut`; re-logging in restores
+  access). They can still post messages, open chats etc.
 
-`PageViewTracker` is mounted inside `NotificationsRoot` (which is a
-client component). That file is on the editable list, so no action is
-required from the parallel session.
-
-## 3. Hard delete (GDPR)
+## 2. Hard delete (GDPR)
 
 `deleteUser` server action exists in `lib/admin/users.ts` and uses the
-service-role client, but is **not** exposed in any UI. To honour a
-GDPR erasure request the admin must invoke it manually from a server
-context or a future scripted runbook.
+service-role client, but is intentionally **not** exposed in any UI.
+To honour a GDPR erasure request the admin must invoke it manually
+from a server context or a future scripted runbook.
+
+## 3. Realtime publication for `events` (optional)
+
+The dashboard polls aggregations on every load, so `events` is not
+included in `supabase_realtime`. If you want the dashboard to live-
+update without a refresh, add `events` to the publication and
+subscribe in the dashboard page.

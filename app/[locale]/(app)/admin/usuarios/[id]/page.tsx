@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { getUserDetail } from "@/lib/admin/users";
-import { requireAdmin } from "@/lib/admin/guard";
-import { Avatar } from "@/components/admin/Avatar";
+import { requireAdmin } from "@/lib/admin/guards";
+import { UserDetailHeader } from "@/components/admin/UserDetailHeader";
 import { UserEditForm } from "@/components/admin/UserEditForm";
 import { UserActions } from "@/components/admin/UserActions";
 
@@ -37,31 +37,7 @@ export default async function AdminUserDetail({
         <ArrowLeft size={14} /> {t("detail.back")}
       </Link>
 
-      <header className="mt-3 flex items-center gap-3">
-        <Avatar
-          alias={user.alias}
-          color={user.color}
-          avatarUrl={user.avatar_url}
-          size={56}
-        />
-        <div className="min-w-0">
-          <h2 className="truncate font-display text-2xl">
-            {user.display_name || user.alias}
-          </h2>
-          <p className="truncate text-sm text-text-2">
-            @{user.alias} · {user.email ?? "—"}
-          </p>
-          <p className="mt-0.5 text-xs text-text-2">
-            ★ {user.rating ?? "—"} · {user.trades_count ?? 0} cambios ·{" "}
-            {user.is_admin && (
-              <span className="font-bold text-green-700">admin</span>
-            )}
-            {user.banned_at && (
-              <span className="ml-1 font-bold text-red-600">banned</span>
-            )}
-          </p>
-        </div>
-      </header>
+      <UserDetailHeader user={user} />
 
       <section className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Stat label={t("detail.summary")} value={user.plan ?? "free"} />

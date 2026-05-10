@@ -2,7 +2,7 @@
 
 import "server-only";
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "@/lib/admin/guard";
+import { requireAdmin } from "@/lib/admin/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { recordAudit } from "@/lib/admin/audit";
 

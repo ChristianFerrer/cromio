@@ -1,3 +1,5 @@
+import { CROMIO_COLORS } from "@/lib/design/colors";
+
 export function Avatar({
   alias,
   color,
@@ -29,7 +31,7 @@ export function Avatar({
       style={{
         width: size,
         height: size,
-        background: color ?? "#1FAE5A",
+        background: color ?? CROMIO_COLORS.green[500],
         fontSize: Math.max(10, Math.round(size * 0.4)),
       }}
     >

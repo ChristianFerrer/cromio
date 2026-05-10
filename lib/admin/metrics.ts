@@ -1,5 +1,5 @@
 import "server-only";
-import { requireAdmin } from "@/lib/admin/guard";
+import { requireAdmin } from "@/lib/admin/guards";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type Range = "24h" | "7d" | "30d" | "90d" | "all";
@@ -55,6 +55,13 @@ export type DailyPoint = {
   meeting_completed?: number;
 };
 
+export type RetentionRow = {
+  cohort: string;
+  day_offset: number;
+  cohort_size: number;
+  retained: number;
+};
+
 export type DashboardPayload = {
   range: Range;
   kpis: Kpis;
@@ -66,6 +73,7 @@ export type DashboardPayload = {
   topSpare: { sticker_n: number; spare_total: number; users_with_spare: number }[];
   radii: { bucket: string; count: number }[];
   ratings: { stars: number; count: number }[];
+  retention: RetentionRow[];
 };
 
 export async function loadDashboard(range: Range): Promise<DashboardPayload> {
@@ -90,6 +98,7 @@ export async function loadDashboard(range: Range): Promise<DashboardPayload> {
     spareRes,
     radiiRes,
     ratingsRes,
+    retentionRes,
   ] = await Promise.all([
     admin.from("profiles").select("id", { head: true, count: "exact" }),
     admin.rpc("admin_active_users"),
@@ -127,6 +136,7 @@ export async function loadDashboard(range: Range): Promise<DashboardPayload> {
     admin.rpc("admin_top_spare", { p_limit: 20 }),
     admin.rpc("admin_radii_histogram"),
     admin.rpc("admin_ratings_histogram"),
+    admin.rpc("admin_retention_cohort", { p_from: fromIso, p_to: toIso }),
   ]);
 
   const totalUsers = totalUsersRes.count ?? 0;
@@ -186,6 +196,19 @@ export async function loadDashboard(range: Range): Promise<DashboardPayload> {
   const ratingsHist = (
     (ratingsRes.data ?? []) as { stars: number; count: number }[]
   ).map((r) => ({ stars: r.stars, count: Number(r.count) }));
+  const retention = (
+    (retentionRes.data ?? []) as {
+      cohort: string;
+      day_offset: number;
+      cohort_size: number;
+      retained: number;
+    }[]
+  ).map((r) => ({
+    cohort: r.cohort,
+    day_offset: Number(r.day_offset),
+    cohort_size: Number(r.cohort_size),
+    retained: Number(r.retained),
+  }));
 
   return {
     range,
@@ -207,5 +230,6 @@ export async function loadDashboard(range: Range): Promise<DashboardPayload> {
     topSpare,
     radii,
     ratings: ratingsHist,
+    retention,
   };
 }
