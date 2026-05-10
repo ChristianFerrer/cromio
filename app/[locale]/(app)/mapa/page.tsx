@@ -47,22 +47,31 @@ export default function MapaPage() {
       sources: {
         osm: {
           type: "raster",
-          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tiles: [
+            "https://a.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png",
+            "https://b.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png",
+            "https://c.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png",
+            "https://d.basemaps.cartocdn.com/voyager/{z}/{x}/{y}.png",
+          ],
           tileSize: 256,
           maxzoom: 19,
           attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         },
       },
       layers: [
+        {
+          id: "background",
+          type: "background",
+          paint: { "background-color": "#EFEDE3" },
+        },
         {
           id: "osm",
           type: "raster",
           source: "osm",
           paint: {
-            "raster-saturation": -0.25,
-            "raster-brightness-min": 0.05,
-            "raster-brightness-max": 0.95,
+            "raster-fade-duration": 200,
+            "raster-saturation": -0.15,
           },
         },
       ],
