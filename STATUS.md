@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 21:04 UTC** · branch `claude/admin-dashboard`_
+_Last updated: **2026-05-10 21:06 UTC** · branch `claude/admin-dashboard`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -132,19 +132,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(64 minutes ago)_
-- 68f4856 feat(brand): green palette anchored on logo + new teal palette _(71 minutes ago)_
+- 5e681f1 feat(admin): role + guard + entry points + /banned scaffolding _(2 minutes ago)_
+- ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(67 minutes ago)_
+- 68f4856 feat(brand): green palette anchored on logo + new teal palette _(73 minutes ago)_
 - 49c98b9 feat(brand): cromio_bg.png as the app logo across favicon + headers _(2 hours ago)_
 - d023680 Add files via upload _(2 hours ago)_
 - c0cfeab fix(mapa): radar above tiles, dot + pins above radar _(2 hours ago)_
 - d724c58 feat(mapa): radar to background z-index + teardrop pins _(2 hours ago)_
 - e7d4768 feat(mapa): Whistle-style radar — minimal scope + recenter button _(2 hours ago)_
 - c6316aa fix(mapa): grid alpha 0.4, user dot promoted above the radar _(2 hours ago)_
-- 66ff06a fix(mapa): original-style pulse + solid rings + quadrant cross _(2 hours ago)_
+- 66ff06a fix(mapa): original-style pulse + solid rings + quadrant cross _(3 hours ago)_
 - a3b4039 feat(mapa): radar rings track filter steps + drop cardinal cross _(3 hours ago)_
 - 9725a18 fix(mapa): rings 60%, single louder pulse, drop the tint _(3 hours ago)_
 - 07b9390 fix(mapa): radar grid thinner @ 20%, cardinals with edge-fade gradient _(3 hours ago)_
 - 559329c feat(mapa): radar scope look — range rings, cardinals, sweep arm _(3 hours ago)_
 - 4527a2d fix(mapa): pulse fills the radar + solid radar border _(3 hours ago)_
-- d39243c fix(flags): SVG flags with proper bounds, no escaping sun _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->
