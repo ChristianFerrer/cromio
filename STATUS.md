@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 15:04 UTC** · branch `main`_
+_Last updated: **2026-05-10 15:07 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -99,19 +99,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(26 minutes ago)_
-- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(28 minutes ago)_
-- f5cad0f fix(chat): make realtime + read receipts actually work _(57 minutes ago)_
-- 3609c65 feat(chat): WhatsApp-style states with read receipts and day separators _(66 minutes ago)_
-- 3b05cb5 fix: hide bottom nav inside chat detail and match detail _(74 minutes ago)_
+- bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(2 minutes ago)_
+- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(28 minutes ago)_
+- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(31 minutes ago)_
+- f5cad0f fix(chat): make realtime + read receipts actually work _(59 minutes ago)_
+- 3609c65 feat(chat): WhatsApp-style states with read receipts and day separators _(69 minutes ago)_
+- 3b05cb5 fix: hide bottom nav inside chat detail and match detail _(76 minutes ago)_
 - 9503f5c feat: remove demo fallback so map only shows real users _(3 hours ago)_
 - 0587155 feat: auto-save device GPS into profile.home_location on map view _(6 hours ago)_
 - 67d0342 feat: realtime nearby users + 30s polling + manual refresh button _(6 hours ago)_
-- b78f47e feat: demo fallback users on map when no real collectors are nearby yet _(6 hours ago)_
+- b78f47e feat: demo fallback users on map when no real collectors are nearby yet _(7 hours ago)_
 - 8fd26a0 feat: add clockwise rotating radar sweep over the search radius _(7 hours ago)_
 - 7208a5b fix: map z-index isolation + zoom table + bigger user pin _(7 hours ago)_
 - dfcd3bd feat: replace custom map with Leaflet for native pan + pinch-zoom _(7 hours ago)_
 - fc2f262 fix: radar centered on user pin + auto-zoom basemap to selected radius _(7 hours ago)_
 - b58ec54 feat: device location + animated radar scaled to selected radius _(7 hours ago)_
-- 36d449c feat: replace MapLibre with no-WebGL StaticTileMap (img-based) _(8 hours ago)_
 <!-- AUTO:COMMITS:END -->

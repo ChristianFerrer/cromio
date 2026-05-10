@@ -15,6 +15,13 @@ export default async function AppLayout({
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("home_location")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (!profile?.home_location) redirect("/onboarding");
+
   const initialUnread = await loadUnreadByChat();
   return (
     <NotificationsRoot initialUnread={initialUnread}>

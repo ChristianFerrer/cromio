@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Plus, ArrowRight } from "lucide-react";
+import { MapPin, ArrowRight, Check } from "lucide-react";
 import { COUNTRIES } from "@/lib/data/countries";
 import { STICKERS_BY_N, TOTAL_STICKERS } from "@/lib/data/stickers";
 import { CromoCard } from "@/components/cromo/CromoCard";
@@ -10,10 +10,22 @@ import { Flag } from "@/components/cromo/Flag";
 import { Btn } from "@/components/ui/Btn";
 import { createClient } from "@/lib/supabase/client";
 
-type Step = "location" | "favorite" | "first-cromos" | "done";
+type Step = "location" | "identity" | "favorite" | "first-cromos";
 type Added = { n: number; count: number };
 
 const BARCELONA: [number, number] = [2.1645, 41.3917];
+
+const COLORS = [
+  "#1FAE5A", // Cromio green
+  "#117C4E", // Cromio dark
+  "#2D7DD8", // Match-interest blue
+  "#7B5BD8", // Purple
+  "#D7263D", // Red
+  "#E5006D", // Pink
+  "#D4AF37", // Gold
+  "#E78C2E", // Orange
+  "#3A3A3A", // Charcoal
+];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -22,7 +34,35 @@ export default function OnboardingPage() {
   const [favorite, setFavorite] = useState<string | null>(null);
   const [added, setAdded] = useState<Added[]>([]);
   const [num, setNum] = useState("");
+  const [alias, setAlias] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [color, setColor] = useState(COLORS[0]);
   const [pending, startTransition] = useTransition();
+
+  // Pre-fill alias/name/color from existing profile if present.
+  useEffect(() => {
+    const supabase = createClient();
+    if (!supabase) return;
+    (async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("alias, display_name, color")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (profile) {
+        if (profile.alias) setAlias(profile.alias);
+        if (profile.display_name) setDisplayName(profile.display_name);
+        if (profile.color) setColor(profile.color);
+      }
+    })();
+  }, [router]);
 
   const finish = () => {
     startTransition(async () => {
@@ -39,12 +79,14 @@ export default function OnboardingPage() {
         return;
       }
       const point = coords ?? BARCELONA;
-      await supabase
-        .from("profiles")
-        .update({
-          home_location: `POINT(${point[0]} ${point[1]})`,
-        })
-        .eq("id", user.id);
+      const aliasClean = alias.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_").slice(0, 24);
+      const updatePayload: Record<string, unknown> = {
+        home_location: `POINT(${point[0]} ${point[1]})`,
+        color,
+      };
+      if (aliasClean) updatePayload.alias = aliasClean;
+      if (displayName.trim()) updatePayload.display_name = displayName.trim().slice(0, 60);
+      await supabase.from("profiles").update(updatePayload).eq("id", user.id);
 
       if (added.length) {
         await supabase
@@ -89,17 +131,17 @@ export default function OnboardingPage() {
             onClick={() => {
               if (!navigator.geolocation) {
                 setCoords(BARCELONA);
-                setStep("favorite");
+                setStep("identity");
                 return;
               }
               navigator.geolocation.getCurrentPosition(
                 (pos) => {
                   setCoords([pos.coords.longitude, pos.coords.latitude]);
-                  setStep("favorite");
+                  setStep("identity");
                 },
                 () => {
                   setCoords(BARCELONA);
-                  setStep("favorite");
+                  setStep("identity");
                 },
                 { timeout: 6000 },
               );
@@ -110,12 +152,99 @@ export default function OnboardingPage() {
           <button
             onClick={() => {
               setCoords(BARCELONA);
-              setStep("favorite");
+              setStep("identity");
             }}
             className="block w-full py-2 text-center text-sm text-text-2"
           >
             Saltar — usar Barcelona
           </button>
+        </div>
+      </main>
+    );
+  }
+
+  if (step === "identity") {
+    const initials = (alias || "?").slice(0, 2).toUpperCase();
+    return (
+      <main className="flex flex-1 flex-col px-6 pt-16">
+        <h1 className="font-display text-4xl">Tu perfil</h1>
+        <p className="mt-2 text-sm text-text-2">
+          Así te verán los demás coleccionistas en el mapa.
+        </p>
+
+        <div className="mt-6 flex flex-col items-center">
+          <div
+            className="grid h-24 w-24 place-items-center rounded-full font-display text-4xl text-white shadow-sh2"
+            style={{ background: color }}
+          >
+            {initials}
+          </div>
+        </div>
+
+        <div className="mt-6 space-y-3">
+          <label className="block">
+            <span className="text-xs font-bold uppercase tracking-wider text-text-2">
+              Alias
+            </span>
+            <input
+              value={alias}
+              onChange={(e) => setAlias(e.target.value)}
+              placeholder="alias_22"
+              maxLength={24}
+              className="mt-1 h-11 w-full rounded-md border border-line bg-white px-3.5 text-sm outline-none focus:border-green-500"
+            />
+          </label>
+          <label className="block">
+            <span className="text-xs font-bold uppercase tracking-wider text-text-2">
+              Nombre visible <span className="text-text-2/60">(opcional)</span>
+            </span>
+            <input
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="María R."
+              maxLength={60}
+              className="mt-1 h-11 w-full rounded-md border border-line bg-white px-3.5 text-sm outline-none focus:border-green-500"
+            />
+          </label>
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-text-2">
+              Color
+            </span>
+            <div className="mt-1.5 grid grid-cols-9 gap-1.5">
+              {COLORS.map((c) => {
+                const active = c === color;
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className="grid aspect-square place-items-center rounded-full transition-transform"
+                    style={{
+                      background: c,
+                      transform: active ? "scale(1.1)" : "scale(1)",
+                      boxShadow: active
+                        ? "0 0 0 3px rgba(11,28,18,0.92)"
+                        : "0 1px 2px rgba(0,0,0,.12)",
+                    }}
+                    aria-label={`Color ${c}`}
+                  >
+                    {active && <Check size={14} className="text-white" strokeWidth={2.6} />}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-auto py-6">
+          <Btn
+            kind="primaryVibrant"
+            full
+            size="lg"
+            disabled={!alias.trim()}
+            onClick={() => setStep("favorite")}
+          >
+            Continuar
+          </Btn>
         </div>
       </main>
     );
@@ -256,11 +385,13 @@ export default function OnboardingPage() {
             onClick={finish}
             icon={<ArrowRight size={16} />}
           >
-            {added.length >= 5
-              ? "Empezar a buscar matches"
-              : added.length === 0
-                ? "Saltar y añadir más tarde"
-                : `Continuar con ${added.length} cromo${added.length > 1 ? "s" : ""}`}
+            {pending
+              ? "Guardando…"
+              : added.length >= 5
+                ? "Empezar a buscar matches"
+                : added.length === 0
+                  ? "Saltar y añadir más tarde"
+                  : `Continuar con ${added.length} cromo${added.length > 1 ? "s" : ""}`}
           </Btn>
         </div>
       </main>
