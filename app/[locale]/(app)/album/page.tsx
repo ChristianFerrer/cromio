@@ -33,7 +33,7 @@ export default function AlbumPage() {
 
   const tabPool = useMemo(() => {
     if (tab === "especiales") {
-      return STICKERS.filter((s) => s.rarity !== "common");
+      return STICKERS.filter((s) => s.type === "foil_intro");
     }
     if (tab === "estadios") {
       return STICKERS.filter((s) => s.type === "host_city");
