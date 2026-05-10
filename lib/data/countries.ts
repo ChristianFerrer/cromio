@@ -1,6 +1,7 @@
 import type { Country } from "../types";
 
 export const COUNTRIES: Country[] = [
+  { code: "ALG", name: "Argelia",           short: "ALG", flag: { dir: "v",     colors: ["#006233","#FFFFFF"] } },
   { code: "ARG", name: "Argentina",         short: "ARG", flag: { dir: "h",     colors: ["#75AADB","#FFFFFF","#75AADB"], dot: "#F5C642" } },
   { code: "AUS", name: "Australia",         short: "AUS", flag: { dir: "cross", colors: ["#012169","#FFFFFF","#E4002B"] } },
   { code: "AUT", name: "Austria",           short: "AUT", flag: { dir: "h",     colors: ["#ED2939","#FFFFFF","#ED2939"] } },
@@ -48,7 +49,6 @@ export const COUNTRIES: Country[] = [
   { code: "URU", name: "Uruguay",           short: "URU", flag: { dir: "h",     colors: ["#FFFFFF","#0038A8"] } },
   { code: "USA", name: "EE.UU.",            short: "USA", flag: { dir: "h",     colors: ["#B22234","#FFFFFF","#3C3B6E"] } },
   { code: "UZB", name: "Uzbekistán",        short: "UZB", flag: { dir: "h",     colors: ["#1EB53A","#FFFFFF","#0099B5"] } },
-  { code: "ALG", name: "Argelia",           short: "ALG", flag: { dir: "v",     colors: ["#006233","#FFFFFF"] } },
 ];
 
 export const HOST_COUNTRIES = ["CAN", "MEX", "USA"];
