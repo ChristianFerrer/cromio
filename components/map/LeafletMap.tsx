@@ -26,6 +26,7 @@ export function LeafletMap({
   const radiusCircleRef = useRef<L.Circle | null>(null);
   const userMarkerRef = useRef<L.Marker | null>(null);
   const userMarkersRef = useRef<L.Marker[]>([]);
+  const sweepRef = useRef<HTMLDivElement | null>(null);
   const programmaticMoveRef = useRef(false);
 
   useEffect(() => {
@@ -70,6 +71,39 @@ export function LeafletMap({
       programmaticMoveRef.current = false;
     }, 600);
   }, [centerLat, centerLng, zoom]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const sweepEl = sweepRef.current;
+    if (!map || !sweepEl) return;
+
+    const update = () => {
+      const center = map.latLngToContainerPoint([centerLat, centerLng]);
+      const cosLat = Math.cos((centerLat * Math.PI) / 180) || 1e-9;
+      const edgeLng = centerLng + radiusM / 111320 / cosLat;
+      const edge = map.latLngToContainerPoint([centerLat, edgeLng]);
+      const radiusPx = Math.abs(edge.x - center.x);
+
+      sweepEl.style.left = `${center.x}px`;
+      sweepEl.style.top = `${center.y}px`;
+      sweepEl.style.width = `${radiusPx * 2}px`;
+      sweepEl.style.height = `${radiusPx * 2}px`;
+      sweepEl.style.opacity = radiusPx > 6 ? "1" : "0";
+    };
+
+    update();
+    map.on("move", update);
+    map.on("zoom", update);
+    map.on("moveend", update);
+    map.on("zoomend", update);
+
+    return () => {
+      map.off("move", update);
+      map.off("zoom", update);
+      map.off("moveend", update);
+      map.off("zoomend", update);
+    };
+  }, [centerLat, centerLng, radiusM, zoom]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -165,9 +199,22 @@ export function LeafletMap({
 
   return (
     <div
-      ref={containerRef}
-      className="relative h-full w-full"
+      className="relative h-full w-full overflow-hidden"
       style={{ touchAction: "none", background: "#F2EFE9", zIndex: 0 }}
-    />
+    >
+      <div ref={containerRef} className="absolute inset-0" />
+      <div
+        ref={sweepRef}
+        className="cromio-radar-sweep-wrapper"
+        style={{
+          position: "absolute",
+          pointerEvents: "none",
+          transform: "translate(-50%, -50%)",
+          zIndex: 450,
+        }}
+      >
+        <div className="cromio-radar-sweep" />
+      </div>
+    </div>
   );
 }
