@@ -28,7 +28,10 @@ export default function FavoritosPage() {
   const [rows, setRows] = useState<FavRow[]>([]);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<FavRow[]>([]);
-  const [loading, setLoading] = useState(false);
+  // Start in `loading` so the very first paint is the skeleton, not the
+  // "Aún no tienes favoritos" empty state. Otherwise navigating into the
+  // page flashes the empty card for ~1s while the favourites hook hydrates.
+  const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
 
   useEffect(() => {
@@ -212,7 +215,7 @@ export default function FavoritosPage() {
       )}
 
       <div className="mt-5 space-y-2">
-        {loading && rows.length === 0 ? (
+        {!loaded || (loading && rows.length === 0) ? (
           Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}

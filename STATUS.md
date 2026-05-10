@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 22:36 UTC** · branch `main`_
+_Last updated: **2026-05-10 22:45 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 311cd0c feat(cromo-card): big centered code + flag left + type pill right + red duplicates _(10 minutes ago)_
-- 1a7e2df feat(album): expand host_city cromos from 3 to 16 (#3) _(32 minutes ago)_
-- 677add3 feat(layout): ban gate before onboarding redirect _(36 minutes ago)_
-- e78167c chore(a11y+i18n): global focus-visible ring, tablist semantics, i18n keys _(45 minutes ago)_
-- f702e09 feat(wishlist): personal wishlist of wanted cromos _(48 minutes ago)_
-- d5ebde3 feat(legal): /sobre, /terminos, /privacidad pages + perfil links _(51 minutes ago)_
-- cb08a9c feat(profile): trade history page with ratings given and received _(53 minutes ago)_
-- bd9a237 feat(profile): sound toggle for in-app message toasts + bloqueos page _(54 minutes ago)_
-- 5dfcb29 feat(ux): Web Share API helper + spinners on chat actions _(58 minutes ago)_
-- f7101d6 feat(ux): empty states + stagger album + match skeleton + radar cardinals _(62 minutes ago)_
-- 80b612d fix(album): partition tabs by sticker type so totals add up to 980 (#2) _(74 minutes ago)_
-- 2af033c feat(album): rename header subtitle and simplify nearby-users banner (#1) _(82 minutes ago)_
-- a59d3d9 feat(ux): view transitions + pin entrance + richer empty states _(2 hours ago)_
-- 23e6d6f feat(pwa): offline shell + tile + asset caching in the service worker _(2 hours ago)_
-- abd0488 feat(chat): tappable cromo chips inline + preview sheet _(2 hours ago)_
+- 65e8834 feat(cromo-card): repe → full red card + position in bottom-right _(10 minutes ago)_
+- c4be251 Merge pull request #4 from ChristianFerrer/claude/admin-dashboard _(17 minutes ago)_
+- 0e438ef feat(nav): rename bottom-nav label Favoritos → Contactos (#5) _(19 minutes ago)_
+- 841d769 docs(claude): CLAUDE.md with project conventions for future sessions _(76 minutes ago)_
+- a4d4050 refactor(admin): split components, rename guards, drop hex literals _(77 minutes ago)_
+- 61f8950 feat(admin): audit log view, profile audit trigger, nightly events retention _(2 hours ago)_
+- c60174b feat(admin): dashboard — KPIs, time series, funnel and breakdowns _(2 hours ago)_
+- e772b85 feat(admin): user CRUD — list with filters, detail, ban / role / reset _(2 hours ago)_
+- 593d056 feat(analytics): events table + client tracker + business-event triggers _(2 hours ago)_
+- 708f0b6 feat(admin): role + guard + entry points + /banned scaffolding _(2 hours ago)_
+- 311cd0c feat(cromo-card): big centered code + flag left + type pill right + red duplicates _(20 minutes ago)_
+- 1a7e2df feat(album): expand host_city cromos from 3 to 16 (#3) _(42 minutes ago)_
+- 677add3 feat(layout): ban gate before onboarding redirect _(45 minutes ago)_
+- e78167c chore(a11y+i18n): global focus-visible ring, tablist semantics, i18n keys _(55 minutes ago)_
+- f702e09 feat(wishlist): personal wishlist of wanted cromos _(58 minutes ago)_
 <!-- AUTO:COMMITS:END -->

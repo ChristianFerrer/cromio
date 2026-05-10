@@ -245,7 +245,22 @@ export default function MapaPage() {
               ))}
             </>
           )}
-          {users.length === 0 && (
+          {usersLoading && users.length === 0 ? (
+            <div className="mt-2 space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-3 rounded-md border border-line bg-white p-3"
+                >
+                  <div className="h-11 w-11 shrink-0 animate-pulse rounded-full bg-paper" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-24 animate-pulse rounded bg-paper" />
+                    <div className="h-3 w-40 animate-pulse rounded bg-paper" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : users.length === 0 ? (
             <div className="mt-4 flex flex-col items-center rounded-2xl border border-line bg-gradient-to-b from-paper to-bone px-6 py-10 text-center">
               <div className="grid h-14 w-14 place-items-center rounded-full bg-green-100 text-green-700">
                 <List size={22} strokeWidth={2.2} />
@@ -261,7 +276,7 @@ export default function MapaPage() {
                 Añadir cromos
               </Link>
             </div>
-          )}
+          ) : null}
         </div>
       )}
 

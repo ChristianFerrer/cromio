@@ -25,7 +25,11 @@ export function useNearbyUsers(radiusM: number) {
   const { user, loading: authLoading } = useUser();
   const [users, setUsers] = useState<NearbyUser[]>([]);
   const [center, setCenter] = useState<[number, number]>(BARCELONA_EIXAMPLE);
-  const [loading, setLoading] = useState(false);
+  // Start `loading=true` so consumers can show their skeleton on the very
+  // first paint and never flash an empty state before the first fetch
+  // resolves. We flip it to false only once a fetch completes (or auth
+  // is known to be missing).
+  const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const refresh = useCallback(() => {
@@ -33,7 +37,11 @@ export function useNearbyUsers(radiusM: number) {
   }, []);
 
   useEffect(() => {
-    if (authLoading || !user) {
+    // While auth is still resolving, keep loading=true so consumers
+    // don't paint an empty state in the gap. Only flip to false when
+    // we positively know there is no user.
+    if (authLoading) return;
+    if (!user) {
       setUsers([]);
       setCenter(BARCELONA_EIXAMPLE);
       setLoading(false);
