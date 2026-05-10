@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 21:42 UTC** · branch `main`_
+_Last updated: **2026-05-10 21:43 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 5dfcb29 feat(ux): Web Share API helper + spinners on chat actions _(3 minutes ago)_
-- f7101d6 feat(ux): empty states + stagger album + match skeleton + radar cardinals _(8 minutes ago)_
-- 80b612d fix(album): partition tabs by sticker type so totals add up to 980 (#2) _(20 minutes ago)_
-- 2af033c feat(album): rename header subtitle and simplify nearby-users banner (#1) _(28 minutes ago)_
-- a59d3d9 feat(ux): view transitions + pin entrance + richer empty states _(61 minutes ago)_
-- 23e6d6f feat(pwa): offline shell + tile + asset caching in the service worker _(64 minutes ago)_
-- abd0488 feat(chat): tappable cromo chips inline + preview sheet _(66 minutes ago)_
-- 208aa32 feat(moderation): block + report users + hide blocked across surfaces _(69 minutes ago)_
+- bd9a237 feat(profile): sound toggle for in-app message toasts + bloqueos page _(81 seconds ago)_
+- 5dfcb29 feat(ux): Web Share API helper + spinners on chat actions _(5 minutes ago)_
+- f7101d6 feat(ux): empty states + stagger album + match skeleton + radar cardinals _(9 minutes ago)_
+- 80b612d fix(album): partition tabs by sticker type so totals add up to 980 (#2) _(21 minutes ago)_
+- 2af033c feat(album): rename header subtitle and simplify nearby-users banner (#1) _(29 minutes ago)_
+- a59d3d9 feat(ux): view transitions + pin entrance + richer empty states _(62 minutes ago)_
+- 23e6d6f feat(pwa): offline shell + tile + asset caching in the service worker _(65 minutes ago)_
+- abd0488 feat(chat): tappable cromo chips inline + preview sheet _(67 minutes ago)_
+- 208aa32 feat(moderation): block + report users + hide blocked across surfaces _(70 minutes ago)_
 - ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(2 hours ago)_
 - 68f4856 feat(brand): green palette anchored on logo + new teal palette _(2 hours ago)_
 - 49c98b9 feat(brand): cromio_bg.png as the app logo across favicon + headers _(2 hours ago)_
 - d023680 Add files via upload _(2 hours ago)_
-- c0cfeab fix(mapa): radar above tiles, dot + pins above radar _(2 hours ago)_
+- c0cfeab fix(mapa): radar above tiles, dot + pins above radar _(3 hours ago)_
 - d724c58 feat(mapa): radar to background z-index + teardrop pins _(3 hours ago)_
-- e7d4768 feat(mapa): Whistle-style radar — minimal scope + recenter button _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->

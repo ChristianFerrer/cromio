@@ -124,6 +124,13 @@ export default async function PerfilPage() {
 
       <section className="mt-5 divide-y divide-line rounded-md border border-line bg-white">
         <Link
+          href="/perfil/intercambios"
+          className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm"
+        >
+          <span>Mis intercambios</span>
+          <ChevronRight size={16} className="text-text-2" />
+        </Link>
+        <Link
           href="/perfil/bloqueos"
           className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm"
         >
