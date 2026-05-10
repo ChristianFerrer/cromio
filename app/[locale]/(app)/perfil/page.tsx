@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Crown, ChevronRight, LogOut, Pencil } from "lucide-react";
+import { Crown, LogOut, Pencil } from "lucide-react";
 import { TOTAL_STICKERS } from "@/lib/data/stickers";
 import { signOut } from "@/lib/auth/actions";
 import { Btn } from "@/components/ui/Btn";
@@ -121,30 +121,6 @@ export default async function PerfilPage() {
       </section>
 
       <ProfileSettings />
-
-      <section className="mt-5 divide-y divide-line rounded-md border border-line bg-white">
-        <Link
-          href="/perfil/editar"
-          className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm"
-        >
-          <span>Datos personales</span>
-          <ChevronRight size={16} className="text-text-2" />
-        </Link>
-        {[
-          "Privacidad",
-          "Términos y condiciones",
-          "Sobre Cromio",
-        ].map((item) => (
-          <button
-            key={item}
-            className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm opacity-60"
-            disabled
-          >
-            <span>{item}</span>
-            <ChevronRight size={16} className="text-text-2" />
-          </button>
-        ))}
-      </section>
 
       <form action={signOut}>
         <button

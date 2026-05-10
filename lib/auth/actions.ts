@@ -66,6 +66,20 @@ export async function signOut() {
   redirect("/login");
 }
 
+export async function requestPasswordReset(formData: FormData): Promise<AuthResult> {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  if (!email) return { error: "Introduce tu email." };
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: process.env.NEXT_PUBLIC_SITE_URL
+      ? `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/perfil/editar`
+      : undefined,
+  });
+  if (error) return { error: friendlyError(error.message) };
+  return {};
+}
+
 function friendlyError(message: string): string {
   const m = message.toLowerCase();
   if (m.includes("invalid login credentials")) return "Email o contraseña incorrectos.";

@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 17:12 UTC** · branch `main`_
+_Last updated: **2026-05-10 17:17 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -63,36 +63,45 @@ Generate VAPID keys with `npx web-push generate-vapid-keys --json`.
 
 ## What works
 
-- Auth (email + Google), automatic locale (es/en). All `(app)` routes
-  hard-redirect to `/login` when anonymous, and to `/onboarding` when
-  the profile has no `home_location`. No demo data anywhere.
-- Onboarding (location → identity → favorite team → first cromos),
-  saving alias, display name, color and `home_location` in one shot.
-- Profile: real avatar (or color disc), rating, trades_count, album
-  stats. `/perfil/editar` updates alias / display_name / color and
-  uploads avatar to a Supabase Storage `avatars` bucket (public read,
-  owner-scoped writes). Push toggle on /perfil for per-device control.
-- Album: load + adjust counts, persisted in `user_stickers` with
-  optimistic UI; banner derived from a real `find_nearby_users` call.
-- Mapa: Leaflet map with radar sweep, real-time nearby collectors,
-  rotating tile cache, hyperlocal banner at 200m radius. Auto-saves
-  device GPS to `profiles.home_location` (50m debounce).
+- Auth (email + Google), `/login/recuperar` for password reset, dynamic
+  `<html lang>` from the locale. All `(app)` routes redirect to
+  `/login` when anonymous and `/onboarding` when the profile has no
+  `home_location`. No demo data anywhere.
+- Onboarding: 4-step wizard with a Stepper ("Paso N de 4" + progress
+  bar + back button). Location step never falls back silently — on
+  permission denied / timeout it shows an inline warning, offers
+  Reintentar plus a curated city picker.
+- Identity / editar: alias is validated inline (regex feedback,
+  aria-invalid, red border) and the unique-violation surfaces as
+  `alias_taken`. Editar warns on unsaved-changes exit and disables
+  Save until something actually changed.
+- Profile: real avatar / color disc, rating, trades_count, album
+  stats. Storage `avatars` bucket. Push toggle per device.
+- Album: header Search opens AddCromoSheet; FAB does the same. No
+  more `window.prompt`. Filter chip "Repetidas" sums extras.
+- Mapa: Leaflet + radar sweep, real-time nearby collectors, GPS
+  auto-save with 50m debounce, dismissible warning banners.
 - Chat: WhatsApp-style ticks (clock → ✓✓ gray → ✓✓ blue), day
-  separators, message grouping, optimistic send, Realtime INSERT +
-  UPDATE listeners with refetch on focus / interval safety net.
-- Chat states: meeting proposals (place + time), Aceptar/Rechazar
-  banner, "Hecho" → completed, ★1–5 rating sheet. `chat_ratings`
-  + trigger keep `profiles.rating` and `profiles.trades_count` live.
-- Favoritos: real profile lookups, alias search, distance + match
-  counts via `find_nearby_users`.
+  separators, optimistic send, Realtime INSERT + UPDATE + chats
+  state. Input is a textarea with auto-grow + Enter submits.
+- Match → Chat: selecting cromos in /match/[id] is now stitched into
+  a draft message that prefills the chat input on first load.
+- Chat states: meeting proposals (place + time), Aceptar/Rechazar,
+  "Hecho" → completed, ★1–5 rating sheet (defaults to 0, blocks
+  send until ≥1). `chat_ratings` + trigger keep
+  `profiles.rating` and `trades_count` live.
+- Favoritos: server-side `user_favorites` table, search debounced
+  with %/_ escaped, alias + display_name match.
 - Notifications: in-app toasts (messages, matches/leads, generic
-  success/error/info via `pushAppToast`), red badges in BottomNav
-  (chat + mapa). Skeletons on /chat, /chat/[id] and /perfil.
-- Web Push: full pipeline (VAPID, `/sw.js`, `push_subscriptions`
-  table, `sendMessage` and meeting actions trigger pushes).
-- Install banner: iOS Safari → "Añadir a pantalla de inicio"
-  instructions, Chromium → `beforeinstallprompt` button. Manifest
-  declares shortcuts for /mapa, /album, /chat.
+  success/error/info via `pushAppToast`), red badges in nav.
+  Per-route `error.tsx` with Reintentar + Volver al álbum.
+- Web Push pipeline (VAPID + `/sw.js` + `push_subscriptions`),
+  install banner (iOS instructions / Chromium prompt).
+- Responsive shell: mobile keeps the 430px column with BottomNav,
+  md+ shows a sticky SideNav and widens content to 760.
+- Accessibility: viewport allows pinch-zoom (WCAG 1.4.4),
+  `text-mute` bumped to AA contrast, every icon-only control has an
+  aria-label via the shared `IconBtn` primitive.
 
 ## What is still pending
 
@@ -104,6 +113,8 @@ Generate VAPID keys with `npx web-push generate-vapid-keys --json`.
 - Per-cromo deep-link from a map pin into chat with preview.
 - Report / block flow for users.
 - View Transitions API for route changes.
+- Privacy / Terms / About pages (currently hidden from /perfil
+  until they exist).
 
 ## How this file stays current
 
@@ -121,19 +132,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 1bfea47 feat(onboarding): stepper, back button, real location flow, inline alias _(5 minutes ago)_
-- 67cf293 feat(album): real Search header + AddCromoSheet replaces window.prompt _(7 minutes ago)_
-- 87e28a7 refactor(design): shared color tokens, IconBtn primitive, drop hex literals _(9 minutes ago)_
-- 73f72b6 feat(a11y+responsive): unblock zoom, dynamic html lang, sidebar at md+ _(13 minutes ago)_
-- 6ba0c4d feat(onboarding): album-style picker + Repetidas chip sums extras _(53 minutes ago)_
-- b27b46e fix(album): show total duplicates as Repetidas _(72 minutes ago)_
-- 5514dea fix(push): TDZ crash on permission grant + friendly error toasts _(82 minutes ago)_
-- e500ad1 fix(favoritos): server-side favorites in user_favorites + UX _(87 minutes ago)_
+- 55121af feat(chat+match): selection handoff, textarea, 0-star rate, day labels _(5 minutes ago)_
+- 1bfea47 feat(onboarding): stepper, back button, real location flow, inline alias _(10 minutes ago)_
+- 67cf293 feat(album): real Search header + AddCromoSheet replaces window.prompt _(12 minutes ago)_
+- 87e28a7 refactor(design): shared color tokens, IconBtn primitive, drop hex literals _(14 minutes ago)_
+- 73f72b6 feat(a11y+responsive): unblock zoom, dynamic html lang, sidebar at md+ _(18 minutes ago)_
+- 6ba0c4d feat(onboarding): album-style picker + Repetidas chip sums extras _(58 minutes ago)_
+- b27b46e fix(album): show total duplicates as Repetidas _(76 minutes ago)_
+- 5514dea fix(push): TDZ crash on permission grant + friendly error toasts _(87 minutes ago)_
+- e500ad1 fix(favoritos): server-side favorites in user_favorites + UX _(2 hours ago)_
 - 506976b feat(pwa): install banner (iOS + Chromium) + manifest shortcuts _(2 hours ago)_
 - 463fea7 feat(chat): meeting proposals + rating after trade _(2 hours ago)_
 - 3a74e7b feat(ux): global toast bus + skeleton loaders _(2 hours ago)_
 - 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(2 hours ago)_
 - edbaace feat(onboarding): identity step + redirect when home_location is null _(2 hours ago)_
 - bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(2 hours ago)_
-- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->

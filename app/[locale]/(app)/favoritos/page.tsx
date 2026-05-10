@@ -111,11 +111,14 @@ export default function FavoritosPage() {
 
     setSearching(true);
     let cancelled = false;
+    // Escape % and _ so a literal % typed by the user doesn't expand
+    // into a wildcard. Postgres uses \ as the escape char by default.
+    const escaped = trimmed.replace(/[\\%_]/g, (c) => `\\${c}`);
     const t = setTimeout(async () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("id, alias, display_name, color, rating, trades_count, plan")
-        .or(`alias.ilike.%${trimmed}%,display_name.ilike.%${trimmed}%`)
+        .or(`alias.ilike.%${escaped}%,display_name.ilike.%${escaped}%`)
         .neq("id", user.id)
         .limit(15);
       if (cancelled) return;

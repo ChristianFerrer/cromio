@@ -1,13 +1,13 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
-import Link from "next/link";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Camera, Check, Loader2, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { updateProfile } from "@/lib/profile/actions";
 import { pushAppToast } from "@/lib/notifications/toast";
 import { Btn } from "@/components/ui/Btn";
+import { IconBtn } from "@/components/ui/IconBtn";
 
 const COLORS = [
   "#1FAE5A",
@@ -49,6 +49,32 @@ export function EditProfileForm({
 
   const aliasNorm = alias.trim().toLowerCase();
   const aliasValid = ALIAS_RE.test(aliasNorm);
+  const aliasTouched = alias.length > 0;
+
+  const dirty =
+    aliasNorm !== initial.alias ||
+    displayName.trim() !== initial.display_name.trim() ||
+    color !== initial.color ||
+    avatarUrl !== initial.avatar_url;
+
+  // Warn on hard navigation away with unsaved changes.
+  useEffect(() => {
+    if (!dirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty]);
+
+  const goBack = () => {
+    if (dirty && !window.confirm("Tienes cambios sin guardar. ¿Salir igualmente?")) {
+      return;
+    }
+    if (window.history.length > 1) router.back();
+    else router.push("/perfil");
+  };
 
   const handleFile = async (file: File) => {
     setError(null);
@@ -119,12 +145,9 @@ export function EditProfileForm({
   return (
     <main className="flex min-h-dvh flex-col px-5 pb-10 pt-14">
       <div className="flex items-center gap-2">
-        <Link
-          href="/perfil"
-          className="grid h-9 w-9 place-items-center rounded-md border border-line bg-white"
-        >
+        <IconBtn ariaLabel="Atrás" onClick={goBack}>
           <ChevronLeft size={18} strokeWidth={2} />
-        </Link>
+        </IconBtn>
         <h1 className="font-display text-2xl">Editar perfil</h1>
       </div>
 
@@ -185,13 +208,21 @@ export function EditProfileForm({
           </span>
           <input
             value={alias}
-            onChange={(e) => setAlias(e.target.value)}
+            onChange={(e) => setAlias(e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))}
             placeholder="alias_22"
             maxLength={24}
-            className="mt-1 h-11 w-full rounded-md border border-line bg-white px-3.5 text-sm outline-none focus:border-green-500"
+            autoComplete="username"
+            aria-invalid={aliasTouched && !aliasValid}
+            className={`mt-1 h-11 w-full rounded-md border bg-white px-3.5 text-sm outline-none focus:border-green-500 ${
+              aliasTouched && !aliasValid ? "border-red-400" : "border-line"
+            }`}
           />
-          <span className="mt-1 block text-[11px] text-text-2">
-            3-24 caracteres. Solo letras, números y _.
+          <span
+            className={`mt-1 block text-[11px] ${
+              aliasTouched && !aliasValid ? "text-red-600" : "text-text-2"
+            }`}
+          >
+            3 a 24 caracteres. Solo minúsculas, números y _.
           </span>
         </label>
 
@@ -248,7 +279,7 @@ export function EditProfileForm({
           kind="primaryVibrant"
           full
           size="lg"
-          disabled={pending || uploading}
+          disabled={pending || uploading || !dirty || !aliasValid}
           onClick={save}
         >
           {pending ? "Guardando…" : "Guardar cambios"}
