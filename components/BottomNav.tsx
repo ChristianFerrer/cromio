@@ -23,6 +23,13 @@ export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations("nav");
 
+  // Hide on chat detail (/chat/[id]) and match detail (/match/[id]) so the
+  // input / sticky CTA can sit at the bottom of the viewport.
+  const hide =
+    /^\/(?:[a-z]{2}\/)?chat\/[^/]+/.test(pathname) ||
+    /^\/(?:[a-z]{2}\/)?match\/[^/]+/.test(pathname);
+  if (hide) return null;
+
   return (
     <nav
       aria-label="Primary"
