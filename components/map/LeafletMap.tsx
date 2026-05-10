@@ -29,6 +29,7 @@ export function LeafletMap({
   const userMarkersRef = useRef<L.Marker[]>([]);
   const sweepRef = useRef<HTMLDivElement | null>(null);
   const pulseRef = useRef<HTMLDivElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
   const programmaticMoveRef = useRef(false);
 
   useEffect(() => {
@@ -78,7 +79,8 @@ export function LeafletMap({
     const map = mapRef.current;
     const sweepEl = sweepRef.current;
     const pulseEl = pulseRef.current;
-    if (!map || !sweepEl || !pulseEl) return;
+    const gridEl = gridRef.current;
+    if (!map || !sweepEl || !pulseEl || !gridEl) return;
 
     const update = () => {
       const center = map.latLngToContainerPoint([centerLat, centerLng]);
@@ -87,18 +89,15 @@ export function LeafletMap({
       const edge = map.latLngToContainerPoint([centerLat, edgeLng]);
       const radiusPx = Math.abs(edge.x - center.x);
       const diameter = radiusPx * 2;
+      const visible = radiusPx > 6 ? "1" : "0";
 
-      sweepEl.style.left = `${center.x}px`;
-      sweepEl.style.top = `${center.y}px`;
-      sweepEl.style.width = `${diameter}px`;
-      sweepEl.style.height = `${diameter}px`;
-      sweepEl.style.opacity = radiusPx > 6 ? "1" : "0";
-
-      pulseEl.style.left = `${center.x}px`;
-      pulseEl.style.top = `${center.y}px`;
-      pulseEl.style.width = `${diameter}px`;
-      pulseEl.style.height = `${diameter}px`;
-      pulseEl.style.opacity = radiusPx > 6 ? "1" : "0";
+      for (const el of [sweepEl, pulseEl, gridEl]) {
+        el.style.left = `${center.x}px`;
+        el.style.top = `${center.y}px`;
+        el.style.width = `${diameter}px`;
+        el.style.height = `${diameter}px`;
+        el.style.opacity = visible;
+      }
     };
 
     update();
@@ -219,8 +218,92 @@ export function LeafletMap({
           zIndex: 440,
         }}
       >
+        <div className="cromio-radar-tint" />
         <div className="cromio-radar-pulse" />
         <div className="cromio-radar-pulse cromio-radar-pulse--late" />
+      </div>
+      <div
+        ref={gridRef}
+        aria-hidden
+        style={{
+          position: "absolute",
+          pointerEvents: "none",
+          transform: "translate(-50%, -50%)",
+          zIndex: 445,
+        }}
+      >
+        <svg
+          viewBox="0 0 100 100"
+          width="100%"
+          height="100%"
+          preserveAspectRatio="xMidYMid meet"
+        >
+          <defs>
+            <clipPath id="cromio-radar-grid-clip">
+              <circle cx="50" cy="50" r="50" />
+            </clipPath>
+          </defs>
+          <g
+            clipPath="url(#cromio-radar-grid-clip)"
+            stroke="rgba(17,124,78,0.55)"
+            fill="none"
+          >
+            {/* Concentric range rings (25% / 50% / 75% of radius) */}
+            <circle cx="50" cy="50" r="12.5" strokeWidth="0.35" strokeDasharray="0.8 1.4" />
+            <circle cx="50" cy="50" r="25" strokeWidth="0.35" strokeDasharray="0.8 1.4" />
+            <circle cx="50" cy="50" r="37.5" strokeWidth="0.4" strokeDasharray="1 1.6" />
+            {/* Cardinal crosshair (N-S, E-W) */}
+            <line x1="50" y1="0" x2="50" y2="100" strokeWidth="0.4" />
+            <line x1="0" y1="50" x2="100" y2="50" strokeWidth="0.4" />
+            {/* Diagonal axes (lighter) */}
+            <line
+              x1="14.6"
+              y1="14.6"
+              x2="85.4"
+              y2="85.4"
+              strokeWidth="0.3"
+              opacity="0.55"
+            />
+            <line
+              x1="85.4"
+              y1="14.6"
+              x2="14.6"
+              y2="85.4"
+              strokeWidth="0.3"
+              opacity="0.55"
+            />
+            {/* Cardinal tick marks at the outer ring */}
+            {([
+              [50, 1.5, "N"],
+              [98.5, 50, "E"],
+              [50, 98.5, "S"],
+              [1.5, 50, "O"],
+            ] as Array<[number, number, string]>).map(([cx, cy, label]) => (
+              <circle
+                key={label}
+                cx={cx}
+                cy={cy}
+                r="0.9"
+                fill="rgba(17,124,78,0.85)"
+                stroke="none"
+              />
+            ))}
+          </g>
+          {/* Cardinal labels (N/E/S/O) */}
+          <g
+            fontFamily="var(--font-bebas), system-ui"
+            fontSize="3.6"
+            fill="rgba(17,124,78,0.7)"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            letterSpacing="0.3"
+          >
+            <text x="50" y="4.8">N</text>
+            <text x="95.2" y="50">E</text>
+            <text x="50" y="95.2">S</text>
+            <text x="4.8" y="50">O</text>
+          </g>
+        </svg>
       </div>
       <div
         ref={sweepRef}
@@ -233,6 +316,7 @@ export function LeafletMap({
         }}
       >
         <div className="cromio-radar-sweep" />
+        <div className="cromio-radar-arm" />
       </div>
     </div>
   );
