@@ -37,28 +37,59 @@ export default function MapaPage() {
     lead: leads.length,
   };
 
+  const [mapError, setMapError] = useState<string | null>(null);
+
   useEffect(() => {
     if (view !== "map" || !containerRef.current || mapRef.current) return;
     const styleUrl =
-      process.env.NEXT_PUBLIC_MAP_STYLE_URL ?? "https://tiles.openfreemap.org/styles/positron";
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: styleUrl,
-      center,
-      zoom: 14,
-      attributionControl: { compact: true },
+      process.env.NEXT_PUBLIC_MAP_STYLE_URL ??
+      "https://tiles.openfreemap.org/styles/positron";
+
+    let map: MapLibreMap;
+    try {
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style: styleUrl,
+        center,
+        zoom: 14,
+        attributionControl: { compact: true },
+        failIfMajorPerformanceCaveat: false,
+      });
+    } catch (err) {
+      console.error("[cromio] MapLibre init failed:", err);
+      setMapError(err instanceof Error ? err.message : "map_init_failed");
+      return;
+    }
+
+    map.on("error", (e) => {
+      console.error("[cromio] MapLibre runtime error:", e);
+      if (!mapRef.current) return;
+      setMapError(
+        (e as { error?: { message?: string } })?.error?.message ?? "tiles_failed",
+      );
     });
+    map.on("load", () => {
+      setMapError(null);
+      map.resize();
+    });
+
     mapRef.current = map;
     return () => {
       map.remove();
       mapRef.current = null;
     };
-  }, [view, center]);
+  }, [view]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    map.easeTo({ center, duration: 600 });
+    if (map.loaded()) {
+      map.easeTo({ center, duration: 600 });
+    } else {
+      map.once("load", () => {
+        map.easeTo({ center, duration: 0 });
+      });
+    }
   }, [center]);
 
   useEffect(() => {
@@ -123,7 +154,19 @@ export default function MapaPage() {
     <main className="absolute inset-0 overflow-hidden">
       {view === "map" && (
         <>
-          <div ref={containerRef} className="absolute inset-0" />
+          <div
+            ref={containerRef}
+            className="absolute inset-0 bg-[#EFEDE3]"
+          />
+          {mapError && (
+            <div className="absolute inset-x-6 top-44 z-30 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+              <p className="font-semibold">Mapa no disponible</p>
+              <p className="mt-1 leading-snug">
+                No se pudieron cargar los tiles. Verifica tu conexión o desactiva el modo
+                de bajo consumo.
+              </p>
+            </div>
+          )}
           <RadarOverlay />
         </>
       )}
