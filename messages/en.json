@@ -4,7 +4,8 @@
     "mapa": "Map",
     "favoritos": "Favorites",
     "chat": "Chats",
-    "perfil": "Profile"
+    "perfil": "Profile",
+    "admin": "Admin"
   },
   "common": {
     "appName": "Cromio",
@@ -46,5 +47,131 @@
     "block": "Block",
     "unblock": "Unblock",
     "report": "Report"
+  },
+  "admin": {
+    "title": "Administration",
+    "entryTitle": "Admin panel",
+    "entrySubtitle": "Metrics, users and audit log",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "audit": "Audit"
+    },
+    "range": {
+      "label": "Range",
+      "24h": "24 h",
+      "7d": "7 d",
+      "30d": "30 d",
+      "90d": "90 d",
+      "all": "All"
+    },
+    "kpi": {
+      "totalUsers": "Total users",
+      "dau": "DAU",
+      "wau": "WAU",
+      "mau": "MAU",
+      "completedTrades": "Completed trades",
+      "avgRating": "Average rating",
+      "pushOptIn": "Push opt-in",
+      "openReports": "Open reports"
+    },
+    "charts": {
+      "signups": "New signups",
+      "pageViews": "Page views",
+      "sessions": "Sessions",
+      "messages": "Messages sent",
+      "trades": "Completed trades",
+      "countries": "Top countries",
+      "funnel": "Funnel",
+      "devices": "Devices",
+      "retention": "Retention (cohorts)",
+      "topWanted": "Top wanted stickers",
+      "topSpare": "Top spare stickers",
+      "radii": "Radius distribution",
+      "ratings": "Ratings histogram"
+    },
+    "users": {
+      "title": "Users",
+      "search": "Search by alias, name or email",
+      "filters": "Filters",
+      "filter": {
+        "plan": "Plan",
+        "any": "All",
+        "free": "Free",
+        "pro": "Pro",
+        "banned": "Banned",
+        "active": "Active",
+        "hasLocation": "Has location",
+        "noLocation": "No location",
+        "admins": "Admins only"
+      },
+      "sort": {
+        "label": "Sort by",
+        "createdAt": "Sign-up date",
+        "lastActivity": "Last activity",
+        "rating": "Rating",
+        "tradesCount": "Trades"
+      },
+      "columns": {
+        "user": "User",
+        "email": "Email",
+        "plan": "Plan",
+        "rating": "Rating",
+        "trades": "Trades",
+        "lastSeen": "Last seen",
+        "createdAt": "Created",
+        "status": "Status"
+      },
+      "empty": "No users for the active filters",
+      "actions": {
+        "view": "View",
+        "edit": "Edit",
+        "ban": "Ban",
+        "unban": "Unban",
+        "forceSignOut": "Force sign-out",
+        "sendReset": "Send password reset",
+        "promote": "Promote to admin",
+        "demote": "Demote admin",
+        "exportData": "Export data (GDPR)"
+      },
+      "detail": {
+        "back": "Back",
+        "summary": "Summary",
+        "activity": "Activity",
+        "metrics": "Metrics",
+        "danger": "Danger zone",
+        "banReasonLabel": "Ban reason",
+        "banReasonPlaceholder": "Shown to the user on the ban screen",
+        "confirmBan": "Confirm ban",
+        "confirmUnban": "Lift ban",
+        "confirmForceSignOut": "Sign out all sessions",
+        "confirmReset": "Send recovery email",
+        "saveChanges": "Save changes",
+        "noChanges": "No changes"
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "empty": "No audit events yet",
+      "columns": {
+        "when": "When",
+        "actor": "Admin",
+        "action": "Action",
+        "target": "Target"
+      }
+    },
+    "errors": {
+      "notAdmin": "You don't have admin permissions",
+      "selfDemote": "You can't remove your own admin role",
+      "selfBan": "You can't ban yourself",
+      "generic": "Something failed. Check the console."
+    }
+  },
+  "banned": {
+    "title": "Your account is suspended",
+    "subtitle": "You no longer have access to Cromio.",
+    "reasonLabel": "Reason:",
+    "contact": "If you think this is a mistake, write to soporte@cromio.app",
+    "signOut": "Sign out"
   }
 }
