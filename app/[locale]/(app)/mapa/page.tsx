@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, MapIcon, List, Lock, RefreshCw } from "lucide-react";
+import { Search, MapIcon, List, Lock, RefreshCw, X } from "lucide-react";
 import Link from "next/link";
 import { useNearbyUsers } from "@/hooks/useNearbyUsers";
 import { useDeviceLocation } from "@/hooks/useDeviceLocation";
@@ -18,6 +18,15 @@ export default function MapaPage() {
   const [radius, setRadius] = useState(1000);
   const [view, setView] = useState<"map" | "list">("map");
   const [listFilter, setListFilter] = useState<"all" | "match" | "lead">("all");
+  const [bannersHidden, setBannersHidden] = useState({
+    location: false,
+    empty: false,
+  });
+  // Re-show the empty banner whenever the radius changes (the message
+  // depends on radius so dismissing for 200m shouldn't hide it for 5km).
+  useEffect(() => {
+    setBannersHidden((b) => ({ ...b, empty: false }));
+  }, [radius]);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [mapDims, setMapDims] = useState<{ w: number; h: number }>({
     w: 0,
@@ -93,13 +102,23 @@ export default function MapaPage() {
         </div>
       )}
 
-      {view === "map" && device.permissionDenied && (
-        <div className="absolute left-3 right-3 top-28 z-30 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 shadow-sh2">
-          <p className="font-semibold">Ubicación bloqueada</p>
-          <p className="mt-1 leading-snug">
-            Activa la ubicación en Ajustes → Safari → Ubicación para que el mapa te
-            siga en vivo. Mientras tanto centramos en tu zona guardada.
-          </p>
+      {view === "map" && device.permissionDenied && !bannersHidden.location && (
+        <div className="absolute left-3 right-3 top-28 z-30 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 shadow-sh2">
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold">Ubicación bloqueada</p>
+            <p className="mt-1 leading-snug">
+              Activa la ubicación en Ajustes → Safari → Ubicación para que el mapa te
+              siga en vivo. Mientras tanto centramos en tu zona guardada.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setBannersHidden((b) => ({ ...b, location: true }))}
+            aria-label="Cerrar aviso"
+            className="grid h-6 w-6 shrink-0 place-items-center rounded text-amber-900/70 hover:bg-amber-100"
+          >
+            <X size={14} strokeWidth={2.2} />
+          </button>
         </div>
       )}
 
@@ -107,14 +126,25 @@ export default function MapaPage() {
         isAuthenticated &&
         !usersLoading &&
         users.length === 0 &&
-        !device.permissionDenied && (
-          <div className="absolute left-3 right-3 top-28 z-30 rounded-md border border-line bg-white/95 p-3 text-xs text-text-2 shadow-sh2 backdrop-blur">
-            <p className="font-semibold text-text">
-              Sin coleccionistas en {radius >= 1000 ? `${radius / 1000} km` : `${radius} m`}
-            </p>
-            <p className="mt-1 leading-snug">
-              Amplía el radio en el slider de abajo o invita a un amigo a Cromio.
-            </p>
+        !device.permissionDenied &&
+        !bannersHidden.empty && (
+          <div className="absolute left-3 right-3 top-28 z-30 flex items-start gap-2 rounded-md border border-line bg-white/95 p-3 text-xs text-text-2 shadow-sh2 backdrop-blur">
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-text">
+                Sin coleccionistas en {radius >= 1000 ? `${radius / 1000} km` : `${radius} m`}
+              </p>
+              <p className="mt-1 leading-snug">
+                Amplía el radio en el slider de abajo o invita a un amigo a Cromio.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setBannersHidden((b) => ({ ...b, empty: true }))}
+              aria-label="Cerrar aviso"
+              className="grid h-6 w-6 shrink-0 place-items-center rounded text-text-2 hover:bg-paper"
+            >
+              <X size={14} strokeWidth={2.2} />
+            </button>
           </div>
         )}
 

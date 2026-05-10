@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useEffect, useMemo, useState, useTransition } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChevronLeft, MessageCircle, Flag as FlagIcon } from "lucide-react";
 import { STICKERS_BY_N } from "@/lib/data/stickers";
 import { buildMatch, fmtDistance } from "@/lib/matches";
@@ -14,6 +14,7 @@ import { createClient } from "@/lib/supabase/client";
 import { CROMIO_COLORS } from "@/lib/design/colors";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { Btn } from "@/components/ui/Btn";
+import { IconBtn } from "@/components/ui/IconBtn";
 import { Badge } from "@/components/ui/Badge";
 
 type ProfileLite = {
@@ -37,6 +38,7 @@ export default function MatchDetailPage({
   const { userId } = use(params);
   const isUuid = UUID_RE.test(userId);
 
+  const router = useRouter();
   const { collection } = useCollection();
   const { has, toggle } = useFavorites();
   const { user: me } = useUser();
@@ -187,26 +189,29 @@ export default function MatchDetailPage({
   return (
     <main className="flex min-h-dvh flex-col pb-24">
       <div className="flex items-center justify-between px-3 pt-14">
-        <Link
-          href="/mapa"
-          className="grid h-9 w-9 place-items-center rounded-md border border-line bg-white"
+        <IconBtn
+          ariaLabel="Atrás"
+          onClick={() => {
+            if (window.history.length > 1) router.back();
+            else router.push("/mapa");
+          }}
         >
           <ChevronLeft size={18} strokeWidth={2} />
-        </Link>
+        </IconBtn>
         <span className="font-display text-2xl uppercase tracking-wider">
           {kindLabel}
         </span>
-        <button
+        <IconBtn
+          ariaLabel={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
           onClick={() => toggle(profile.id)}
-          className="grid h-9 w-9 place-items-center rounded-md border border-line bg-white"
-          aria-label={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
         >
           <FlagIcon
             size={16}
             strokeWidth={2}
             className={isFav ? "text-green-700" : ""}
+            fill={isFav ? "currentColor" : "none"}
           />
-        </button>
+        </IconBtn>
       </div>
 
       <section className="mt-3 flex flex-col items-center px-5 pb-4">
@@ -283,7 +288,7 @@ export default function MatchDetailPage({
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
         <Btn
           kind="primaryVibrant"
           full
@@ -291,8 +296,25 @@ export default function MatchDetailPage({
           disabled={chatPending}
           icon={<MessageCircle size={18} strokeWidth={2} />}
           onClick={() => {
+            const youList = [...youSel].sort((a, b) => a - b);
+            const theyList = [...theySel].sort((a, b) => a - b);
+            const draftLines: string[] = [];
+            if (youList.length > 0) {
+              draftLines.push(
+                `Hola! Me interesan tus cromos: ${youList.map((n) => `#${n}`).join(", ")}.`,
+              );
+            }
+            if (theyList.length > 0) {
+              draftLines.push(
+                `A cambio te ofrezco: ${theyList.map((n) => `#${n}`).join(", ")}.`,
+              );
+            }
+            const draftText = draftLines.join(" ");
+            const draftQuery = draftText
+              ? `draft=${encodeURIComponent(draftText)}`
+              : undefined;
             startChatTransition(async () => {
-              await startChatWith(profile.id);
+              await startChatWith(profile.id, draftQuery);
             });
           }}
         >

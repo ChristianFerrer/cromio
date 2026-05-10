@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { sendPushToUser } from "@/lib/push/server";
 
-export async function startChatWith(userId: string) {
+export async function startChatWith(userId: string, draftQuery?: string) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -19,7 +19,8 @@ export async function startChatWith(userId: string) {
   if (error || !data) {
     return { error: error?.message ?? "Could not create chat" };
   }
-  redirect(`/chat/${data}`);
+  const url = draftQuery ? `/chat/${data}?${draftQuery}` : `/chat/${data}`;
+  redirect(url);
 }
 
 export async function sendMessage(chatId: string, body: string) {

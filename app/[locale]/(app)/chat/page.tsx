@@ -3,6 +3,35 @@ import { LogIn, MessageCircle } from "lucide-react";
 import { getCurrentUser } from "@/lib/profile";
 import { loadChatsForCurrentUser } from "@/lib/chat/queries";
 
+function formatChatTime(iso: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  if (sameDay) {
+    return d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  }
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday =
+    d.getFullYear() === yesterday.getFullYear() &&
+    d.getMonth() === yesterday.getMonth() &&
+    d.getDate() === yesterday.getDate();
+  if (isYesterday) return "Ayer";
+  const diffDays = Math.round((now.getTime() - d.getTime()) / 86400000);
+  if (diffDays < 7) {
+    return d.toLocaleDateString("es-ES", { weekday: "short" });
+  }
+  return d.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+    year: now.getFullYear() === d.getFullYear() ? undefined : "numeric",
+  });
+}
+
 export default async function ChatListPage() {
   const user = await getCurrentUser();
 
@@ -53,12 +82,7 @@ export default async function ChatListPage() {
         <div className="mt-5 space-y-2">
           {chats.map((c) => {
             const initials = (c.other_user.alias ?? "??").slice(0, 2).toUpperCase();
-            const time = c.last_message_at
-              ? new Date(c.last_message_at).toLocaleTimeString("es-ES", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              : "";
+            const time = formatChatTime(c.last_message_at);
             const stateLabel =
               c.state === "pending"
                 ? "Pendiente"

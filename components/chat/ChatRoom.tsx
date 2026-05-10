@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Calendar,
   CheckCheck,
@@ -23,6 +24,8 @@ import {
 } from "@/lib/chat/actions";
 import { createClient } from "@/lib/supabase/client";
 import { pushAppToast } from "@/lib/notifications/toast";
+import { IconBtn, IconLink } from "@/components/ui/IconBtn";
+import { Sheet } from "@/components/ui/Sheet";
 
 type Other = {
   id: string;
@@ -78,9 +81,18 @@ export function ChatRoom({
   initialMeeting: ChatMeeting;
   initialMyRated: boolean;
 }) {
+  const searchParams = useSearchParams();
+  const draft = searchParams.get("draft") ?? "";
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
-  const [body, setBody] = useState("");
+  const [body, setBody] = useState(draft);
   const [pending, startTransition] = useTransition();
+  // Strip the draft from the URL the first time so refreshes don't re-prefill.
+  useEffect(() => {
+    if (!draft) return;
+    const url = new URL(window.location.href);
+    url.searchParams.delete("draft");
+    window.history.replaceState({}, "", url.toString());
+  }, [draft]);
   const [chatState, setChatState] = useState<ChatState>(initialState);
   const [meeting, setMeeting] = useState<ChatMeeting>(initialMeeting);
   const [myRated, setMyRated] = useState(initialMyRated);
@@ -307,20 +319,21 @@ export function ChatRoom({
   return (
     <main className="absolute inset-0 mx-auto flex max-w-[430px] flex-col bg-bone">
       <header className="flex items-center gap-3 border-b border-line bg-white px-3 pb-3 pt-14">
-        <Link
-          href="/chat"
-          className="grid h-9 w-9 place-items-center rounded-md border border-line bg-white"
-        >
+        <IconLink href="/chat" ariaLabel="Volver a la lista de chats">
           <ChevronLeft size={18} strokeWidth={2} />
-        </Link>
+        </IconLink>
         <Link
           href={`/match/${other.id}`}
+          aria-label={`Ver perfil de ${other.display_name ?? other.alias}`}
           className="grid h-10 w-10 place-items-center rounded-full font-display text-base text-white"
           style={{ background: other.color ?? "#1FAE5A" }}
         >
           {initials}
         </Link>
-        <div className="min-w-0 flex-1">
+        <Link
+          href={`/match/${other.id}`}
+          className="min-w-0 flex-1"
+        >
           <p className="truncate text-sm font-bold">
             {other.display_name ?? other.alias}
           </p>
@@ -328,7 +341,7 @@ export function ChatRoom({
             {other.rating ? `★ ${other.rating}` : "Coleccionista"}
             {other.trades_count != null && ` · ${other.trades_count} cambios`}
           </p>
-        </div>
+        </Link>
       </header>
 
       <MeetingBanner
@@ -381,16 +394,17 @@ export function ChatRoom({
         })}
       </div>
 
-      <div className="flex items-center gap-2 border-t border-line bg-white p-3 pb-[max(env(safe-area-inset-bottom),12px)]">
-        <button
+      <div className="flex items-end gap-2 border-t border-line bg-white p-3 pb-[max(env(safe-area-inset-bottom),12px)]">
+        <IconBtn
+          ariaLabel="Proponer quedada"
           onClick={() => setShowProposeSheet(true)}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-md border border-line bg-white text-text-2"
-          aria-label="Proponer quedada"
           disabled={chatState === "completed" || chatState === "cancelled"}
+          variant="outline"
+          className="text-text-2"
         >
           <Calendar size={18} strokeWidth={2} />
-        </button>
-        <input
+        </IconBtn>
+        <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
           onKeyDown={(e) => {
@@ -400,16 +414,23 @@ export function ChatRoom({
             }
           }}
           placeholder="Escribe un mensaje…"
-          className="h-11 flex-1 rounded-md border border-line bg-paper px-3.5 text-sm outline-none focus:border-green-500"
+          rows={1}
+          ref={(el) => {
+            if (!el) return;
+            el.style.height = "auto";
+            el.style.height = `${Math.min(el.scrollHeight, 140)}px`;
+          }}
+          aria-label="Mensaje"
+          className="max-h-[140px] min-h-[44px] flex-1 resize-none rounded-md border border-line bg-paper px-3.5 py-2.5 text-sm leading-snug outline-none focus:border-green-500"
         />
-        <button
+        <IconBtn
+          ariaLabel="Enviar mensaje"
+          variant="solid"
           onClick={submit}
           disabled={!body.trim() || pending}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-green-500 text-white disabled:opacity-40"
-          aria-label="Enviar"
         >
           <Send size={18} strokeWidth={2.2} />
-        </button>
+        </IconBtn>
       </div>
 
       {showProposeSheet && (
@@ -610,7 +631,7 @@ function ProposeMeetingSheet({
   const [when, setWhen] = useState(defaultWhen);
 
   return (
-    <SheetWrapper title="Proponer quedada" onClose={onClose}>
+    <Sheet title="Proponer quedada" onClose={onClose}>
       <label className="block">
         <span className="text-xs font-bold uppercase tracking-wider text-text-2">
           Lugar
@@ -649,7 +670,7 @@ function ProposeMeetingSheet({
       >
         Enviar propuesta
       </button>
-    </SheetWrapper>
+    </Sheet>
   );
 }
 
@@ -660,23 +681,37 @@ function RateChatSheet({
   onClose: () => void;
   onSubmit: (stars: number, note: string) => void;
 }) {
-  const [stars, setStars] = useState(5);
+  const [stars, setStars] = useState(0);
+  const [hover, setHover] = useState(0);
   const [note, setNote] = useState("");
+  const display = hover || stars;
   return (
-    <SheetWrapper title="¿Cómo fue el intercambio?" onClose={onClose}>
-      <div className="flex justify-center gap-1.5">
+    <Sheet title="¿Cómo fue el intercambio?" onClose={onClose}>
+      <div
+        className="flex justify-center gap-1.5"
+        onMouseLeave={() => setHover(0)}
+        role="radiogroup"
+        aria-label="Valoración en estrellas"
+      >
         {[1, 2, 3, 4, 5].map((s) => (
           <button
             key={s}
+            type="button"
             onClick={() => setStars(s)}
-            className="text-3xl"
-            style={{ color: s <= stars ? "#D4AF37" : "#D8D5C9" }}
-            aria-label={`${s} estrellas`}
+            onMouseEnter={() => setHover(s)}
+            className="text-3xl transition-transform hover:scale-110"
+            style={{ color: s <= display ? "#D4AF37" : "#D8D5C9" }}
+            aria-label={`${s} estrella${s === 1 ? "" : "s"}`}
+            aria-checked={stars === s}
+            role="radio"
           >
             ★
           </button>
         ))}
       </div>
+      <p className="mt-2 text-center text-xs text-text-2">
+        {stars === 0 ? "Pulsa una estrella" : `${stars} de 5`}
+      </p>
       <textarea
         value={note}
         onChange={(e) => setNote(e.target.value)}
@@ -687,44 +722,12 @@ function RateChatSheet({
       />
       <button
         onClick={() => onSubmit(stars, note)}
-        className="mt-4 h-12 w-full rounded-md bg-green-500 font-bold text-white"
+        disabled={stars < 1}
+        className="mt-4 h-12 w-full rounded-md bg-green-500 font-bold text-white disabled:opacity-40"
       >
         Enviar valoración
       </button>
-    </SheetWrapper>
-  );
-}
-
-function SheetWrapper({
-  title,
-  onClose,
-  children,
-}: {
-  title: string;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center">
-      <button
-        onClick={onClose}
-        className="absolute inset-0 bg-black/40"
-        aria-label="Cerrar"
-      />
-      <div className="relative mx-auto w-full max-w-[430px] rounded-t-2xl bg-white p-5 pb-[max(env(safe-area-inset-bottom),20px)] shadow-sh3 animate-slide-down">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-xl">{title}</h2>
-          <button
-            onClick={onClose}
-            className="grid h-8 w-8 place-items-center rounded-md border border-line"
-            aria-label="Cerrar"
-          >
-            <X size={14} strokeWidth={2.2} />
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
+    </Sheet>
   );
 }
 
