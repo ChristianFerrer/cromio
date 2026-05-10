@@ -225,7 +225,8 @@ export default function MapaPage() {
               </button>
             </div>
           )}
-          <RadarOverlay />
+          {/* RadarOverlay temporalmente deshabilitado para debug del mapa */}
+          {false && <RadarOverlay />}
         </>
       )}
 
