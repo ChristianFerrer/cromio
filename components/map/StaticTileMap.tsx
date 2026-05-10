@@ -5,6 +5,7 @@ import type { NearbyUser } from "@/hooks/useNearbyUsers";
 
 const TILE_SIZE = 256;
 const ZOOM = 14;
+const EARTH_CIRCUMFERENCE = 40075016.686;
 
 function lngLatToWorldPx(lng: number, lat: number) {
   const n = 2 ** ZOOM;
@@ -17,6 +18,13 @@ function lngLatToWorldPx(lng: number, lat: number) {
     n *
     TILE_SIZE;
   return { x, y };
+}
+
+function metersPerPixel(lat: number) {
+  return (
+    (Math.cos((lat * Math.PI) / 180) * EARTH_CIRCUMFERENCE) /
+    (TILE_SIZE * 2 ** ZOOM)
+  );
 }
 
 function bearingToLngLat(
@@ -37,12 +45,14 @@ export function StaticTileMap({
   centerLng,
   centerLat,
   users,
+  radiusM,
   width,
   height,
 }: {
   centerLng: number;
   centerLat: number;
   users: NearbyUser[];
+  radiusM: number;
   width: number;
   height: number;
 }) {
@@ -65,6 +75,10 @@ export function StaticTileMap({
       tiles.push({ tx, ty, left, top });
     }
   }
+
+  const mpp = metersPerPixel(centerLat);
+  const radiusPx = Math.min(radiusM / mpp, Math.max(width, height) * 1.5);
+  const radarSize = radiusPx * 2;
 
   return (
     <div
@@ -94,11 +108,57 @@ export function StaticTileMap({
       ))}
 
       <div
-        className="absolute h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-white bg-green-500 shadow-md"
-        style={{ left: width / 2, top: height / 2 }}
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
+        style={{
+          left: width / 2,
+          top: height / 2,
+          width: radarSize,
+          height: radarSize,
+          border: "2px dashed rgba(31,174,90,0.6)",
+          background:
+            "radial-gradient(circle, rgba(31,174,90,0.18), rgba(31,174,90,0.08) 60%, transparent 75%)",
+        }}
+      />
+
+      <div
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 animate-radar-pulse rounded-full"
+        style={{
+          left: width / 2,
+          top: height / 2,
+          width: radarSize,
+          height: radarSize,
+          border: "2px solid rgba(31,174,90,0.55)",
+          transformOrigin: "center",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 animate-radar-pulse rounded-full"
+        style={{
+          left: width / 2,
+          top: height / 2,
+          width: radarSize,
+          height: radarSize,
+          border: "2px solid rgba(31,174,90,0.45)",
+          transformOrigin: "center",
+          animationDelay: "1.3s",
+        }}
+      />
+
+      <div
+        className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-500"
+        style={{
+          left: width / 2,
+          top: height / 2,
+          width: 18,
+          height: 18,
+          border: "3px solid #fff",
+          boxShadow:
+            "0 0 0 4px rgba(31,174,90,0.25), 0 4px 10px rgba(0,0,0,0.2)",
+        }}
       />
 
       {users.map((u) => {
+        if (u.distance_m > radiusM) return null;
         const [ulng, ulat] = bearingToLngLat(
           centerLng,
           centerLat,

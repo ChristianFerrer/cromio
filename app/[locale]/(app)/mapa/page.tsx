@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, MapIcon, List, Lock } from "lucide-react";
+import { Search, MapIcon, List, Lock, Crosshair } from "lucide-react";
 import Link from "next/link";
 import { useCollection } from "@/hooks/useCollection";
 import { useNearbyUsers } from "@/hooks/useNearbyUsers";
+import { useDeviceLocation } from "@/hooks/useDeviceLocation";
 import { fmtDistance } from "@/lib/matches";
 import { MatchArrows } from "@/components/match/MatchArrows";
 import { AlbumProgress } from "@/components/match/AlbumProgress";
@@ -24,7 +25,13 @@ export default function MapaPage() {
     h: 0,
   });
 
-  const { users, center, isAuthenticated } = useNearbyUsers(radius, collection);
+  const { users, center: profileCenter, isAuthenticated } = useNearbyUsers(
+    radius,
+    collection,
+  );
+  const device = useDeviceLocation(view === "map");
+
+  const center: [number, number] = device.coords ?? profileCenter;
 
   const matches = useMemo(() => users.filter((u) => u.kind === "match"), [users]);
   const leads = useMemo(() => users.filter((u) => u.kind === "lead"), [users]);
@@ -55,10 +62,21 @@ export default function MapaPage() {
               centerLng={center[0]}
               centerLat={center[1]}
               users={users}
+              radiusM={radius}
               width={mapDims.w}
               height={mapDims.h}
             />
           )}
+        </div>
+      )}
+
+      {view === "map" && device.permissionDenied && (
+        <div className="absolute left-3 right-3 top-28 z-20 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 shadow-sh2">
+          <p className="font-semibold">Ubicación bloqueada</p>
+          <p className="mt-1 leading-snug">
+            Activa la ubicación en Ajustes → Safari → Ubicación para que el mapa te
+            siga en vivo. Mientras tanto centramos en tu zona guardada.
+          </p>
         </div>
       )}
 
