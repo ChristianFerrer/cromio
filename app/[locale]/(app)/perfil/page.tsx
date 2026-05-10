@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Crown, LogOut, Pencil } from "lucide-react";
+import { ChevronRight, Crown, LogOut, Pencil } from "lucide-react";
 import { TOTAL_STICKERS } from "@/lib/data/stickers";
 import { signOut } from "@/lib/auth/actions";
 import { Btn } from "@/components/ui/Btn";
@@ -121,6 +121,16 @@ export default async function PerfilPage() {
       </section>
 
       <ProfileSettings />
+
+      <section className="mt-5 divide-y divide-line rounded-md border border-line bg-white">
+        <Link
+          href="/perfil/bloqueos"
+          className="flex w-full items-center justify-between px-4 py-3.5 text-left text-sm"
+        >
+          <span>Bloqueos</span>
+          <ChevronRight size={16} className="text-text-2" />
+        </Link>
+      </section>
 
       <form action={signOut}>
         <button

@@ -22,6 +22,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
 import { subscribeAppToast } from "@/lib/notifications/toast";
+import { playMessageSound } from "@/lib/notifications/sound";
 import { EnablePush } from "./EnablePush";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import { InstallPwaBanner } from "./InstallPwaBanner";
@@ -194,6 +195,7 @@ export function NotificationsRoot({
               body: m.body,
               color: prof?.color ?? "#1FAE5A",
             });
+            void playMessageSound();
           },
         )
         .subscribe();

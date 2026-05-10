@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, BellOff } from "lucide-react";
+import { Bell, BellOff, Volume2, VolumeX } from "lucide-react";
 import { disablePushOnThisDevice } from "@/components/notifications/EnablePush";
 import { savePushSubscription } from "@/lib/push/actions";
 import { pushAppToast } from "@/lib/notifications/toast";
+import {
+  isSoundEnabled,
+  setSoundEnabled,
+  playMessageSound,
+} from "@/lib/notifications/sound";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 
@@ -29,6 +34,11 @@ export function ProfileSettings() {
   const [supported, setSupported] = useState(false);
   const [enabled, setEnabled] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [sound, setSound] = useState(false);
+
+  useEffect(() => {
+    setSound(isSoundEnabled());
+  }, []);
 
   useEffect(() => {
     const ok =
@@ -106,11 +116,12 @@ export function ProfileSettings() {
   };
 
   return (
-    <section className="mt-5 rounded-md border border-line bg-white p-4">
+    <section className="mt-5 divide-y divide-line rounded-md border border-line bg-white">
       <button
         onClick={toggle}
         disabled={busy}
-        className="flex w-full items-center gap-3 disabled:opacity-50"
+        className="flex w-full items-center gap-3 p-4 disabled:opacity-50"
+        aria-pressed={enabled}
       >
         <div
           className={`grid h-9 w-9 place-items-center rounded-full ${
@@ -127,18 +138,52 @@ export function ProfileSettings() {
               : "Recibe avisos de mensajes y nuevos matches"}
           </p>
         </div>
-        <span
-          className={`h-6 w-10 rounded-full transition-colors ${
-            enabled ? "bg-green-500" : "bg-line"
-          } relative`}
+        <SwitchKnob on={enabled} />
+      </button>
+
+      <button
+        onClick={() => {
+          const next = !sound;
+          setSound(next);
+          setSoundEnabled(next);
+          if (next) void playMessageSound();
+        }}
+        className="flex w-full items-center gap-3 p-4"
+        aria-pressed={sound}
+      >
+        <div
+          className={`grid h-9 w-9 place-items-center rounded-full ${
+            sound ? "bg-green-100 text-green-700" : "bg-paper text-text-2"
+          }`}
         >
-          <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sh1 transition-transform ${
-              enabled ? "translate-x-4" : "translate-x-0.5"
-            }`}
-          />
-        </span>
+          {sound ? <Volume2 size={16} strokeWidth={2.2} /> : <VolumeX size={16} strokeWidth={2} />}
+        </div>
+        <div className="flex-1 text-left">
+          <p className="text-sm font-bold">Sonido al recibir mensajes</p>
+          <p className="text-xs text-text-2">
+            {sound
+              ? "Un tono corto cuando llega un mensaje nuevo."
+              : "Activa el tono in-app al recibir un mensaje."}
+          </p>
+        </div>
+        <SwitchKnob on={sound} />
       </button>
     </section>
+  );
+}
+
+function SwitchKnob({ on }: { on: boolean }) {
+  return (
+    <span
+      className={`relative h-6 w-10 shrink-0 rounded-full transition-colors ${
+        on ? "bg-green-500" : "bg-line"
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sh1 transition-transform ${
+          on ? "translate-x-4" : "translate-x-0.5"
+        }`}
+      />
+    </span>
   );
 }
