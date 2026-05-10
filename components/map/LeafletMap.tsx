@@ -171,20 +171,40 @@ export function LeafletMap({
         u.kind === "match" ? CROMIO_COLORS.green[500] : CROMIO_COLORS.match.interest;
       const initials = u.alias.slice(0, 2).toUpperCase();
 
+      // Whistle-style teardrop pin: rounded body with a pointed tip
+      // anchored at the location. The avatar circle sits inside the
+      // bulb; the trade counter chip floats above the pin head.
       const icon = L.divIcon({
         className: "",
         html: `
           <a href="/match/${u.id}" style="display:block;cursor:pointer;position:relative;">
+            <svg
+              width="40" height="52" viewBox="0 0 40 52"
+              style="display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.28));"
+            >
+              <path
+                d="M20,2
+                   C9.5,2 2,10 2,20
+                   C2,30 14,42 20,50
+                   C26,42 38,30 38,20
+                   C38,10 30.5,2 20,2 Z"
+                fill="${color}"
+                stroke="#ffffff"
+                stroke-width="2.5"
+                stroke-linejoin="round"
+              />
+              <circle cx="20" cy="20" r="13" fill="rgba(255,255,255,0.18)" />
+              <text
+                x="20" y="20"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-family="var(--font-bebas), system-ui"
+                font-size="14" font-weight="700"
+                fill="#ffffff" letter-spacing="0.5"
+              >${initials}</text>
+            </svg>
             <div style="
-              width:44px;height:44px;border-radius:50%;
-              background:${color};color:#fff;
-              border:3px solid #fff;
-              box-shadow:0 4px 10px rgba(0,0,0,.22);
-              display:flex;align-items:center;justify-content:center;
-              font-family:var(--font-bebas),system-ui;font-size:16px;font-weight:700;
-            ">${initials}</div>
-            <div style="
-              position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+              position:absolute;top:-6px;left:50%;transform:translateX(-50%);
               background:#fff;border-radius:8px;padding:1px 6px;
               box-shadow:0 2px 6px rgba(0,0,0,.18);
               font-family:var(--font-bebas),system-ui;font-size:11px;
@@ -195,8 +215,8 @@ export function LeafletMap({
             </div>
           </a>
         `,
-        iconSize: [44, 44],
-        iconAnchor: [22, 44],
+        iconSize: [40, 52],
+        iconAnchor: [20, 50],
       });
 
       const marker = L.marker([ulat, ulng], { icon }).addTo(map);
@@ -210,6 +230,10 @@ export function LeafletMap({
       style={{ touchAction: "none", background: "#F2EFE9", zIndex: 0 }}
     >
       <div ref={containerRef} className="absolute inset-0" />
+      {/* Radar overlays sit between Leaflet's tilePane (200) and the
+          overlayPane (400) so they read as a *background* effect on
+          the map — perimeter circle, other-user pins (markerPane 600)
+          and tooltips all float above. */}
       <div
         ref={pulseRef}
         className="cromio-radar-pulse-wrapper"
@@ -217,7 +241,7 @@ export function LeafletMap({
           position: "absolute",
           pointerEvents: "none",
           transform: "translate(-50%, -50%)",
-          zIndex: 440,
+          zIndex: 210,
         }}
       >
         <div className="cromio-radar-pulse" />
@@ -230,7 +254,7 @@ export function LeafletMap({
           position: "absolute",
           pointerEvents: "none",
           transform: "translate(-50%, -50%)",
-          zIndex: 450,
+          zIndex: 220,
         }}
       >
         <div className="cromio-radar-sweep" />
@@ -242,7 +266,7 @@ export function LeafletMap({
           position: "absolute",
           pointerEvents: "none",
           transform: "translate(-50%, -50%)",
-          zIndex: 470,
+          zIndex: 230,
         }}
       >
         <div className="cromio-self-dot" />
