@@ -116,6 +116,21 @@ export default function MapaPage() {
         </div>
       )}
 
+      {view === "map" &&
+        isAuthenticated &&
+        !usersLoading &&
+        users.length === 0 &&
+        !device.permissionDenied && (
+          <div className="absolute left-3 right-3 top-28 z-30 rounded-md border border-line bg-white/95 p-3 text-xs text-text-2 shadow-sh2 backdrop-blur">
+            <p className="font-semibold text-text">
+              Sin coleccionistas en {radius >= 1000 ? `${radius / 1000} km` : `${radius} m`}
+            </p>
+            <p className="mt-1 leading-snug">
+              Amplía el radio en el slider de abajo o invita a un amigo a Cromio.
+            </p>
+          </div>
+        )}
+
       <div className="absolute left-3 right-3 top-14 z-30 flex items-center gap-2">
         <div className="flex h-10 flex-1 items-center gap-2.5 rounded-md border border-black/5 bg-white/95 px-3.5 shadow-sh2 backdrop-blur">
           <Search size={16} strokeWidth={2} className="text-text-2" />

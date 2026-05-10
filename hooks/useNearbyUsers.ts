@@ -128,8 +128,8 @@ export function useNearbyUsers(
       }>;
 
       if (rows.length === 0) {
-        setUsers(buildMockNearby(radiusM, collection, true));
-        setIsDemoFallback(true);
+        setUsers([]);
+        setIsDemoFallback(false);
       } else {
         setUsers(
           rows.map((r) => ({
