@@ -1,15 +1,23 @@
 "use client";
 
-import type { Sticker } from "@/lib/types";
+import type { Sticker, StickerType } from "@/lib/types";
 import { COUNTRY_BY_CODE } from "@/lib/data/countries";
 import { Flag } from "./Flag";
 
 const SIZES = {
-  sm: { ratio: "78/110", num: "clamp(18px, 6.5vw, 28px)", pos: 9, name: 10, flag: 18, fixed: null },
-  md: { ratio: "102/144", num: "clamp(22px, 7.5vw, 34px)", pos: 10, name: 12, flag: 22, fixed: null },
-  lg: { ratio: "140/200", num: "42px", pos: 11, name: 14, flag: 28, fixed: { w: 140, h: 200 } },
-  xl: { ratio: "200/286", num: "60px", pos: 13, name: 16, flag: 40, fixed: { w: 200, h: 286 } },
+  sm: { ratio: "78/110", num: "clamp(28px, 11vw, 44px)", type: 9.5, name: 10, flag: 18, fixed: null },
+  md: { ratio: "102/144", num: "clamp(36px, 13vw, 58px)", type: 10.5, name: 12, flag: 22, fixed: null },
+  lg: { ratio: "140/200", num: "64px", type: 11, name: 14, flag: 26, fixed: { w: 140, h: 200 } },
+  xl: { ratio: "200/286", num: "92px", type: 13, name: 16, flag: 34, fixed: { w: 200, h: 286 } },
 } as const;
+
+const TYPE_LABEL: Record<StickerType, string> = {
+  team_badge: "ESCUDO",
+  team_photo: "EQUIPO",
+  player: "JUGADOR",
+  host_city: "ESTADIO",
+  foil_intro: "INTRO",
+};
 
 export function CromoCard({
   sticker,
@@ -32,7 +40,30 @@ export function CromoCard({
   const repe = count >= 2;
 
   const accent = country?.flag.colors[0] ?? "#0B6E3F";
-  const isSpecial = sticker.rarity !== "common";
+  const isLegendary = sticker.rarity === "legendary";
+  const isSpecial = sticker.rarity === "special";
+
+  const typeLabel = isLegendary
+    ? "LEGENDARY"
+    : TYPE_LABEL[sticker.type] ?? sticker.type.toUpperCase();
+
+  // Type pill styling: legendary → gold gradient, special → soft gold,
+  // common → neutral ink.
+  const typePillStyle: React.CSSProperties = isLegendary
+    ? {
+        background: "linear-gradient(135deg, #F0DA8E, #D4AF37)",
+        color: "#3A2C00",
+        boxShadow: "0 1px 3px rgba(212,175,55,0.35)",
+      }
+    : isSpecial
+      ? {
+          background: "rgba(212,175,55,.18)",
+          color: "#8C7220",
+        }
+      : {
+          background: have ? `${accent}1F` : "rgba(0,0,0,.06)",
+          color: have ? accent : "#5C5A50",
+        };
 
   const wrapperStyle: React.CSSProperties = dim.fixed
     ? { width: dim.fixed.w }
@@ -68,64 +99,67 @@ export function CromoCard({
         />
 
         <div className="relative flex h-full w-full flex-col p-2">
-          <div className="flex items-start justify-between gap-1">
+          {/* Top row: flag (left) + type pill (right) */}
+          <div className="flex items-start justify-between gap-1.5">
+            {country ? (
+              <Flag country={country} size={dim.flag} />
+            ) : (
+              <span className="block" style={{ width: dim.flag, height: dim.flag }} />
+            )}
+            <span
+              className="inline-flex shrink-0 rounded-full px-1.5 py-0.5 font-display uppercase leading-none tracking-wider"
+              style={{ fontSize: dim.type, ...typePillStyle }}
+            >
+              {typeLabel}
+            </span>
+          </div>
+
+          {/* Center: big sticker code */}
+          <div className="flex flex-1 items-center justify-center px-1">
             <span
               className="font-display tabular leading-none"
-              style={{ fontSize: dim.num, color: have ? accent : "#8A8779" }}
+              style={{
+                fontSize: dim.num,
+                color: have ? accent : "#8A8779",
+                letterSpacing: "-0.02em",
+                textShadow: have
+                  ? `0 1px 0 rgba(255,255,255,0.6)`
+                  : undefined,
+              }}
             >
               {sticker.code}
             </span>
-            {country && <Flag country={country} size={dim.flag} />}
           </div>
 
-          <div className="mt-auto flex flex-col gap-0.5">
-            {sticker.position && (
+          {/* Bottom: player name (if any) + repe badge */}
+          <div className="flex min-h-[14px] items-end justify-between gap-1.5">
+            <span className="min-w-0 flex-1">
+              {sticker.player_name && (
+                <span
+                  className="block line-clamp-1 font-semibold leading-tight"
+                  style={{ fontSize: dim.name, color: have ? "#1A1A1A" : "#5C5A50" }}
+                >
+                  {sticker.player_name}
+                </span>
+              )}
+              {!sticker.player_name && sticker.city && (
+                <span
+                  className="block line-clamp-1 leading-tight text-text-2"
+                  style={{ fontSize: dim.name }}
+                >
+                  {sticker.city}
+                </span>
+              )}
+            </span>
+            {repe && (
               <span
-                className="font-display uppercase tracking-wider text-mute"
-                style={{ fontSize: dim.pos }}
+                className="shrink-0 rounded-full bg-red-500 px-1.5 py-0.5 font-display text-[10px] leading-none text-white shadow-sh1"
+                aria-label={`Tienes ${count} copias`}
               >
-                {sticker.position}
-              </span>
-            )}
-            {sticker.player_name && (
-              <span
-                className="line-clamp-1 font-semibold leading-tight"
-                style={{ fontSize: dim.name, color: have ? "#1A1A1A" : "#5C5A50" }}
-              >
-                {sticker.player_name}
-              </span>
-            )}
-            {sticker.city && (
-              <span
-                className="line-clamp-1 leading-tight text-text-2"
-                style={{ fontSize: dim.name }}
-              >
-                {sticker.city}
+                ×{count}
               </span>
             )}
           </div>
-
-          {repe && (
-            <span
-              className="absolute right-1.5 top-1.5 rounded-full bg-gold px-1.5 py-0.5 font-display text-[10px] text-ink"
-            >
-              ×{count}
-            </span>
-          )}
-          {isSpecial && (
-            <span
-              className="absolute left-1 bottom-1 rounded-full px-1 py-0.5 font-display text-[9px]"
-              style={{
-                background:
-                  sticker.rarity === "legendary"
-                    ? "linear-gradient(135deg, #F0DA8E, #D4AF37)"
-                    : "rgba(212,175,55,.18)",
-                color: sticker.rarity === "legendary" ? "#3A2C00" : "#8C7220",
-              }}
-            >
-              {sticker.rarity === "legendary" ? "LEGENDARY" : "ESPECIAL"}
-            </span>
-          )}
         </div>
       </button>
 
@@ -134,13 +168,25 @@ export function CromoCard({
           <button
             onClick={() => onAdjust(-1)}
             disabled={count === 0}
-            className="grid h-7 w-7 place-items-center rounded-full border border-line bg-white text-base font-bold text-text-2 disabled:opacity-30"
+            aria-label="Quitar uno"
+            className={`grid h-7 w-7 place-items-center rounded-full text-base font-bold transition-colors disabled:opacity-30 ${
+              repe
+                ? "border border-transparent bg-red-500 text-white"
+                : "border border-line bg-white text-text-2"
+            }`}
           >
             −
           </button>
-          <span className="font-display tabular text-base">{count}</span>
+          <span
+            className={`font-display tabular text-base ${
+              repe ? "text-red-600" : "text-text"
+            }`}
+          >
+            {count}
+          </span>
           <button
             onClick={() => onAdjust(+1)}
+            aria-label="Añadir uno"
             className="grid h-7 w-7 place-items-center rounded-full bg-green-500 text-base font-bold text-white"
           >
             +
