@@ -7,6 +7,7 @@ import { useCollection } from "@/hooks/useCollection";
 import { useNearbyUsers } from "@/hooks/useNearbyUsers";
 import { useDeviceLocation } from "@/hooks/useDeviceLocation";
 import { fmtDistance } from "@/lib/matches";
+import { saveHomeLocation } from "@/lib/profile/actions";
 import { MatchArrows } from "@/components/match/MatchArrows";
 import { AlbumProgress } from "@/components/match/AlbumProgress";
 import { LeafletMap, zoomForRadius } from "@/components/map/LeafletMapClient";
@@ -46,6 +47,23 @@ export default function MapaPage() {
     match: matches.length,
     lead: leads.length,
   };
+
+  const homeLocSavedRef = useRef<{ lng: number; lat: number } | null>(null);
+  useEffect(() => {
+    if (!isAuthenticated || !device.coords) return;
+    const [lng, lat] = device.coords;
+    const last = homeLocSavedRef.current;
+    if (last) {
+      const dLng = (lng - last.lng) * 111320 * Math.cos((lat * Math.PI) / 180);
+      const dLat = (lat - last.lat) * 110540;
+      const movedM = Math.sqrt(dLng * dLng + dLat * dLat);
+      if (movedM < 50) return;
+    }
+    homeLocSavedRef.current = { lng, lat };
+    void saveHomeLocation(lng, lat).then(() => {
+      refreshUsers();
+    });
+  }, [isAuthenticated, device.coords, refreshUsers]);
 
   useEffect(() => {
     if (view !== "map" || !containerRef.current) return;
