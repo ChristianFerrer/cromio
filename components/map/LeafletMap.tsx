@@ -177,7 +177,7 @@ export function LeafletMap({
       const icon = L.divIcon({
         className: "",
         html: `
-          <a href="/match/${u.id}" style="display:block;cursor:pointer;position:relative;">
+          <a href="/match/${u.id}" class="cromio-pin" style="display:block;cursor:pointer;position:relative;">
             <svg
               width="40" height="52" viewBox="0 0 40 52"
               style="display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.28));"

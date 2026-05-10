@@ -368,9 +368,22 @@ export function ChatRoom({
         className="scroll-hide flex-1 overflow-y-auto px-3 py-4"
       >
         {messages.length === 0 && (
-          <p className="py-12 text-center text-xs text-text-2">
-            Empieza la conversación. Sé claro con qué cromos quieres intercambiar.
-          </p>
+          <div className="mt-6 flex flex-col items-center px-4 text-center">
+            <div
+              className="grid h-14 w-14 place-items-center rounded-full text-white"
+              style={{ background: other.color ?? "#1FAE5A" }}
+            >
+              <span className="font-display text-base">{initials}</span>
+            </div>
+            <h3 className="mt-3 font-display text-lg">Saluda a @{other.alias}</h3>
+            <p className="mt-1 max-w-xs text-xs leading-snug text-text-2">
+              Comparte qué cromos quieres recibir y cuáles ofreces. Puedes referenciarlos por número (ej. <span className="font-semibold text-text">#125</span>) y aparecerán como tarjeta interactiva.
+            </p>
+            <div className="mt-3 flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] text-text-2">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
+              <span>Tip: pulsa el calendario abajo para proponer una quedada</span>
+            </div>
+          </div>
         )}
 
         {grouped.map((item) => {

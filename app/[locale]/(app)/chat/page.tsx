@@ -65,18 +65,29 @@ export default async function ChatListPage() {
       </p>
 
       {chats.length === 0 ? (
-        <div className="mt-10 grid place-items-center rounded-md border border-dashed border-line bg-paper px-5 py-12 text-center">
-          <MessageCircle size={28} className="text-mute" />
-          <p className="mt-2 text-sm text-text-2">
-            Sin conversaciones todavía.<br />
-            Encuentra un coleccionista en el mapa y empieza un chat.
+        <div className="mt-8 flex flex-col items-center rounded-2xl border border-line bg-gradient-to-b from-paper to-bone px-6 py-10 text-center">
+          <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-green-500 to-green-700 text-white shadow-sh2">
+            <MessageCircle size={28} strokeWidth={2} />
+          </div>
+          <h2 className="mt-4 font-display text-xl">Aún no tienes chats</h2>
+          <p className="mt-1 max-w-xs text-xs leading-snug text-text-2">
+            Cuando encuentres un coleccionista con cromos que te interesen, abre
+            una conversación desde su perfil para coordinar el intercambio.
           </p>
-          <Link
-            href="/mapa"
-            className="mt-3 rounded-md border border-line bg-white px-4 py-2 text-xs font-semibold"
-          >
-            Ir al mapa
-          </Link>
+          <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+            <Link
+              href="/mapa"
+              className="rounded-md bg-green-500 px-4 py-2.5 text-xs font-bold text-white shadow-sh1"
+            >
+              Buscar coleccionistas en el mapa
+            </Link>
+            <Link
+              href="/album"
+              className="rounded-md border border-line bg-white px-4 py-2.5 text-xs font-semibold"
+            >
+              Añadir más cromos
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="mt-5 space-y-2">
