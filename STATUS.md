@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 19:53 UTC** · branch `main`_
+_Last updated: **2026-05-10 19:34 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -132,19 +132,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 49c98b9 feat(brand): cromio_bg.png as the app logo across favicon + headers _(19 minutes ago)_
-- d023680 Add files via upload _(28 minutes ago)_
-- c0cfeab fix(mapa): radar above tiles, dot + pins above radar _(40 minutes ago)_
-- d724c58 feat(mapa): radar to background z-index + teardrop pins _(54 minutes ago)_
-- e7d4768 feat(mapa): Whistle-style radar — minimal scope + recenter button _(61 minutes ago)_
-- c6316aa fix(mapa): grid alpha 0.4, user dot promoted above the radar _(73 minutes ago)_
-- 66ff06a fix(mapa): original-style pulse + solid rings + quadrant cross _(78 minutes ago)_
-- a3b4039 feat(mapa): radar rings track filter steps + drop cardinal cross _(85 minutes ago)_
-- 9725a18 fix(mapa): rings 60%, single louder pulse, drop the tint _(2 hours ago)_
-- 07b9390 fix(mapa): radar grid thinner @ 20%, cardinals with edge-fade gradient _(2 hours ago)_
+- d023680 Add files via upload _(9 minutes ago)_
+- c0cfeab fix(mapa): radar above tiles, dot + pins above radar _(21 minutes ago)_
+- d724c58 feat(mapa): radar to background z-index + teardrop pins _(35 minutes ago)_
+- e7d4768 feat(mapa): Whistle-style radar — minimal scope + recenter button _(42 minutes ago)_
+- c6316aa fix(mapa): grid alpha 0.4, user dot promoted above the radar _(54 minutes ago)_
+- 66ff06a fix(mapa): original-style pulse + solid rings + quadrant cross _(59 minutes ago)_
+- a3b4039 feat(mapa): radar rings track filter steps + drop cardinal cross _(66 minutes ago)_
+- 9725a18 fix(mapa): rings 60%, single louder pulse, drop the tint _(72 minutes ago)_
+- 07b9390 fix(mapa): radar grid thinner @ 20%, cardinals with edge-fade gradient _(79 minutes ago)_
 - 559329c feat(mapa): radar scope look — range rings, cardinals, sweep arm _(2 hours ago)_
 - 4527a2d fix(mapa): pulse fills the radar + solid radar border _(2 hours ago)_
 - d39243c fix(flags): SVG flags with proper bounds, no escaping sun _(2 hours ago)_
-- f8fb9c8 feat(forms+ux): forgot pwd, signup confirm, error.tsx, perfil cleanup _(3 hours ago)_
-- 55121af feat(chat+match): selection handoff, textarea, 0-star rate, day labels _(3 hours ago)_
+- f8fb9c8 feat(forms+ux): forgot pwd, signup confirm, error.tsx, perfil cleanup _(2 hours ago)_
+- 55121af feat(chat+match): selection handoff, textarea, 0-star rate, day labels _(2 hours ago)_
+- 1bfea47 feat(onboarding): stepper, back button, real location flow, inline alias _(2 hours ago)_
 <!-- AUTO:COMMITS:END -->

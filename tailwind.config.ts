@@ -8,23 +8,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand greens — anchored on the logo's mint #01F78B. 700/900
-        // darken in the same hue family while keeping AA contrast on
-        // white for headings and bold copy.
         green: {
-          50: "#E5FEF0",
-          100: "#C0FCDC",
-          500: "#01F78B",
-          700: "#007A47",
-          900: "#00563B",
-        },
-        // Secondary brand — the teal half of the logo gradient.
-        teal: {
-          50: "#E1F4FA",
-          100: "#B5E2EF",
-          500: "#0F97BD",
-          700: "#0A7393",
-          900: "#074F65",
+          50: "#F1FAF4",
+          100: "#E6F4EC",
+          500: "#1FAE5A",
+          700: "#117C4E",
+          900: "#0B6E3F",
         },
         ink: {
           DEFAULT: "#0E0E0E",

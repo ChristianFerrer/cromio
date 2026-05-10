@@ -326,7 +326,7 @@ export function ChatRoom({
           href={`/match/${other.id}`}
           aria-label={`Ver perfil de ${other.display_name ?? other.alias}`}
           className="grid h-10 w-10 place-items-center rounded-full font-display text-base text-white"
-          style={{ background: other.color ?? "#01F78B" }}
+          style={{ background: other.color ?? "#1FAE5A" }}
         >
           {initials}
         </Link>
@@ -387,7 +387,7 @@ export function ChatRoom({
               mine={item.mine}
               isLastFromSender={item.isLastFromSender}
               otherInitials={initials}
-              otherColor={other.color ?? "#01F78B"}
+              otherColor={other.color ?? "#1FAE5A"}
               showAvatar={item.showAvatar}
             />
           );

@@ -3,18 +3,11 @@
 @tailwind utilities;
 
 :root {
-  /* Brand greens — anchored on the logo mint #01F78B. */
-  --y-green-900: #00563b;
-  --y-green-700: #007a47;
-  --y-green-500: #01f78b;
-  --y-green-100: #c0fcdc;
-  --y-green-50: #e5fef0;
-  /* Secondary brand teal — the second logo colour. */
-  --y-teal-900: #074f65;
-  --y-teal-700: #0a7393;
-  --y-teal-500: #0f97bd;
-  --y-teal-100: #b5e2ef;
-  --y-teal-50: #e1f4fa;
+  --y-green-900: #0b6e3f;
+  --y-green-700: #117c4e;
+  --y-green-500: #1fae5a;
+  --y-green-100: #e6f4ec;
+  --y-green-50: #f1faf4;
   --y-ink: #0e0e0e;
   --y-ink-soft: #1a1a1a;
   --y-charcoal: #3a3a3a;
@@ -73,9 +66,9 @@ body {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #01f78b;
+  background: #1fae5a;
   border: 3px solid #ffffff;
-  box-shadow: 0 0 0 4px rgba(1, 247, 139, 0.3),
+  box-shadow: 0 0 0 4px rgba(31, 174, 90, 0.25),
     0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -90,14 +83,14 @@ body {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: rgba(1, 247, 139, 0.4);
+  background: rgba(31, 174, 90, 0.4);
   transform: scale(0.05);
   animation: cromio-radar-pulse 2.6s ease-out infinite;
   will-change: transform, opacity;
 }
 .cromio-radar-pulse--late {
   animation-delay: 1.3s;
-  background: rgba(1, 247, 139, 0.25);
+  background: rgba(31, 174, 90, 0.25);
 }
 @keyframes cromio-radar-pulse {
   0% { transform: scale(0.05); opacity: 0.9; }
@@ -124,12 +117,12 @@ body {
   border-radius: 50%;
   background: conic-gradient(
     from 0deg,
-    rgba(1, 247, 139, 0) 0deg,
-    rgba(1, 247, 139, 0) 270deg,
-    rgba(1, 247, 139, 0.1) 290deg,
-    rgba(1, 247, 139, 0.32) 320deg,
-    rgba(1, 247, 139, 0.6) 348deg,
-    rgba(1, 247, 139, 0.85) 360deg
+    rgba(31, 174, 90, 0) 0deg,
+    rgba(31, 174, 90, 0) 270deg,
+    rgba(31, 174, 90, 0.1) 290deg,
+    rgba(31, 174, 90, 0.32) 320deg,
+    rgba(31, 174, 90, 0.6) 348deg,
+    rgba(31, 174, 90, 0.85) 360deg
   );
   -webkit-mask-image: radial-gradient(circle, #000 0%, #000 96%, transparent 100%);
   mask-image: radial-gradient(circle, #000 0%, #000 96%, transparent 100%);

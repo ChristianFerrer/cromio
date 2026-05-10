@@ -31,7 +31,7 @@ export function CromoCard({
   const have = count > 0;
   const repe = count >= 2;
 
-  const accent = country?.flag.colors[0] ?? "#00563B";
+  const accent = country?.flag.colors[0] ?? "#0B6E3F";
   const isSpecial = sticker.rarity !== "common";
 
   const wrapperStyle: React.CSSProperties = dim.fixed
