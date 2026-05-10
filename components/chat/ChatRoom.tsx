@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { ChevronLeft, Send } from "lucide-react";
+import { ChevronLeft, Send, Check, CheckCheck, Clock } from "lucide-react";
 import type { ChatMessage } from "@/lib/chat/queries";
 import { sendMessage, markChatRead } from "@/lib/chat/actions";
 import { createClient } from "@/lib/supabase/client";
@@ -16,6 +16,33 @@ type Other = {
   rating: number | null;
   trades_count: number | null;
 };
+
+function startOfDay(d: Date) {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
+function formatDayLabel(ts: string) {
+  const d = new Date(ts);
+  const today = startOfDay(new Date());
+  const that = startOfDay(d);
+  const diffDays = Math.round((today - that) / 86400000);
+  if (diffDays === 0) return "Hoy";
+  if (diffDays === 1) return "Ayer";
+  if (diffDays < 7)
+    return d.toLocaleDateString("es-ES", { weekday: "long" });
+  return d.toLocaleDateString("es-ES", {
+    day: "numeric",
+    month: "short",
+    year: today - that > 365 * 86400000 ? "numeric" : undefined,
+  });
+}
+
+function formatTime(ts: string) {
+  return new Date(ts).toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export function ChatRoom({
   chatId,
@@ -46,16 +73,48 @@ export function ChatRoom({
       .channel(`chat:${chatId}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `chat_id=eq.${chatId}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `chat_id=eq.${chatId}`,
+        },
         (payload) => {
+          const incoming = payload.new as ChatMessage;
           setMessages((prev) => {
-            const incoming = payload.new as ChatMessage;
+            // Replace any matching optimistic by sender+body+near time, else dedupe
             if (prev.some((m) => m.id === incoming.id)) return prev;
+            const tmpIdx = prev.findIndex(
+              (m) =>
+                m.id.startsWith("tmp-") &&
+                m.sender_id === incoming.sender_id &&
+                m.body === incoming.body,
+            );
+            if (tmpIdx >= 0) {
+              const next = [...prev];
+              next[tmpIdx] = incoming;
+              return next;
+            }
             return [...prev, incoming];
           });
-          if (payload.new && (payload.new as ChatMessage).sender_id !== meId) {
+          if (incoming.sender_id !== meId) {
             markChatRead(chatId);
           }
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "messages",
+          filter: `chat_id=eq.${chatId}`,
+        },
+        (payload) => {
+          const updated = payload.new as ChatMessage;
+          setMessages((prev) =>
+            prev.map((m) => (m.id === updated.id ? updated : m)),
+          );
         },
       )
       .subscribe();
@@ -66,7 +125,10 @@ export function ChatRoom({
   }, [chatId, meId]);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages.length]);
 
   const submit = () => {
@@ -74,7 +136,7 @@ export function ChatRoom({
     if (!trimmed || pending) return;
     setBody("");
     const optimistic: ChatMessage = {
-      id: `tmp-${Date.now()}`,
+      id: `tmp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       chat_id: chatId,
       sender_id: meId,
       body: trimmed,
@@ -90,6 +152,48 @@ export function ChatRoom({
       }
     });
   };
+
+  // Group messages with day separators and consecutive-sender flags
+  const grouped = useMemo(() => {
+    const out: Array<
+      | { type: "day"; key: string; label: string }
+      | {
+          type: "msg";
+          key: string;
+          msg: ChatMessage;
+          mine: boolean;
+          showAvatar: boolean;
+          isLastFromSender: boolean;
+        }
+    > = [];
+    let lastDay = -1;
+    for (let i = 0; i < messages.length; i++) {
+      const m = messages[i];
+      const day = startOfDay(new Date(m.created_at));
+      if (day !== lastDay) {
+        out.push({
+          type: "day",
+          key: `d-${day}`,
+          label: formatDayLabel(m.created_at),
+        });
+        lastDay = day;
+      }
+      const prev = messages[i - 1];
+      const next = messages[i + 1];
+      const mine = m.sender_id === meId;
+      const showAvatar = !mine && (!prev || prev.sender_id !== m.sender_id);
+      const isLastFromSender = !next || next.sender_id !== m.sender_id;
+      out.push({
+        type: "msg",
+        key: m.id,
+        msg: m,
+        mine,
+        showAvatar,
+        isLastFromSender,
+      });
+    }
+    return out;
+  }, [messages, meId]);
 
   return (
     <main className="absolute inset-0 mx-auto flex max-w-[430px] flex-col bg-bone">
@@ -118,29 +222,36 @@ export function ChatRoom({
         </div>
       </header>
 
-      <div ref={scrollRef} className="scroll-hide flex-1 space-y-1.5 overflow-y-auto px-3 py-4">
+      <div
+        ref={scrollRef}
+        className="scroll-hide flex-1 overflow-y-auto px-3 py-4"
+      >
         {messages.length === 0 && (
           <p className="py-12 text-center text-xs text-text-2">
             Empieza la conversación. Sé claro con qué cromos quieres intercambiar.
           </p>
         )}
-        {messages.map((m) => {
-          const mine = m.sender_id === meId;
-          return (
-            <div
-              key={m.id}
-              className={`flex ${mine ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`max-w-[78%] rounded-2xl px-3.5 py-2 text-sm ${
-                  mine
-                    ? "rounded-br-md bg-green-500 text-white"
-                    : "rounded-bl-md bg-white text-text shadow-sh1"
-                }`}
-              >
-                {m.body}
+
+        {grouped.map((item) => {
+          if (item.type === "day") {
+            return (
+              <div key={item.key} className="my-3 flex justify-center">
+                <span className="rounded-full bg-line px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-text-2">
+                  {item.label}
+                </span>
               </div>
-            </div>
+            );
+          }
+          return (
+            <MessageRow
+              key={item.key}
+              msg={item.msg}
+              mine={item.mine}
+              isLastFromSender={item.isLastFromSender}
+              otherInitials={initials}
+              otherColor={other.color ?? "#1FAE5A"}
+              showAvatar={item.showAvatar}
+            />
           );
         })}
       </div>
@@ -168,5 +279,73 @@ export function ChatRoom({
         </button>
       </div>
     </main>
+  );
+}
+
+function MessageRow({
+  msg,
+  mine,
+  isLastFromSender,
+  otherInitials,
+  otherColor,
+  showAvatar,
+}: {
+  msg: ChatMessage;
+  mine: boolean;
+  isLastFromSender: boolean;
+  otherInitials: string;
+  otherColor: string;
+  showAvatar: boolean;
+}) {
+  const isPending = msg.id.startsWith("tmp-");
+  const isRead = msg.read_by_recipient_at !== null;
+  const time = formatTime(msg.created_at);
+
+  return (
+    <div
+      className={`mb-0.5 flex items-end gap-1.5 ${
+        mine ? "flex-row-reverse" : "flex-row"
+      } ${isLastFromSender ? "mb-2" : ""}`}
+    >
+      {!mine ? (
+        showAvatar ? (
+          <div
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-full font-display text-[11px] text-white"
+            style={{ background: otherColor }}
+          >
+            {otherInitials}
+          </div>
+        ) : (
+          <div className="w-7 shrink-0" />
+        )
+      ) : null}
+      <div
+        className={`max-w-[78%] rounded-2xl px-3.5 py-2 text-sm shadow-sh1 ${
+          mine
+            ? `bg-green-500 text-white ${isLastFromSender ? "rounded-br-md" : ""}`
+            : `bg-white text-text ${isLastFromSender ? "rounded-bl-md" : ""}`
+        }`}
+      >
+        <p className="whitespace-pre-wrap break-words leading-snug">{msg.body}</p>
+        <div
+          className={`mt-1 flex items-center gap-1 text-[10px] leading-none ${
+            mine ? "justify-end text-white/70" : "justify-start text-text-2"
+          }`}
+        >
+          <span>{time}</span>
+          {mine && (
+            <span className="ml-0.5 inline-flex">
+              {isPending ? (
+                <Clock size={11} strokeWidth={2} />
+              ) : isRead ? (
+                <CheckCheck size={13} strokeWidth={2.4} className="text-sky-200" />
+              ) : (
+                <CheckCheck size={13} strokeWidth={2.4} className="text-white/70" />
+              )}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
