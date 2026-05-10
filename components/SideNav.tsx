@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Logo } from "@/components/Logo";
 import {
   BookMarked,
   Compass,
@@ -30,11 +31,8 @@ export function SideNav() {
       aria-label="Primary"
       className="sticky top-0 hidden h-dvh w-60 shrink-0 border-r border-line bg-white px-4 py-6 md:block"
     >
-      <Link
-        href="/album"
-        className="mb-6 block px-2 font-display text-3xl tracking-tight text-text"
-      >
-        CROMIO
+      <Link href="/album" aria-label="Cromio · ir al álbum" className="mb-6 block px-2">
+        <Logo size="md" />
       </Link>
       <ul className="space-y-1">
         {TABS.map(({ id, href, icon: Icon }) => {

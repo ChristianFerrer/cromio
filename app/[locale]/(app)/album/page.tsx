@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { AddCromoSheet } from "@/components/cromo/AddCromoSheet";
 import { Flag } from "@/components/cromo/Flag";
+import { Logo } from "@/components/Logo";
 import { Chip } from "@/components/ui/Chip";
 import { IconBtn } from "@/components/ui/IconBtn";
 
@@ -81,7 +82,8 @@ export default function AlbumPage() {
   return (
     <main className="flex flex-col">
       <div className="flex items-center justify-between px-5 pt-14">
-        <h1 className="font-display text-3xl tracking-tight">CROMIO</h1>
+        <Logo size="md" />
+        <h1 className="sr-only">Cromio</h1>
         <IconBtn
           ariaLabel="Buscar y añadir cromo"
           onClick={() => setShowAdd(true)}

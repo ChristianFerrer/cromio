@@ -32,8 +32,12 @@ export const metadata: Metadata = {
     startupImage: ["/icon.svg"],
   },
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon-maskable.svg",
+    icon: [
+      { url: "/cromio_bg.png", type: "image/png" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/cromio_bg.png",
+    apple: "/cromio_bg.png",
   },
   formatDetection: {
     telephone: false,

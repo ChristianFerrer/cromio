@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { signUpWithPassword } from "@/lib/auth/actions";
 import { Btn } from "@/components/ui/Btn";
+import { Logo } from "@/components/Logo";
 import { AuthDivider, Field, GoogleButton } from "@/components/auth/AuthForm";
 
 export default function SignupPage() {
@@ -20,8 +21,8 @@ export default function SignupPage() {
   return (
     <main className="flex flex-1 flex-col px-6 pt-16">
       <div>
-        <h1 className="font-display text-5xl tracking-tight">CROMIO</h1>
-        <p className="mt-1 text-sm text-text-2">
+        <Logo size="lg" />
+        <p className="mt-2 text-sm text-text-2">
           Crea tu cuenta y empieza a intercambiar.
         </p>
       </div>

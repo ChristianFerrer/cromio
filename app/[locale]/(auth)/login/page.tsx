@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { signInWithPassword } from "@/lib/auth/actions";
 import { Btn } from "@/components/ui/Btn";
+import { Logo } from "@/components/Logo";
 import { AuthDivider, Field, GoogleButton } from "@/components/auth/AuthForm";
 
 export default function LoginPage() {
@@ -15,8 +16,8 @@ export default function LoginPage() {
   return (
     <main className="flex flex-1 flex-col px-6 pt-16">
       <div>
-        <h1 className="font-display text-5xl tracking-tight">CROMIO</h1>
-        <p className="mt-1 text-sm text-text-2">Bienvenido de vuelta.</p>
+        <Logo size="lg" />
+        <p className="mt-2 text-sm text-text-2">Bienvenido de vuelta.</p>
       </div>
 
       <form
