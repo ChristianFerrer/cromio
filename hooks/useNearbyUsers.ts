@@ -87,7 +87,7 @@ export function useNearbyUsers(radiusM: number) {
           alias: r.alias,
           display_name: r.display_name,
           avatar_url: r.avatar_url,
-          color: r.color ?? "#1FAE5A",
+          color: r.color ?? "#10C56A",
           rating: r.rating,
           trades_count: r.trades_count,
           distance_m: r.distance_m,

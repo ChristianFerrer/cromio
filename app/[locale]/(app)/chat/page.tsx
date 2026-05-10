@@ -118,7 +118,7 @@ export default async function ChatListPage() {
                 <div className="relative">
                   <div
                     className="grid h-12 w-12 place-items-center rounded-full font-display text-lg text-white"
-                    style={{ background: c.other_user.color ?? "#1FAE5A" }}
+                    style={{ background: c.other_user.color ?? "#10C56A" }}
                   >
                     {initials}
                   </div>
