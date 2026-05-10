@@ -41,15 +41,38 @@ export default function MapaPage() {
 
   useEffect(() => {
     if (view !== "map" || !containerRef.current || mapRef.current) return;
-    const styleUrl =
-      process.env.NEXT_PUBLIC_MAP_STYLE_URL ??
-      "https://tiles.openfreemap.org/styles/positron";
+
+    const style: maplibregl.StyleSpecification = {
+      version: 8,
+      sources: {
+        osm: {
+          type: "raster",
+          tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+          tileSize: 256,
+          maxzoom: 19,
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        },
+      },
+      layers: [
+        {
+          id: "osm",
+          type: "raster",
+          source: "osm",
+          paint: {
+            "raster-saturation": -0.25,
+            "raster-brightness-min": 0.05,
+            "raster-brightness-max": 0.95,
+          },
+        },
+      ],
+    };
 
     let map: MapLibreMap;
     try {
       map = new maplibregl.Map({
         container: containerRef.current,
-        style: styleUrl,
+        style,
         center,
         zoom: 14,
         attributionControl: { compact: true },
