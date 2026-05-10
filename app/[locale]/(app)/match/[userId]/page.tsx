@@ -159,11 +159,31 @@ export default function MatchDetailPage({
 
   if (!profile || !match) {
     return (
-      <main className="flex min-h-dvh flex-col px-5 pt-14">
-        <div className="mt-10 flex flex-col items-center gap-2">
+      <main className="flex min-h-dvh flex-col pb-24">
+        <div className="flex items-center justify-between px-3 pt-14">
+          <div className="h-10 w-10 animate-pulse rounded-md bg-paper" />
+          <div className="h-7 w-24 animate-pulse rounded bg-paper" />
+          <div className="flex gap-1.5">
+            <div className="h-10 w-10 animate-pulse rounded-md bg-paper" />
+            <div className="h-10 w-10 animate-pulse rounded-md bg-paper" />
+          </div>
+        </div>
+        <section className="mt-3 flex flex-col items-center px-5 pb-4">
           <div className="h-20 w-20 animate-pulse rounded-full bg-paper" />
-          <div className="mt-2 h-4 w-32 animate-pulse rounded bg-paper" />
-          <div className="h-3 w-48 animate-pulse rounded bg-paper" />
+          <div className="mt-3 h-6 w-40 animate-pulse rounded bg-paper" />
+          <div className="mt-1.5 h-3 w-52 animate-pulse rounded bg-paper" />
+        </section>
+        <div className="h-[68px] animate-pulse bg-paper" />
+        <div className="mx-3 mt-1 grid grid-cols-2 gap-3 rounded-md border border-line bg-white p-3.5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div
+              key={i}
+              className="aspect-[78/110] animate-pulse rounded-card bg-paper"
+            />
+          ))}
+        </div>
+        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
+          <div className="h-14 w-full animate-pulse rounded-xl bg-paper" />
         </div>
       </main>
     );

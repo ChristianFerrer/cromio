@@ -217,14 +217,19 @@ export default function AlbumPage() {
       </div>
 
       <div className="grid grid-cols-3 gap-3 px-4 pb-6 pt-1">
-        {list.map((s) => (
-          <CromoCard
+        {list.map((s, i) => (
+          <div
             key={s.n}
-            sticker={s}
-            count={collection.get(s.n) ?? 0}
-            size="sm"
-            onAdjust={(d) => adjust(s.n, d)}
-          />
+            className="cromio-card-rise"
+            style={{ ["--i" as string]: i }}
+          >
+            <CromoCard
+              sticker={s}
+              count={collection.get(s.n) ?? 0}
+              size="sm"
+              onAdjust={(d) => adjust(s.n, d)}
+            />
+          </div>
         ))}
         {list.length === 0 && (
           <div className="col-span-3 py-10 text-center text-sm text-text-2">

@@ -246,9 +246,21 @@ export default function MapaPage() {
             </>
           )}
           {users.length === 0 && (
-            <p className="py-10 text-center text-sm text-text-2">
-              Sin matches en este radio. Amplía el radio o añade más cromos.
-            </p>
+            <div className="mt-4 flex flex-col items-center rounded-2xl border border-line bg-gradient-to-b from-paper to-bone px-6 py-10 text-center">
+              <div className="grid h-14 w-14 place-items-center rounded-full bg-green-100 text-green-700">
+                <List size={22} strokeWidth={2.2} />
+              </div>
+              <h2 className="mt-3 font-display text-lg">Sin coleccionistas en este radio</h2>
+              <p className="mt-1 max-w-xs text-xs leading-snug text-text-2">
+                Amplía el radio con el slider de abajo o añade más cromos en tu álbum para abrir el rango de posibles matches.
+              </p>
+              <Link
+                href="/album"
+                className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-green-500 px-4 py-2.5 text-xs font-bold text-white shadow-sh1"
+              >
+                Añadir cromos
+              </Link>
+            </div>
           )}
         </div>
       )}

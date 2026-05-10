@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Flag as FlagIcon, Search, X } from "lucide-react";
+import { Flag as FlagIcon, Search, X, MapPin } from "lucide-react";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
@@ -226,9 +226,36 @@ export default function FavoritosPage() {
             </div>
           ))
         ) : rows.length === 0 ? (
-          <div className="grid h-48 place-items-center rounded-md border border-dashed border-line text-center text-sm text-text-2">
-            Aún no tienes favoritos.<br />
-            Búscalos arriba o márcalos desde el mapa.
+          <div className="mt-2 flex flex-col items-center rounded-2xl border border-line bg-gradient-to-b from-paper to-bone px-6 py-10 text-center">
+            <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-green-500 to-green-700 text-white shadow-sh2">
+              <FlagIcon size={26} strokeWidth={2} fill="currentColor" />
+            </div>
+            <h2 className="mt-4 font-display text-xl">Aún no tienes favoritos</h2>
+            <p className="mt-1 max-w-xs text-xs leading-snug text-text-2">
+              Marca con la bandera a los coleccionistas que te interesen para tenerlos siempre a un toque, aunque cambien de zona.
+            </p>
+            <div className="mt-5 flex flex-col gap-2 sm:flex-row">
+              <Link
+                href="/mapa"
+                className="inline-flex items-center justify-center gap-1.5 rounded-md bg-green-500 px-4 py-2.5 text-xs font-bold text-white shadow-sh1"
+              >
+                <MapPin size={14} strokeWidth={2.2} />
+                Buscar en el mapa
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.querySelector<HTMLInputElement>(
+                    'input[placeholder="Buscar coleccionista por alias"]',
+                  );
+                  el?.focus();
+                }}
+                className="inline-flex items-center justify-center gap-1.5 rounded-md border border-line bg-white px-4 py-2.5 text-xs font-semibold"
+              >
+                <Search size={14} strokeWidth={2.2} />
+                Buscar por alias
+              </button>
+            </div>
           </div>
         ) : (
           rows.map((u) => (

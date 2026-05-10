@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { NearbyUser } from "@/hooks/useNearbyUsers";
@@ -32,6 +32,7 @@ export function LeafletMap({
   const sweepRef = useRef<HTMLDivElement | null>(null);
   const pulseRef = useRef<HTMLDivElement | null>(null);
   const dotRef = useRef<HTMLDivElement | null>(null);
+  const [showCardinals, setShowCardinals] = useState(false);
   const programmaticMoveRef = useRef(false);
 
   useEffect(() => {
@@ -262,15 +263,47 @@ export function LeafletMap({
       </div>
       <div
         ref={dotRef}
-        aria-hidden
         style={{
           position: "absolute",
-          pointerEvents: "none",
           transform: "translate(-50%, -50%)",
           zIndex: 700,
         }}
       >
-        <div className="cromio-self-dot" />
+        <button
+          type="button"
+          aria-label="Tu ubicación"
+          onClick={() => {
+            setShowCardinals(true);
+            window.setTimeout(() => setShowCardinals(false), 2200);
+          }}
+          className="cromio-self-dot-btn"
+        >
+          <div className="cromio-self-dot" />
+        </button>
+        {showCardinals && (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{ width: 96, height: 96 }}
+          >
+            {(
+              [
+                { l: "N", x: 50, y: -2 },
+                { l: "E", x: 102, y: 50 },
+                { l: "S", x: 50, y: 102 },
+                { l: "O", x: -2, y: 50 },
+              ] as const
+            ).map((c) => (
+              <span
+                key={c.l}
+                className="cromio-cardinal-tag"
+                style={{ left: `${c.x}%`, top: `${c.y}%` }}
+              >
+                {c.l}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
