@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 15:12 UTC** · branch `main`_
+_Last updated: **2026-05-10 15:15 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -99,19 +99,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(3 minutes ago)_
-- edbaace feat(onboarding): identity step + redirect when home_location is null _(6 minutes ago)_
-- bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(8 minutes ago)_
-- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(33 minutes ago)_
-- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(36 minutes ago)_
-- f5cad0f fix(chat): make realtime + read receipts actually work _(65 minutes ago)_
-- 3609c65 feat(chat): WhatsApp-style states with read receipts and day separators _(74 minutes ago)_
-- 3b05cb5 fix: hide bottom nav inside chat detail and match detail _(82 minutes ago)_
+- 3a74e7b feat(ux): global toast bus + skeleton loaders _(3 minutes ago)_
+- 0fc93eb feat(profile): editable profile + avatar upload + push toggle _(6 minutes ago)_
+- edbaace feat(onboarding): identity step + redirect when home_location is null _(9 minutes ago)_
+- bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(11 minutes ago)_
+- 61ca76c feat(push): Web Push notifications via VAPID + service worker _(37 minutes ago)_
+- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(40 minutes ago)_
+- f5cad0f fix(chat): make realtime + read receipts actually work _(68 minutes ago)_
+- 3609c65 feat(chat): WhatsApp-style states with read receipts and day separators _(78 minutes ago)_
+- 3b05cb5 fix: hide bottom nav inside chat detail and match detail _(85 minutes ago)_
 - 9503f5c feat: remove demo fallback so map only shows real users _(3 hours ago)_
 - 0587155 feat: auto-save device GPS into profile.home_location on map view _(6 hours ago)_
 - 67d0342 feat: realtime nearby users + 30s polling + manual refresh button _(7 hours ago)_
 - b78f47e feat: demo fallback users on map when no real collectors are nearby yet _(7 hours ago)_
 - 8fd26a0 feat: add clockwise rotating radar sweep over the search radius _(7 hours ago)_
 - 7208a5b fix: map z-index isolation + zoom table + bigger user pin _(7 hours ago)_
-- dfcd3bd feat: replace custom map with Leaflet for native pan + pinch-zoom _(7 hours ago)_
 <!-- AUTO:COMMITS:END -->

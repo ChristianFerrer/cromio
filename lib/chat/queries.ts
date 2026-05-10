@@ -111,6 +111,14 @@ export async function loadUnreadByChat(): Promise<Record<string, number>> {
   return out;
 }
 
+export type ChatState = "pending" | "confirmed" | "completed" | "cancelled";
+
+export type ChatMeeting = {
+  place: string;
+  at: string;
+  proposer_id: string;
+} | null;
+
 export async function loadChatDetail(chatId: string) {
   const supabase = await createClient();
   const {
@@ -122,6 +130,7 @@ export async function loadChatDetail(chatId: string) {
     .from("chats")
     .select(
       `id, state, user_a, user_b,
+       meeting_place, meeting_at, meeting_proposer_id,
        a:profiles!chats_user_a_fkey (id, alias, display_name, avatar_url, color, rating, trades_count),
        b:profiles!chats_user_b_fkey (id, alias, display_name, avatar_url, color, rating, trades_count)`,
     )
@@ -133,16 +142,34 @@ export async function loadChatDetail(chatId: string) {
   const otherRaw = (chat.user_a === user.id ? chat.b : chat.a) as never;
   const other = Array.isArray(otherRaw) ? otherRaw[0] : otherRaw;
 
-  const { data: messages } = await supabase
-    .from("messages")
-    .select("id, chat_id, sender_id, body, created_at, read_by_recipient_at")
-    .eq("chat_id", chatId)
-    .order("created_at", { ascending: true });
+  const [{ data: messages }, { data: myRating }] = await Promise.all([
+    supabase
+      .from("messages")
+      .select("id, chat_id, sender_id, body, created_at, read_by_recipient_at")
+      .eq("chat_id", chatId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("chat_ratings")
+      .select("stars")
+      .eq("chat_id", chatId)
+      .eq("rater_id", user.id)
+      .maybeSingle(),
+  ]);
+
+  const meeting: ChatMeeting = chat.meeting_at
+    ? {
+        place: chat.meeting_place ?? "",
+        at: chat.meeting_at,
+        proposer_id: chat.meeting_proposer_id ?? "",
+      }
+    : null;
 
   return {
-    chat: { id: chat.id, state: chat.state },
+    chat: { id: chat.id, state: chat.state as ChatState },
     me: user.id,
     other,
+    meeting,
+    myRated: !!myRating,
     messages: (messages ?? []) as ChatMessage[],
   };
 }

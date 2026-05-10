@@ -18,6 +18,9 @@ export default async function ChatDetailPage({
       meId={data.me}
       other={data.other}
       initialMessages={data.messages}
+      initialState={data.chat.state}
+      initialMeeting={data.meeting}
+      initialMyRated={data.myRated}
     />
   );
 }
