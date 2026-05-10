@@ -74,24 +74,26 @@ body {
 /* Pulse rings that expand from the user's location to the radar edge.
    The wrapper is sized at runtime to the radar diameter (see LeafletMap),
    so scale(1) lands exactly on the radar boundary regardless of zoom. */
+/* Two staggered solid green discs scaling out from the user dot to
+   the radar edge — same look-and-feel as the original Claude.ai
+   design handoff (just sized at runtime to the radar diameter so the
+   pulse always lands on the perimeter). */
 .cromio-radar-pulse {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(31, 174, 90, 0.6) 0%,
-    rgba(31, 174, 90, 0.32) 45%,
-    rgba(31, 174, 90, 0.12) 75%,
-    rgba(31, 174, 90, 0) 100%
-  );
-  transform: scale(0);
+  background: rgba(31, 174, 90, 0.4);
+  transform: scale(0.05);
   animation: cromio-radar-pulse 2.6s ease-out infinite;
   will-change: transform, opacity;
 }
+.cromio-radar-pulse--late {
+  animation-delay: 1.3s;
+  background: rgba(31, 174, 90, 0.25);
+}
 @keyframes cromio-radar-pulse {
-  0% { transform: scale(0); opacity: 1; }
-  80% { opacity: 0.18; }
+  0% { transform: scale(0.05); opacity: 0.9; }
+  80% { opacity: 0.05; }
   100% { transform: scale(1); opacity: 0; }
 }
 

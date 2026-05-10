@@ -222,6 +222,7 @@ export function LeafletMap({
         }}
       >
         <div className="cromio-radar-pulse" />
+        <div className="cromio-radar-pulse cromio-radar-pulse--late" />
       </div>
       <div
         ref={gridRef}
@@ -249,11 +250,15 @@ export function LeafletMap({
             stroke="rgba(17,124,78,0.6)"
             fill="none"
           >
+            {/* Cardinal cross splits the scope into 4 quadrants. */}
+            <line x1="50" y1="0" x2="50" y2="100" strokeWidth="0.22" />
+            <line x1="0" y1="50" x2="100" y2="50" strokeWidth="0.22" />
+
+            {/* Range rings — one per filter step smaller than the
+                currently selected radius. Continuous strokes. */}
             {innerRings
               .filter((r) => r > 0 && r < radiusM)
               .map((r) => {
-                // Each smaller filter step (200m, 500m, 1km, ...) becomes
-                // a ring whose visual radius = (r / selected) * 50.
                 const rv = (r / radiusM) * 50;
                 return (
                   <circle
@@ -261,8 +266,7 @@ export function LeafletMap({
                     cx="50"
                     cy="50"
                     r={rv}
-                    strokeWidth={rv > 25 ? 0.2 : 0.18}
-                    strokeDasharray={rv > 25 ? "1 1.6" : "0.8 1.4"}
+                    strokeWidth={rv > 25 ? 0.22 : 0.2}
                   />
                 );
               })}

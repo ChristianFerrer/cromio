@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 18:28 UTC** · branch `main`_
+_Last updated: **2026-05-10 18:35 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -132,19 +132,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 9725a18 fix(mapa): rings 60%, single louder pulse, drop the tint _(7 minutes ago)_
-- 07b9390 fix(mapa): radar grid thinner @ 20%, cardinals with edge-fade gradient _(13 minutes ago)_
-- 559329c feat(mapa): radar scope look — range rings, cardinals, sweep arm _(32 minutes ago)_
-- 4527a2d fix(mapa): pulse fills the radar + solid radar border _(38 minutes ago)_
-- d39243c fix(flags): SVG flags with proper bounds, no escaping sun _(49 minutes ago)_
-- f8fb9c8 feat(forms+ux): forgot pwd, signup confirm, error.tsx, perfil cleanup _(71 minutes ago)_
-- 55121af feat(chat+match): selection handoff, textarea, 0-star rate, day labels _(76 minutes ago)_
-- 1bfea47 feat(onboarding): stepper, back button, real location flow, inline alias _(81 minutes ago)_
-- 67cf293 feat(album): real Search header + AddCromoSheet replaces window.prompt _(83 minutes ago)_
-- 87e28a7 refactor(design): shared color tokens, IconBtn primitive, drop hex literals _(85 minutes ago)_
-- 73f72b6 feat(a11y+responsive): unblock zoom, dynamic html lang, sidebar at md+ _(89 minutes ago)_
+- a3b4039 feat(mapa): radar rings track filter steps + drop cardinal cross _(7 minutes ago)_
+- 9725a18 fix(mapa): rings 60%, single louder pulse, drop the tint _(14 minutes ago)_
+- 07b9390 fix(mapa): radar grid thinner @ 20%, cardinals with edge-fade gradient _(20 minutes ago)_
+- 559329c feat(mapa): radar scope look — range rings, cardinals, sweep arm _(39 minutes ago)_
+- 4527a2d fix(mapa): pulse fills the radar + solid radar border _(45 minutes ago)_
+- d39243c fix(flags): SVG flags with proper bounds, no escaping sun _(56 minutes ago)_
+- f8fb9c8 feat(forms+ux): forgot pwd, signup confirm, error.tsx, perfil cleanup _(78 minutes ago)_
+- 55121af feat(chat+match): selection handoff, textarea, 0-star rate, day labels _(82 minutes ago)_
+- 1bfea47 feat(onboarding): stepper, back button, real location flow, inline alias _(87 minutes ago)_
+- 67cf293 feat(album): real Search header + AddCromoSheet replaces window.prompt _(2 hours ago)_
+- 87e28a7 refactor(design): shared color tokens, IconBtn primitive, drop hex literals _(2 hours ago)_
+- 73f72b6 feat(a11y+responsive): unblock zoom, dynamic html lang, sidebar at md+ _(2 hours ago)_
 - 6ba0c4d feat(onboarding): album-style picker + Repetidas chip sums extras _(2 hours ago)_
-- b27b46e fix(album): show total duplicates as Repetidas _(2 hours ago)_
+- b27b46e fix(album): show total duplicates as Repetidas _(3 hours ago)_
 - 5514dea fix(push): TDZ crash on permission grant + friendly error toasts _(3 hours ago)_
-- e500ad1 fix(favoritos): server-side favorites in user_favorites + UX _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->
