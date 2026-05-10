@@ -26,6 +26,8 @@ import { createClient } from "@/lib/supabase/client";
 import { pushAppToast } from "@/lib/notifications/toast";
 import { IconBtn, IconLink } from "@/components/ui/IconBtn";
 import { Sheet } from "@/components/ui/Sheet";
+import { CromoPreviewSheet } from "@/components/cromo/CromoPreviewSheet";
+import { TOTAL_STICKERS } from "@/lib/data/stickers";
 
 type Other = {
   id: string;
@@ -98,6 +100,7 @@ export function ChatRoom({
   const [myRated, setMyRated] = useState(initialMyRated);
   const [showProposeSheet, setShowProposeSheet] = useState(false);
   const [showRateSheet, setShowRateSheet] = useState(false);
+  const [previewN, setPreviewN] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const initials = (other.alias ?? "??").slice(0, 2).toUpperCase();
 
@@ -389,6 +392,7 @@ export function ChatRoom({
               otherInitials={initials}
               otherColor={other.color ?? "#1FAE5A"}
               showAvatar={item.showAvatar}
+              onCromoClick={(n) => setPreviewN(n)}
             />
           );
         })}
@@ -473,6 +477,10 @@ export function ChatRoom({
             });
           }}
         />
+      )}
+
+      {previewN !== null && (
+        <CromoPreviewSheet n={previewN} onClose={() => setPreviewN(null)} />
       )}
     </main>
   );
@@ -731,6 +739,46 @@ function RateChatSheet({
   );
 }
 
+// Splits a chat message body into text + tappable #NNN chips so a draft like
+// "Te ofrezco #5, #10" becomes interactive previews. Only matches numbers
+// inside the catalog range (1..TOTAL_STICKERS).
+function renderBodyWithCromoChips(
+  body: string,
+  mine: boolean,
+  onCromoClick: (n: number) => void,
+): React.ReactNode {
+  const re = /#(\d{1,4})\b/g;
+  const out: React.ReactNode[] = [];
+  let last = 0;
+  let i = 0;
+  for (let m = re.exec(body); m !== null; m = re.exec(body)) {
+    const n = Number(m[1]);
+    if (n >= 1 && n <= TOTAL_STICKERS) {
+      if (m.index > last) out.push(body.slice(last, m.index));
+      out.push(
+        <button
+          key={`c-${i++}-${m.index}`}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCromoClick(n);
+          }}
+          className={`mx-0.5 inline-flex items-center rounded px-1.5 py-0.5 align-baseline font-display text-[12px] leading-none transition-colors ${
+            mine
+              ? "bg-white/20 text-white hover:bg-white/30"
+              : "bg-green-100 text-green-700 hover:bg-green-50"
+          }`}
+        >
+          #{n}
+        </button>,
+      );
+      last = m.index + m[0].length;
+    }
+  }
+  if (last < body.length) out.push(body.slice(last));
+  return out.length === 0 ? body : out;
+}
+
 function MessageRow({
   msg,
   mine,
@@ -738,6 +786,7 @@ function MessageRow({
   otherInitials,
   otherColor,
   showAvatar,
+  onCromoClick,
 }: {
   msg: ChatMessage;
   mine: boolean;
@@ -745,6 +794,7 @@ function MessageRow({
   otherInitials: string;
   otherColor: string;
   showAvatar: boolean;
+  onCromoClick: (n: number) => void;
 }) {
   const isPending = msg.id.startsWith("tmp-");
   const isRead = msg.read_by_recipient_at !== null;
@@ -775,7 +825,9 @@ function MessageRow({
             : `bg-white text-text ${isLastFromSender ? "rounded-bl-md" : ""}`
         }`}
       >
-        <p className="whitespace-pre-wrap break-words leading-snug">{msg.body}</p>
+        <p className="whitespace-pre-wrap break-words leading-snug">
+          {renderBodyWithCromoChips(msg.body, mine, onCromoClick)}
+        </p>
         <div
           className={`mt-1 flex items-center gap-1 text-[10px] leading-none ${
             mine ? "justify-end text-white/70" : "justify-start text-text-2"
