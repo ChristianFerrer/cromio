@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Camera, Check, Loader2, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { updateProfile } from "@/lib/profile/actions";
+import { pushAppToast } from "@/lib/notifications/toast";
 import { Btn } from "@/components/ui/Btn";
 
 const COLORS = [
@@ -95,12 +96,19 @@ export function EditProfileForm({
         avatar_url: avatarUrl,
       });
       if (result?.error) {
-        if (result.error === "alias_taken") setError("Ese alias ya está en uso");
-        else if (result.error === "invalid_alias") setError("Alias no válido");
-        else if (result.error === "invalid_color") setError("Color no válido");
-        else setError(result.error);
+        const msg =
+          result.error === "alias_taken"
+            ? "Ese alias ya está en uso"
+            : result.error === "invalid_alias"
+              ? "Alias no válido"
+              : result.error === "invalid_color"
+                ? "Color no válido"
+                : result.error;
+        setError(msg);
+        pushAppToast({ kind: "error", title: "No se pudo guardar", body: msg });
         return;
       }
+      pushAppToast({ kind: "success", body: "Perfil actualizado" });
       router.replace("/perfil");
       router.refresh();
     });

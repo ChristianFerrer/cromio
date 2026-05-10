@@ -11,9 +11,17 @@ import {
 } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MessageCircle, Sparkles, X } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  MessageCircle,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useUser } from "@/hooks/useUser";
+import { subscribeAppToast } from "@/lib/notifications/toast";
 import { EnablePush } from "./EnablePush";
 
 type Toast =
@@ -32,6 +40,14 @@ type Toast =
       alias: string;
       youGet: number;
       theyGet: number;
+    }
+  | {
+      id: string;
+      kind: "app";
+      level: "success" | "error" | "info";
+      title?: string;
+      body: string;
+      url?: string;
     };
 
 type NotifContext = {
@@ -74,12 +90,29 @@ export function NotificationsRoot({
 
   const onMapa = /\/mapa(\/|$)/.test(pathname);
 
-  const pushToast = useCallback((t: Toast) => {
+  const pushToast = useCallback((t: Toast, ttl = TOAST_TTL) => {
     setToasts((prev) => [...prev.slice(-3), t]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((x) => x.id !== t.id));
-    }, TOAST_TTL);
+    }, ttl);
   }, []);
+
+  // Listen for in-app toast events (errors, success, info from anywhere)
+  useEffect(() => {
+    return subscribeAppToast((t) => {
+      pushToast(
+        {
+          id: `app-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          kind: "app",
+          level: t.kind,
+          title: t.title,
+          body: t.body,
+          url: t.url,
+        },
+        t.ttlMs ?? TOAST_TTL,
+      );
+    });
+  }, [pushToast]);
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((x) => x.id !== id));
@@ -338,6 +371,57 @@ function ToastCard({
       </Link>
     );
   }
+  if (toast.kind === "app") {
+    const Icon =
+      toast.level === "success"
+        ? CheckCircle2
+        : toast.level === "error"
+          ? AlertTriangle
+          : Info;
+    const accent =
+      toast.level === "success"
+        ? "var(--y-green-700)"
+        : toast.level === "error"
+          ? "#D7263D"
+          : "#2D7DD8";
+    const className =
+      "pointer-events-auto flex animate-slide-down items-center gap-2.5 rounded-md border border-black/5 bg-white/95 p-2.5 shadow-sh3 backdrop-blur-xl";
+    const inner = (
+      <>
+        <div
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-white"
+          style={{ background: accent }}
+        >
+          <Icon size={16} strokeWidth={2.2} />
+        </div>
+        <div className="min-w-0 flex-1">
+          {toast.title && (
+            <p className="truncate text-sm font-bold text-text">{toast.title}</p>
+          )}
+          <p className="truncate text-xs text-text-2">{toast.body}</p>
+        </div>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDismiss();
+          }}
+          className="grid h-6 w-6 shrink-0 place-items-center rounded text-text-2"
+          aria-label="Cerrar"
+        >
+          <X size={14} strokeWidth={2.2} />
+        </button>
+      </>
+    );
+    return toast.url ? (
+      <Link href={toast.url} onClick={onDismiss} className={className}>
+        {inner}
+      </Link>
+    ) : (
+      <div className={className}>{inner}</div>
+    );
+  }
+
   const isMatch = toast.kind === "match";
   const accent = isMatch ? "var(--y-green-700)" : "#2D7DD8";
   return (

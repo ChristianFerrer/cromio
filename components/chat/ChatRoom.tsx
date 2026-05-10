@@ -6,6 +6,7 @@ import { ChevronLeft, Send, CheckCheck, Clock } from "lucide-react";
 import type { ChatMessage } from "@/lib/chat/queries";
 import { sendMessage, markChatRead } from "@/lib/chat/actions";
 import { createClient } from "@/lib/supabase/client";
+import { pushAppToast } from "@/lib/notifications/toast";
 
 type Other = {
   id: string;
@@ -198,6 +199,11 @@ export function ChatRoom({
       if (result.error) {
         setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
         setBody(trimmed);
+        pushAppToast({
+          kind: "error",
+          title: "No se pudo enviar",
+          body: "Revisa tu conexión y vuelve a intentarlo.",
+        });
       }
     });
   };
