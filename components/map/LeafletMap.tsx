@@ -13,6 +13,8 @@ type Props = {
   zoom: number;
   users: NearbyUser[];
   radiusM: number;
+  /** Inner range rings to draw (in metres). Each must be < radiusM. */
+  innerRings?: number[];
 };
 
 export function LeafletMap({
@@ -21,6 +23,7 @@ export function LeafletMap({
   zoom,
   users,
   radiusM,
+  innerRings = [],
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -240,60 +243,30 @@ export function LeafletMap({
             <clipPath id="cromio-radar-grid-clip">
               <circle cx="50" cy="50" r="50" />
             </clipPath>
-            {/* Cardinal cross: opaque at center, transparent at the
-                radar edge so the lines fade naturally into the scope. */}
-            <linearGradient
-              id="cromio-radar-cross-v"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop offset="0%" stopColor="rgba(17,124,78,0)" />
-              <stop offset="50%" stopColor="rgba(17,124,78,0.55)" />
-              <stop offset="100%" stopColor="rgba(17,124,78,0)" />
-            </linearGradient>
-            <linearGradient
-              id="cromio-radar-cross-h"
-              x1="0"
-              y1="0"
-              x2="1"
-              y2="0"
-            >
-              <stop offset="0%" stopColor="rgba(17,124,78,0)" />
-              <stop offset="50%" stopColor="rgba(17,124,78,0.55)" />
-              <stop offset="100%" stopColor="rgba(17,124,78,0)" />
-            </linearGradient>
           </defs>
           <g
             clipPath="url(#cromio-radar-grid-clip)"
             stroke="rgba(17,124,78,0.6)"
             fill="none"
           >
-            {/* Concentric range rings (25% / 50% / 75% of radius) */}
-            <circle cx="50" cy="50" r="12.5" strokeWidth="0.18" strokeDasharray="0.8 1.4" />
-            <circle cx="50" cy="50" r="25" strokeWidth="0.18" strokeDasharray="0.8 1.4" />
-            <circle cx="50" cy="50" r="37.5" strokeWidth="0.2" strokeDasharray="1 1.6" />
+            {innerRings
+              .filter((r) => r > 0 && r < radiusM)
+              .map((r) => {
+                // Each smaller filter step (200m, 500m, 1km, ...) becomes
+                // a ring whose visual radius = (r / selected) * 50.
+                const rv = (r / radiusM) * 50;
+                return (
+                  <circle
+                    key={r}
+                    cx="50"
+                    cy="50"
+                    r={rv}
+                    strokeWidth={rv > 25 ? 0.2 : 0.18}
+                    strokeDasharray={rv > 25 ? "1 1.6" : "0.8 1.4"}
+                  />
+                );
+              })}
           </g>
-          {/* Cardinal crosshair with fade-out gradient toward the edges */}
-          <line
-            x1="50"
-            y1="0"
-            x2="50"
-            y2="100"
-            stroke="url(#cromio-radar-cross-v)"
-            strokeWidth="0.22"
-            clipPath="url(#cromio-radar-grid-clip)"
-          />
-          <line
-            x1="0"
-            y1="50"
-            x2="100"
-            y2="50"
-            stroke="url(#cromio-radar-cross-h)"
-            strokeWidth="0.22"
-            clipPath="url(#cromio-radar-grid-clip)"
-          />
         </svg>
       </div>
       <div
@@ -307,7 +280,6 @@ export function LeafletMap({
         }}
       >
         <div className="cromio-radar-sweep" />
-        <div className="cromio-radar-arm" />
       </div>
     </div>
   );

@@ -127,30 +127,6 @@ body {
   will-change: transform;
 }
 
-/* Crisp leading edge of the sweep arm — a thin radial line that travels
-   in lockstep with the sweep gradient. */
-.cromio-radar-arm {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 50%;
-  height: 1.5px;
-  transform-origin: 0 50%;
-  background: linear-gradient(
-    to right,
-    rgba(17, 124, 78, 0.95) 0%,
-    rgba(31, 174, 90, 0.7) 60%,
-    rgba(31, 174, 90, 0) 100%
-  );
-  filter: drop-shadow(0 0 2px rgba(31, 174, 90, 0.6));
-  animation: cromio-radar-arm 3.6s linear infinite;
-  will-change: transform;
-}
-
-@keyframes cromio-radar-arm {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
 @keyframes cromio-radar-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

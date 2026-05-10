@@ -97,6 +97,7 @@ export default function MapaPage() {
               zoom={zoom}
               users={users}
               radiusM={radius}
+              innerRings={RADII.filter((r) => r < radius)}
             />
           )}
         </div>
