@@ -4,7 +4,8 @@
     "mapa": "Mapa",
     "favoritos": "Contactos",
     "chat": "Chats",
-    "perfil": "Perfil"
+    "perfil": "Perfil",
+    "admin": "Admin"
   },
   "common": {
     "appName": "Cromio",
@@ -46,5 +47,131 @@
     "block": "Bloquear",
     "unblock": "Desbloquear",
     "report": "Denunciar"
+  },
+  "admin": {
+    "title": "Administración",
+    "entryTitle": "Panel de administración",
+    "entrySubtitle": "Métricas, usuarios y auditoría",
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Usuarios",
+      "audit": "Auditoría"
+    },
+    "range": {
+      "label": "Rango",
+      "24h": "24 h",
+      "7d": "7 d",
+      "30d": "30 d",
+      "90d": "90 d",
+      "all": "Todo"
+    },
+    "kpi": {
+      "totalUsers": "Usuarios totales",
+      "dau": "DAU",
+      "wau": "WAU",
+      "mau": "MAU",
+      "completedTrades": "Intercambios completados",
+      "avgRating": "Rating promedio",
+      "pushOptIn": "Push opt-in",
+      "openReports": "Reports abiertos"
+    },
+    "charts": {
+      "signups": "Registros nuevos",
+      "pageViews": "Page views",
+      "sessions": "Sesiones",
+      "messages": "Mensajes enviados",
+      "trades": "Intercambios",
+      "countries": "Top países",
+      "funnel": "Funnel",
+      "devices": "Dispositivos",
+      "retention": "Retención (cohort)",
+      "topWanted": "Top cromos demandados",
+      "topSpare": "Top cromos sobrantes",
+      "radii": "Radios elegidos",
+      "ratings": "Histograma ratings"
+    },
+    "users": {
+      "title": "Usuarios",
+      "search": "Buscar por alias, nombre o email",
+      "filters": "Filtros",
+      "filter": {
+        "plan": "Plan",
+        "any": "Todos",
+        "free": "Free",
+        "pro": "Pro",
+        "banned": "Baneados",
+        "active": "Activos",
+        "hasLocation": "Con localización",
+        "noLocation": "Sin localización",
+        "admins": "Solo admins"
+      },
+      "sort": {
+        "label": "Ordenar por",
+        "createdAt": "Fecha registro",
+        "lastActivity": "Última actividad",
+        "rating": "Rating",
+        "tradesCount": "Intercambios"
+      },
+      "columns": {
+        "user": "Usuario",
+        "email": "Email",
+        "plan": "Plan",
+        "rating": "Rating",
+        "trades": "Cambios",
+        "lastSeen": "Últ. actividad",
+        "createdAt": "Registro",
+        "status": "Estado"
+      },
+      "empty": "Sin usuarios para los filtros aplicados",
+      "actions": {
+        "view": "Ver",
+        "edit": "Editar",
+        "ban": "Banear",
+        "unban": "Levantar ban",
+        "forceSignOut": "Forzar logout",
+        "sendReset": "Enviar reset de contraseña",
+        "promote": "Promover a admin",
+        "demote": "Quitar admin",
+        "exportData": "Exportar datos (GDPR)"
+      },
+      "detail": {
+        "back": "Volver",
+        "summary": "Resumen",
+        "activity": "Actividad",
+        "metrics": "Métricas",
+        "danger": "Zona peligrosa",
+        "banReasonLabel": "Razón del baneo",
+        "banReasonPlaceholder": "Visible para el usuario en la pantalla de baneo",
+        "confirmBan": "Confirmar baneo",
+        "confirmUnban": "Levantar baneo",
+        "confirmForceSignOut": "Cerrar sesiones de este usuario",
+        "confirmReset": "Enviar email de recuperación",
+        "saveChanges": "Guardar cambios",
+        "noChanges": "Sin cambios"
+      }
+    },
+    "audit": {
+      "title": "Auditoría",
+      "empty": "Sin eventos de auditoría todavía",
+      "columns": {
+        "when": "Cuándo",
+        "actor": "Admin",
+        "action": "Acción",
+        "target": "Objetivo"
+      }
+    },
+    "errors": {
+      "notAdmin": "No tienes permisos de administrador",
+      "selfDemote": "No puedes quitarte el rol admin a ti mismo",
+      "selfBan": "No puedes banearte a ti mismo",
+      "generic": "Algo falló. Revisa la consola."
+    }
+  },
+  "banned": {
+    "title": "Tu cuenta está suspendida",
+    "subtitle": "Has perdido acceso a Cromio.",
+    "reasonLabel": "Razón:",
+    "contact": "Si crees que es un error, escribe a soporte@cromio.app",
+    "signOut": "Cerrar sesión"
   }
 }

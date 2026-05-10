@@ -32,4 +32,15 @@ export const CROMIO_COLORS = {
     give: "#D7263D",
     get: "#117C4E",
   },
+  admin: {
+    chart: [
+      "#1FAE5A",
+      "#0E8A48",
+      "#22C55E",
+      "#16A34A",
+      "#06B6D4",
+      "#2D7DD8",
+      "#D7263D",
+    ],
+  },
 } as const;

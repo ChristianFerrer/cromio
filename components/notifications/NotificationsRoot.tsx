@@ -26,6 +26,7 @@ import { playMessageSound } from "@/lib/notifications/sound";
 import { EnablePush } from "./EnablePush";
 import { ServiceWorkerRegistrar } from "@/components/ServiceWorkerRegistrar";
 import { InstallPwaBanner } from "./InstallPwaBanner";
+import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 
 type Toast =
   | {
@@ -315,6 +316,7 @@ export function NotificationsRoot({
       <ServiceWorkerRegistrar />
       <EnablePush />
       <InstallPwaBanner />
+      <PageViewTracker />
     </Ctx.Provider>
   );
 }

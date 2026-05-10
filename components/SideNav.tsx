@@ -9,9 +9,11 @@ import {
   Compass,
   Flag,
   MessageCircle,
+  ShieldCheck,
   User,
 } from "lucide-react";
 import { useNotifications } from "@/components/notifications/NotificationsRoot";
+import { useUser } from "@/hooks/useUser";
 
 const TABS = [
   { id: "album", href: "/album", icon: BookMarked },
@@ -25,6 +27,7 @@ export function SideNav() {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const { totalUnread, newNearbyCount } = useNotifications();
+  const { isAdmin } = useUser();
 
   return (
     <aside
@@ -64,6 +67,25 @@ export function SideNav() {
             </li>
           );
         })}
+        {isAdmin && (
+          <li>
+            <Link
+              href="/admin/dashboard"
+              className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors ${
+                pathname.startsWith("/admin")
+                  ? "bg-green-50 font-bold text-green-700"
+                  : "font-medium text-text-2 hover:bg-paper hover:text-text"
+              }`}
+            >
+              <ShieldCheck
+                size={20}
+                strokeWidth={pathname.startsWith("/admin") ? 2.2 : 1.8}
+                aria-hidden
+              />
+              <span className="flex-1 capitalize">{t("admin")}</span>
+            </Link>
+          </li>
+        )}
       </ul>
     </aside>
   );

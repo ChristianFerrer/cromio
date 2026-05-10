@@ -5,6 +5,7 @@ import { signOut } from "@/lib/auth/actions";
 import { Btn } from "@/components/ui/Btn";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileSettings } from "@/components/profile/ProfileSettings";
+import { AdminLink } from "@/components/admin/AdminLink";
 
 export default async function PerfilPage() {
   const supabase = await createClient();
@@ -164,6 +165,8 @@ export default async function PerfilPage() {
           </Link>
         ))}
       </section>
+
+      <AdminLink />
 
       <form action={signOut}>
         <button
