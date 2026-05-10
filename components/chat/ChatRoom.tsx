@@ -687,7 +687,8 @@ function ProposeMeetingSheet({
           type="datetime-local"
           value={when}
           onChange={(e) => setWhen(e.target.value)}
-          className="mt-1 h-11 w-full rounded-md border border-line bg-white px-3.5 text-sm outline-none"
+          aria-label="Fecha y hora de la quedada"
+          className="mt-1 h-11 w-full rounded-md border border-line bg-white px-3.5 text-sm outline-none focus:border-green-500"
         />
       </label>
       <button

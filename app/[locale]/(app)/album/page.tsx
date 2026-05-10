@@ -157,10 +157,16 @@ export default function AlbumPage() {
         </Link>
       )}
 
-      <div className="mt-5 flex gap-5 border-b border-line px-5">
+      <div
+        role="tablist"
+        aria-label="Categoría de cromos"
+        className="mt-5 flex gap-5 border-b border-line px-5"
+      >
         {(["selecciones", "especiales", "estadios"] as const).map((id) => (
           <button
             key={id}
+            role="tab"
+            aria-selected={tab === id}
             onClick={() => {
               setTab(id);
               if (id !== "selecciones") setCountry("all");

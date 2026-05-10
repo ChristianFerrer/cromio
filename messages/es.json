@@ -34,6 +34,17 @@
   },
   "perfil": {
     "title": "Perfil",
-    "settings": "Ajustes"
+    "settings": "Ajustes",
+    "trades": "Mis intercambios",
+    "wishlist": "Lista de deseos",
+    "blocks": "Bloqueos",
+    "about": "Sobre Cromio",
+    "terms": "Términos y condiciones",
+    "privacy": "Política de privacidad"
+  },
+  "moderation": {
+    "block": "Bloquear",
+    "unblock": "Desbloquear",
+    "report": "Denunciar"
   }
 }
