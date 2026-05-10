@@ -23,22 +23,26 @@ type FavRow = {
 };
 
 export default function FavoritosPage() {
-  const { favs, toggle, has } = useFavorites();
+  const { favs, toggle, has, loaded } = useFavorites();
   const { user } = useUser();
   const [rows, setRows] = useState<FavRow[]>([]);
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<FavRow[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
-    if (!user || favs.size === 0) {
+    if (!user || !loaded) return;
+    if (favs.size === 0) {
       setRows([]);
+      setLoading(false);
       return;
     }
     const supabase = createClient();
     if (!supabase) return;
 
     setLoading(true);
+    let cancelled = false;
     (async () => {
       const ids = [...favs];
       const [profilesRes, nearbyRes] = await Promise.all([
@@ -51,6 +55,7 @@ export default function FavoritosPage() {
           p_radius_m: 50000,
         }),
       ]);
+      if (cancelled) return;
 
       const nearby = new Map<
         string,
@@ -88,25 +93,35 @@ export default function FavoritosPage() {
       );
       setLoading(false);
     })();
-  }, [user, favs]);
+    return () => {
+      cancelled = true;
+    };
+  }, [user, favs, loaded]);
 
-  // Search profiles by alias
+  // Search profiles by alias OR display_name
   useEffect(() => {
     const trimmed = query.trim();
-    if (!user || trimmed.length < 2) {
+    if (!user || trimmed.length === 0) {
       setSearchResults([]);
+      setSearching(false);
       return;
     }
     const supabase = createClient();
     if (!supabase) return;
 
+    setSearching(true);
+    let cancelled = false;
     const t = setTimeout(async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("profiles")
         .select("id, alias, display_name, color, rating, trades_count, plan")
-        .ilike("alias", `%${trimmed}%`)
+        .or(`alias.ilike.%${trimmed}%,display_name.ilike.%${trimmed}%`)
         .neq("id", user.id)
-        .limit(10);
+        .limit(15);
+      if (cancelled) return;
+      if (error) {
+        console.error("[cromio] favorites search failed:", error);
+      }
       setSearchResults(
         (data ?? []).map((p) => ({
           id: p.id,
@@ -121,8 +136,12 @@ export default function FavoritosPage() {
           they_get_count: 0,
         })),
       );
-    }, 250);
-    return () => clearTimeout(t);
+      setSearching(false);
+    }, 200);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, [query, user]);
 
   return (
@@ -147,37 +166,45 @@ export default function FavoritosPage() {
         )}
       </div>
 
-      {searchResults.length > 0 && (
+      {query.trim().length > 0 && (
         <div className="mt-2 rounded-md border border-line bg-white">
-          {searchResults.map((u) => {
-            const active = has(u.id);
-            return (
-              <button
-                key={u.id}
-                onClick={() => toggle(u.id)}
-                className="flex w-full items-center gap-3 border-b border-line p-3 text-left last:border-b-0"
-              >
-                <div
-                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full font-display text-sm text-white"
-                  style={{ background: u.color ?? "#1FAE5A" }}
+          {searching ? (
+            <p className="px-3 py-3 text-xs text-text-2">Buscando…</p>
+          ) : searchResults.length === 0 ? (
+            <p className="px-3 py-3 text-xs text-text-2">
+              Sin resultados para «{query.trim()}»
+            </p>
+          ) : (
+            searchResults.map((u) => {
+              const active = has(u.id);
+              return (
+                <button
+                  key={u.id}
+                  onClick={() => toggle(u.id)}
+                  className="flex w-full items-center gap-3 border-b border-line p-3 text-left last:border-b-0"
                 >
-                  {u.alias.slice(0, 2).toUpperCase()}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold">{u.alias}</p>
-                  {u.display_name && (
-                    <p className="text-xs text-text-2">{u.display_name}</p>
-                  )}
-                </div>
-                <FlagIcon
-                  size={18}
-                  className={active ? "text-green-700" : "text-text-2"}
-                  strokeWidth={2.2}
-                  fill={active ? "currentColor" : "none"}
-                />
-              </button>
-            );
-          })}
+                  <div
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full font-display text-sm text-white"
+                    style={{ background: u.color ?? "#1FAE5A" }}
+                  >
+                    {u.alias.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold">{u.alias}</p>
+                    {u.display_name && (
+                      <p className="text-xs text-text-2">{u.display_name}</p>
+                    )}
+                  </div>
+                  <FlagIcon
+                    size={18}
+                    className={active ? "text-green-700" : "text-text-2"}
+                    strokeWidth={2.2}
+                    fill={active ? "currentColor" : "none"}
+                  />
+                </button>
+              );
+            })
+          )}
         </div>
       )}
 
