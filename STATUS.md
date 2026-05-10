@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 17:05 UTC** · branch `main`_
+_Last updated: **2026-05-10 17:07 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -121,12 +121,13 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 87e28a7 refactor(design): shared color tokens, IconBtn primitive, drop hex literals _(2 minutes ago)_
-- 73f72b6 feat(a11y+responsive): unblock zoom, dynamic html lang, sidebar at md+ _(6 minutes ago)_
-- 6ba0c4d feat(onboarding): album-style picker + Repetidas chip sums extras _(46 minutes ago)_
-- b27b46e fix(album): show total duplicates as Repetidas _(64 minutes ago)_
-- 5514dea fix(push): TDZ crash on permission grant + friendly error toasts _(75 minutes ago)_
-- e500ad1 fix(favoritos): server-side favorites in user_favorites + UX _(79 minutes ago)_
+- 67cf293 feat(album): real Search header + AddCromoSheet replaces window.prompt _(2 minutes ago)_
+- 87e28a7 refactor(design): shared color tokens, IconBtn primitive, drop hex literals _(4 minutes ago)_
+- 73f72b6 feat(a11y+responsive): unblock zoom, dynamic html lang, sidebar at md+ _(8 minutes ago)_
+- 6ba0c4d feat(onboarding): album-style picker + Repetidas chip sums extras _(48 minutes ago)_
+- b27b46e fix(album): show total duplicates as Repetidas _(67 minutes ago)_
+- 5514dea fix(push): TDZ crash on permission grant + friendly error toasts _(77 minutes ago)_
+- e500ad1 fix(favoritos): server-side favorites in user_favorites + UX _(82 minutes ago)_
 - 506976b feat(pwa): install banner (iOS + Chromium) + manifest shortcuts _(2 hours ago)_
 - 463fea7 feat(chat): meeting proposals + rating after trade _(2 hours ago)_
 - 3a74e7b feat(ux): global toast bus + skeleton loaders _(2 hours ago)_
@@ -134,6 +135,5 @@ Or manually: `git config core.hooksPath .githooks`.
 - edbaace feat(onboarding): identity step + redirect when home_location is null _(2 hours ago)_
 - bb19325 chore: remove demo data + add STATUS.md with auto-update hook _(2 hours ago)_
 - 61ca76c feat(push): Web Push notifications via VAPID + service worker _(2 hours ago)_
-- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(2 hours ago)_
-- f5cad0f fix(chat): make realtime + read receipts actually work _(3 hours ago)_
+- 7e3040e feat(notifications): in-app toasts + unread badges in bottom nav _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->
