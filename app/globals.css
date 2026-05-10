@@ -59,16 +59,17 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* User dot — small fixed-size disc at the user's location */
+/* User dot — small fixed-size disc at the user's location.
+   Sits in a JSX overlay above the radar grid/sweep, not inside a
+   Leaflet marker, so no extra centering margin. */
 .cromio-self-dot {
-  width: 14px;
-  height: 14px;
-  margin: 4px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #1fae5a;
   border: 3px solid #ffffff;
   box-shadow: 0 0 0 4px rgba(31, 174, 90, 0.25),
-    0 4px 10px rgba(0, 0, 0, 0.25);
+    0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Pulse rings that expand from the user's location to the radar edge.

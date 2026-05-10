@@ -28,11 +28,11 @@ export function LeafletMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const radiusCircleRef = useRef<L.Circle | null>(null);
-  const userMarkerRef = useRef<L.Marker | null>(null);
   const userMarkersRef = useRef<L.Marker[]>([]);
   const sweepRef = useRef<HTMLDivElement | null>(null);
   const pulseRef = useRef<HTMLDivElement | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
+  const dotRef = useRef<HTMLDivElement | null>(null);
   const programmaticMoveRef = useRef(false);
 
   useEffect(() => {
@@ -83,7 +83,8 @@ export function LeafletMap({
     const sweepEl = sweepRef.current;
     const pulseEl = pulseRef.current;
     const gridEl = gridRef.current;
-    if (!map || !sweepEl || !pulseEl || !gridEl) return;
+    const dotEl = dotRef.current;
+    if (!map || !sweepEl || !pulseEl || !gridEl || !dotEl) return;
 
     const update = () => {
       const center = map.latLngToContainerPoint([centerLat, centerLng]);
@@ -101,6 +102,9 @@ export function LeafletMap({
         el.style.height = `${diameter}px`;
         el.style.opacity = visible;
       }
+
+      dotEl.style.left = `${center.x}px`;
+      dotEl.style.top = `${center.y}px`;
     };
 
     update();
@@ -121,27 +125,10 @@ export function LeafletMap({
     const map = mapRef.current;
     if (!map) return;
 
-    if (!userMarkerRef.current) {
-      const icon = L.divIcon({
-        className: "",
-        html: `<div class="cromio-self-dot"></div>`,
-        iconSize: [22, 22],
-        iconAnchor: [11, 11],
-      });
-      userMarkerRef.current = L.marker([centerLat, centerLng], {
-        icon,
-        interactive: false,
-        keyboard: false,
-        zIndexOffset: 500,
-      }).addTo(map);
-    } else {
-      userMarkerRef.current.setLatLng([centerLat, centerLng]);
-    }
-
     if (!radiusCircleRef.current) {
       radiusCircleRef.current = L.circle([centerLat, centerLng], {
         radius: radiusM,
-        color: "rgba(17,124,78,0.2)",
+        color: "rgba(17,124,78,0.4)",
         weight: 1,
         fillColor: CROMIO_COLORS.green[500],
         fillOpacity: 0.06,
@@ -247,7 +234,7 @@ export function LeafletMap({
           </defs>
           <g
             clipPath="url(#cromio-radar-grid-clip)"
-            stroke="rgba(17,124,78,0.6)"
+            stroke="rgba(17,124,78,0.4)"
             fill="none"
           >
             {/* Cardinal cross splits the scope into 4 quadrants. */}
@@ -284,6 +271,18 @@ export function LeafletMap({
         }}
       >
         <div className="cromio-radar-sweep" />
+      </div>
+      <div
+        ref={dotRef}
+        aria-hidden
+        style={{
+          position: "absolute",
+          pointerEvents: "none",
+          transform: "translate(-50%, -50%)",
+          zIndex: 470,
+        }}
+      >
+        <div className="cromio-self-dot" />
       </div>
     </div>
   );
