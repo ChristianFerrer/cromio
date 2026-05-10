@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-10 21:29 UTC** · branch `claude/admin-dashboard`_
+_Last updated: **2026-05-10 22:36 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -84,19 +84,32 @@ Generate VAPID keys with `npx web-push generate-vapid-keys --json`.
 - Chat: WhatsApp-style ticks (clock → ✓✓ gray → ✓✓ blue), day
   separators, optimistic send, Realtime INSERT + UPDATE + chats
   state. Input is a textarea with auto-grow + Enter submits.
-- Match → Chat: selecting cromos in /match/[id] is now stitched into
-  a draft message that prefills the chat input on first load.
+- Match → Chat: selecting cromos in /match/[id] stitches into a
+  draft message that prefills the chat input. In the chat itself
+  every `#NNN` reference renders as a tappable chip that opens a
+  CromoPreviewSheet with the actual sticker card.
 - Chat states: meeting proposals (place + time), Aceptar/Rechazar,
   "Hecho" → completed, ★1–5 rating sheet (defaults to 0, blocks
   send until ≥1). `chat_ratings` + trigger keep
   `profiles.rating` and `trades_count` live.
 - Favoritos: server-side `user_favorites` table, search debounced
   with %/_ escaped, alias + display_name match.
+- Moderación: `user_blocks` (one-way) + `user_reports` (queue with
+  reason + note + status). `find_nearby_users` skips both directions
+  of a block, `loadChatsForCurrentUser` filters blocked counterparts,
+  and the match detail kebab menu offers Bloquear / Desbloquear /
+  Denunciar via a sheet.
 - Notifications: in-app toasts (messages, matches/leads, generic
   success/error/info via `pushAppToast`), red badges in nav.
   Per-route `error.tsx` with Reintentar + Volver al álbum.
 - Web Push pipeline (VAPID + `/sw.js` + `push_subscriptions`),
   install banner (iOS instructions / Chromium prompt).
+- PWA offline shell: the SW now precaches manifest + brand icons +
+  /offline.html, runtime-caches HTML (network-first) and tiles
+  (cache-first). ServiceWorkerRegistrar mounts the SW on every
+  visit, independent from push permission.
+- Route transitions: Next 16 viewTransition flag enabled with a
+  cross-fade default. Map pins fade-up + scale on entrance.
 - Responsive shell: mobile keeps the 430px column with BottomNav,
   md+ shows a sticky SideNav and widens content to 760.
 - Accessibility: viewport allows pinch-zoom (WCAG 1.4.4),
@@ -105,14 +118,9 @@ Generate VAPID keys with `npx web-push generate-vapid-keys --json`.
 
 ## What is still pending
 
-- Service Worker offline shell (currently SW handles push only;
-  no precache/runtime caching of the app shell or tile cache).
 - Real PNG splash screens + screenshots in `manifest.webmanifest`.
 - Pro tier (Stripe Checkout, radius unlock, badges).
 - Marketplace / individual cromo trades.
-- Per-cromo deep-link from a map pin into chat with preview.
-- Report / block flow for users.
-- View Transitions API for route changes.
 - Privacy / Terms / About pages (currently hidden from /perfil
   until they exist).
 
@@ -132,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- cb5e399 refactor(admin): split components, rename guards, drop hex literals _(69 seconds ago)_
-- e2beaf9 feat(admin): audit log view, profile audit trigger, nightly events retention _(14 minutes ago)_
-- 1314972 feat(admin): dashboard — KPIs, time series, funnel and breakdowns _(16 minutes ago)_
-- a9c4502 feat(admin): user CRUD — list with filters, detail, ban / role / reset _(19 minutes ago)_
-- dc8c948 feat(analytics): events table + client tracker + business-event triggers _(23 minutes ago)_
-- 5e681f1 feat(admin): role + guard + entry points + /banned scaffolding _(26 minutes ago)_
-- ac4833d Revert "feat(brand): green palette anchored on logo + new teal palette" _(2 hours ago)_
-- 68f4856 feat(brand): green palette anchored on logo + new teal palette _(2 hours ago)_
-- 49c98b9 feat(brand): cromio_bg.png as the app logo across favicon + headers _(2 hours ago)_
-- d023680 Add files via upload _(2 hours ago)_
-- c0cfeab fix(mapa): radar above tiles, dot + pins above radar _(2 hours ago)_
-- d724c58 feat(mapa): radar to background z-index + teardrop pins _(3 hours ago)_
-- e7d4768 feat(mapa): Whistle-style radar — minimal scope + recenter button _(3 hours ago)_
-- c6316aa fix(mapa): grid alpha 0.4, user dot promoted above the radar _(3 hours ago)_
-- 66ff06a fix(mapa): original-style pulse + solid rings + quadrant cross _(3 hours ago)_
+- 311cd0c feat(cromo-card): big centered code + flag left + type pill right + red duplicates _(10 minutes ago)_
+- 1a7e2df feat(album): expand host_city cromos from 3 to 16 (#3) _(32 minutes ago)_
+- 677add3 feat(layout): ban gate before onboarding redirect _(36 minutes ago)_
+- e78167c chore(a11y+i18n): global focus-visible ring, tablist semantics, i18n keys _(45 minutes ago)_
+- f702e09 feat(wishlist): personal wishlist of wanted cromos _(48 minutes ago)_
+- d5ebde3 feat(legal): /sobre, /terminos, /privacidad pages + perfil links _(51 minutes ago)_
+- cb08a9c feat(profile): trade history page with ratings given and received _(53 minutes ago)_
+- bd9a237 feat(profile): sound toggle for in-app message toasts + bloqueos page _(54 minutes ago)_
+- 5dfcb29 feat(ux): Web Share API helper + spinners on chat actions _(58 minutes ago)_
+- f7101d6 feat(ux): empty states + stagger album + match skeleton + radar cardinals _(62 minutes ago)_
+- 80b612d fix(album): partition tabs by sticker type so totals add up to 980 (#2) _(74 minutes ago)_
+- 2af033c feat(album): rename header subtitle and simplify nearby-users banner (#1) _(82 minutes ago)_
+- a59d3d9 feat(ux): view transitions + pin entrance + richer empty states _(2 hours ago)_
+- 23e6d6f feat(pwa): offline shell + tile + asset caching in the service worker _(2 hours ago)_
+- abd0488 feat(chat): tappable cromo chips inline + preview sheet _(2 hours ago)_
 <!-- AUTO:COMMITS:END -->

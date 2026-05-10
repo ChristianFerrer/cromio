@@ -43,6 +43,12 @@ export function CromoCard({
   const isLegendary = sticker.rarity === "legendary";
   const isSpecial = sticker.rarity === "special";
 
+  // When the cromo is repeated, the whole card switches to a red
+  // visual identity (border, gradient, center text) so duplicates jump
+  // out at a glance without needing a separate badge.
+  const cardAccent = repe ? "#D7263D" : accent;
+  const centerColor = repe ? "#B91C1C" : have ? accent : "#8A8779";
+
   const typeLabel = isLegendary
     ? "LEGENDARY"
     : TYPE_LABEL[sticker.type] ?? sticker.type.toUpperCase();
@@ -80,21 +86,29 @@ export function CromoCard({
         className="relative flex shrink-0 overflow-hidden rounded-card text-left transition-transform active:scale-[0.97]"
         style={{
           ...cardStyle,
-          background: have ? `linear-gradient(160deg, ${accent}22, #fff)` : "#F5F4EE",
+          background: repe
+            ? `linear-gradient(160deg, ${cardAccent}30, #fff)`
+            : have
+              ? `linear-gradient(160deg, ${accent}22, #fff)`
+              : "#F5F4EE",
           border: selectBorder
             ? `2px solid ${selectBorder}`
-            : have
-              ? `1px solid ${accent}55`
-              : `1px dashed #D8D5C9`,
+            : repe
+              ? `1.5px solid ${cardAccent}`
+              : have
+                ? `1px solid ${accent}55`
+                : `1px dashed #D8D5C9`,
           opacity: have ? 1 : 0.92,
         }}
       >
         <div
           className="absolute inset-0"
           style={{
-            background: have
-              ? `radial-gradient(120% 100% at 0% 0%, ${accent}33, transparent 60%)`
-              : "transparent",
+            background: repe
+              ? `radial-gradient(120% 100% at 0% 0%, ${cardAccent}3D, transparent 65%)`
+              : have
+                ? `radial-gradient(120% 100% at 0% 0%, ${accent}33, transparent 60%)`
+                : "transparent",
           }}
         />
 
@@ -120,7 +134,7 @@ export function CromoCard({
               className="font-display tabular leading-none"
               style={{
                 fontSize: dim.num,
-                color: have ? accent : "#8A8779",
+                color: centerColor,
                 letterSpacing: "-0.02em",
                 textShadow: have
                   ? `0 1px 0 rgba(255,255,255,0.6)`
@@ -131,7 +145,7 @@ export function CromoCard({
             </span>
           </div>
 
-          {/* Bottom: player name (if any) + repe badge */}
+          {/* Bottom: player / city (left) + position (right) */}
           <div className="flex min-h-[14px] items-end justify-between gap-1.5">
             <span className="min-w-0 flex-1">
               {sticker.player_name && (
@@ -151,12 +165,12 @@ export function CromoCard({
                 </span>
               )}
             </span>
-            {repe && (
+            {sticker.position && (
               <span
-                className="shrink-0 rounded-full bg-red-500 px-1.5 py-0.5 font-display text-[10px] leading-none text-white shadow-sh1"
-                aria-label={`Tienes ${count} copias`}
+                className="shrink-0 font-display uppercase leading-none tracking-wider text-mute"
+                style={{ fontSize: dim.name }}
               >
-                ×{count}
+                {sticker.position}
               </span>
             )}
           </div>
