@@ -129,12 +129,10 @@ export default function AlbumPage() {
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-[13.5px] font-bold text-green-700">
-              Hay {matchBanner.total} usuario{matchBanner.total === 1 ? "" : "s"} con cromos de tu interés
+              Hay {matchBanner.total} usuario{matchBanner.total === 1 ? "" : "s"} con cromos
             </span>
-            <span className="mt-0.5 block text-xs text-text-2">
-              <strong className="text-green-700">{matchBanner.matches}</strong> Match{matchBanner.matches === 1 ? "" : "es"}
-              {" "}y{" "}
-              <strong className="text-match-interest">{matchBanner.leads}</strong> de Interés
+            <span className="mt-0.5 block text-xs text-text">
+              {matchBanner.matches} Match{matchBanner.matches === 1 ? "" : "es"} y {matchBanner.leads} de Interés
             </span>
           </span>
           <ArrowRight size={16} className="text-green-700" />
@@ -149,9 +147,9 @@ export default function AlbumPage() {
           </span>
           <span className="min-w-0 flex-1">
             <span className="block text-[13.5px] font-bold text-gold-dark">
-              No hay usuarios con cromos de tu interés
+              No hay usuarios con cromos
             </span>
-            <span className="mt-0.5 block text-xs text-text-2">
+            <span className="mt-0.5 block text-xs text-text">
               Agrega cromos a tu colección o incrementa el radio de búsqueda
             </span>
           </span>
