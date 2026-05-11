@@ -5,12 +5,11 @@ import { useTranslations } from "next-intl";
 import { Search, Globe, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { COUNTRIES } from "@/lib/data/countries";
-import { STICKERS, STICKERS_BY_N, TOTAL_STICKERS } from "@/lib/data/stickers";
+import { STICKERS, TOTAL_STICKERS } from "@/lib/data/stickers";
 import { useCollection } from "@/hooks/useCollection";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
-import { CromoCard, type CromoSocial } from "@/components/cromo/CromoCard";
-import { CromoDetailSheet } from "@/components/cromo/CromoDetailSheet";
+import { CromoCard } from "@/components/cromo/CromoCard";
 import { Flag } from "@/components/cromo/Flag";
 import { Logo } from "@/components/Logo";
 import { Chip } from "@/components/ui/Chip";
@@ -28,8 +27,6 @@ export default function AlbumPage() {
   const [matchBanner, setMatchBanner] = useState<
     { total: number; matches: number; leads: number } | null
   >(null);
-  const [socialByN, setSocialByN] = useState<Map<number, CromoSocial>>(new Map());
-  const [openN, setOpenN] = useState<number | null>(null);
 
   const tabPool = useMemo(() => {
     if (tab === "especiales") {
@@ -60,7 +57,6 @@ export default function AlbumPage() {
   useEffect(() => {
     if (!user) {
       setMatchBanner({ total: 0, matches: 0, leads: 0 });
-      setSocialByN(new Map());
       return;
     }
     const supabase = createClient();
@@ -70,29 +66,10 @@ export default function AlbumPage() {
       .rpc("find_nearby_users", { p_user_id: user.id, p_radius_m: 5000 })
       .then(({ data }) => {
         if (cancelled) return;
-        const rows = (data ?? []) as Array<{
-          kind: "match" | "lead";
-          you_get: number[] | null;
-          they_get: number[] | null;
-        }>;
+        const rows = (data ?? []) as Array<{ kind: "match" | "lead" }>;
         const matches = rows.filter((r) => r.kind === "match").length;
         const leads = rows.filter((r) => r.kind === "lead").length;
         setMatchBanner({ total: matches + leads, matches, leads });
-
-        // Aggregate per-cromo: suppliers = nearby users whose `you_get`
-        // (cromos they could give me) includes N; demanders = nearby
-        // users whose `they_get` (cromos I could give them) includes N.
-        const map = new Map<number, CromoSocial>();
-        const bump = (n: number, key: "suppliers" | "demanders") => {
-          const cur = map.get(n) ?? { suppliers: 0, demanders: 0 };
-          cur[key] += 1;
-          map.set(n, cur);
-        };
-        for (const row of rows) {
-          for (const n of row.you_get ?? []) bump(n, "suppliers");
-          for (const n of row.they_get ?? []) bump(n, "demanders");
-        }
-        setSocialByN(map);
       });
     return () => {
       cancelled = true;
@@ -247,8 +224,7 @@ export default function AlbumPage() {
               sticker={s}
               count={collection.get(s.n) ?? 0}
               size="sm"
-              social={socialByN.get(s.n)}
-              onClick={() => setOpenN(s.n)}
+              onAdjust={(d) => adjust(s.n, d)}
             />
           </div>
         ))}
@@ -259,19 +235,6 @@ export default function AlbumPage() {
         )}
       </div>
 
-      {openN !== null && (() => {
-        const s = STICKERS_BY_N.get(openN);
-        if (!s) return null;
-        return (
-          <CromoDetailSheet
-            sticker={s}
-            count={collection.get(openN) ?? 0}
-            social={socialByN.get(openN)}
-            onAdjust={(d) => adjust(openN, d)}
-            onClose={() => setOpenN(null)}
-          />
-        );
-      })()}
     </main>
   );
 }
