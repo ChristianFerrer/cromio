@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { LogIn, MessageCircle } from "lucide-react";
+import { LogIn, MessageCircle, Calendar, MapPin, Star } from "lucide-react";
 import { getCurrentUser } from "@/lib/profile";
-import { loadChatsForCurrentUser } from "@/lib/chat/queries";
+import { loadChatsForCurrentUser, type ChatRow } from "@/lib/chat/queries";
 import { MatchArrows } from "@/components/match/MatchArrows";
 
 function formatDistance(meters: number | null): string | null {
@@ -37,6 +37,75 @@ function formatChatTime(iso: string | null): string {
     month: "short",
     year: now.getFullYear() === d.getFullYear() ? undefined : "numeric",
   });
+}
+
+function formatMeetingWhen(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  const isTomorrow =
+    d.getFullYear() === tomorrow.getFullYear() &&
+    d.getMonth() === tomorrow.getMonth() &&
+    d.getDate() === tomorrow.getDate();
+  const hm = d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+  if (sameDay) return `Hoy ${hm}`;
+  if (isTomorrow) return `Mañana ${hm}`;
+  return `${d.toLocaleDateString("es-ES", { day: "numeric", month: "short" })} ${hm}`;
+}
+
+type StageInfo = {
+  label: string;
+  pillClass: string;
+  barClass: string;
+  pct: number;
+};
+
+function stageInfo(c: ChatRow, meId: string): StageInfo {
+  if (c.state === "cancelled") {
+    return {
+      label: "Cancelado",
+      pillClass: "bg-line text-text-2",
+      barClass: "bg-line",
+      pct: 0,
+    };
+  }
+  if (c.state === "completed") {
+    return {
+      label: c.my_rating ? "Valorado" : "Pendiente de valorar",
+      pillClass: c.my_rating
+        ? "bg-green-100 text-green-700"
+        : "bg-gold/20 text-gold-dark",
+      barClass: "bg-green-500",
+      pct: 100,
+    };
+  }
+  if (c.state === "confirmed") {
+    return {
+      label: "Confirmado",
+      pillClass: "bg-green-100 text-green-700",
+      barClass: "bg-green-500",
+      pct: 66,
+    };
+  }
+  // pending
+  const meetingProposed = c.meeting_at != null;
+  const proposedByMe = c.meeting_proposer_id === meId;
+  return {
+    label: meetingProposed
+      ? proposedByMe
+        ? "Esperando confirmación"
+        : "Pendiente de confirmar"
+      : "Pendiente",
+    pillClass: "bg-gold/15 text-gold-dark",
+    barClass: "bg-gold",
+    pct: meetingProposed ? 33 : 10,
+  };
 }
 
 export default async function ChatListPage() {
@@ -99,12 +168,14 @@ export default async function ChatListPage() {
       ) : (
         <div className="mt-5 space-y-2">
           {chats.map((c) => {
-            const initials = (c.other_user.alias ?? "??").slice(0, 2).toUpperCase();
+            const visibleName = c.other_user.display_name ?? c.other_user.alias;
+            const initials = visibleName.slice(0, 2).toUpperCase();
             const time = formatChatTime(c.last_message_at);
-            const pct = Math.max(0, Math.min(100, c.other_completion_pct));
             const lastBody = c.last_message?.body ?? "Sin mensajes todavía";
             const isMine = c.last_message?.sender_id === user.id;
             const dist = formatDistance(c.distance_m);
+            const stage = stageInfo(c, user.id);
+            const meetingWhen = c.meeting_at ? formatMeetingWhen(c.meeting_at) : null;
 
             return (
               <Link
@@ -117,7 +188,7 @@ export default async function ChatListPage() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={c.other_user.avatar_url}
-                      alt={c.other_user.alias}
+                      alt={visibleName}
                       className="h-12 w-12 rounded-full object-cover"
                     />
                   ) : (
@@ -137,46 +208,81 @@ export default async function ChatListPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="truncate text-sm font-bold">
-                      {c.other_user.alias}
-                    </span>
+                    <span className="truncate text-sm font-bold">{visibleName}</span>
                     {time && (
                       <span className="shrink-0 text-[11px] text-text-2">{time}</span>
                     )}
                   </div>
-                  {c.other_user.display_name && (
-                    <span className="block truncate text-xs text-text-2">
-                      {c.other_user.display_name}
-                    </span>
-                  )}
 
-                  <div className="mt-1.5 flex items-center gap-3 text-[12px] text-text-2">
+                  <div className="mt-1 flex items-center gap-2.5 text-[12px] text-text-2">
                     <MatchArrows
                       recibes={c.you_get_count}
                       entregas={c.they_get_count}
-                      size={14}
+                      size={13}
                     />
                     {dist && (
                       <span className="font-display tabular leading-none">{dist}</span>
                     )}
+                    <span
+                      className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${stage.pillClass}`}
+                    >
+                      {stage.label}
+                    </span>
                   </div>
 
-                  <div className="mt-2 text-[11px] text-text-2">
-                    Completado al: <b className="text-text">{pct}%</b>
-                  </div>
-                  <div
-                    className="mt-1 h-1.5 overflow-hidden rounded-full bg-line"
-                    role="progressbar"
-                    aria-valuenow={pct}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`Álbum ${pct}%`}
-                  >
+                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-line">
                     <div
-                      className="h-full rounded-full bg-green-500"
-                      style={{ width: `${pct}%` }}
+                      className={`h-full rounded-full transition-[width] ${stage.barClass}`}
+                      style={{ width: `${stage.pct}%` }}
                     />
                   </div>
+
+                  {c.state === "confirmed" && meetingWhen && (
+                    <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-text-2">
+                      <Calendar size={12} strokeWidth={2.2} className="shrink-0 text-green-700" />
+                      <span className="font-semibold text-text">{meetingWhen}</span>
+                      {c.meeting_place && (
+                        <>
+                          <MapPin size={12} strokeWidth={2.2} className="shrink-0 text-text-2" />
+                          <span className="truncate">{c.meeting_place}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {c.state === "pending" && meetingWhen && (
+                    <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-text-2">
+                      <Calendar size={12} strokeWidth={2.2} className="shrink-0 text-gold-dark" />
+                      <span>{meetingWhen}</span>
+                      {c.meeting_place && (
+                        <span className="truncate">· {c.meeting_place}</span>
+                      )}
+                    </div>
+                  )}
+
+                  {c.state === "completed" && (
+                    <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-text-2">
+                      {c.my_rating ? (
+                        <>
+                          <Star
+                            size={12}
+                            strokeWidth={2.2}
+                            className="shrink-0 text-gold-dark"
+                            fill="currentColor"
+                          />
+                          <span>Diste ★{c.my_rating}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Star size={12} strokeWidth={2.2} className="shrink-0 text-gold-dark" />
+                          <span className="font-semibold text-gold-dark">Valora el intercambio</span>
+                        </>
+                      )}
+                      {c.they_rated_me && (
+                        <span className="ml-auto text-text-2">· Te valoraron</span>
+                      )}
+                    </div>
+                  )}
 
                   <p className="mt-2 truncate text-xs text-text-2">
                     {isMine && <span className="font-semibold text-text">Tú: </span>}
