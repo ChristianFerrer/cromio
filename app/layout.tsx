@@ -33,11 +33,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/radar_cromio.png", type: "image/png" },
+      { url: "/cromio_icon.png", type: "image/png" },
       { url: "/icon.svg", type: "image/svg+xml" },
     ],
-    shortcut: "/radar_cromio.png",
-    apple: "/radar_cromio.png",
+    shortcut: "/cromio_icon.png",
+    apple: "/cromio_icon.png",
   },
   formatDetection: {
     telephone: false,
