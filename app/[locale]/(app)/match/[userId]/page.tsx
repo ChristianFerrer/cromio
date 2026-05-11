@@ -346,48 +346,28 @@ export default function MatchDetailPage({
       </div>
 
       <div
-        className="border-x border-b bg-white shadow-sh2"
+        className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-start gap-3 border-x border-b bg-white p-3.5 shadow-sh2"
         style={{
           borderColor: isLead ? "rgba(30,120,255,.35)" : "rgba(16,197,106,.30)",
         }}
       >
-        <div className="flex items-baseline justify-between border-b border-line px-4 py-2.5">
-          <span className="flex items-baseline gap-1.5 text-[11px] font-bold uppercase tracking-wider text-text-2">
-            <span className="text-base leading-none text-match-green">▼</span>
-            Recibes
-          </span>
-          <span className="font-display tabular text-xs text-text-2">
-            {match.youGet.length}
-          </span>
+        <div className="grid grid-cols-2 gap-1.5">
+          {match.youGet.length === 0 && (
+            <p className="col-span-2 py-6 text-center text-xs text-text-2">
+              Sin cromos por recibir
+            </p>
+          )}
+          {renderCromoEntries(match.youGet, youSel, setYouSel, "var(--y-green-500)")}
         </div>
-        {match.youGet.length === 0 ? (
-          <p className="px-4 py-6 text-center text-xs text-text-2">
-            Sin cromos por recibir
-          </p>
-        ) : (
-          <div className="grid grid-cols-3 gap-3 p-4">
-            {renderCromoEntries(match.youGet, youSel, setYouSel, "var(--y-green-500)")}
-          </div>
-        )}
-
-        <div className="flex items-baseline justify-between border-y border-line px-4 py-2.5">
-          <span className="flex items-baseline gap-1.5 text-[11px] font-bold uppercase tracking-wider text-text-2">
-            <span className="text-base leading-none text-match-red">▲</span>
-            Entregas
-          </span>
-          <span className="font-display tabular text-xs text-text-2">
-            {match.theyGet.length}
-          </span>
+        <div className="self-stretch bg-line" style={{ minHeight: 200 }} />
+        <div className="grid grid-cols-2 gap-1.5">
+          {match.theyGet.length === 0 && (
+            <p className="col-span-2 py-6 text-center text-xs text-text-2">
+              Sin cromos por entregar
+            </p>
+          )}
+          {renderCromoEntries(match.theyGet, theySel, setTheySel, CROMIO_COLORS.trade.give)}
         </div>
-        {match.theyGet.length === 0 ? (
-          <p className="px-4 py-6 text-center text-xs text-text-2">
-            Sin cromos por entregar
-          </p>
-        ) : (
-          <div className="grid grid-cols-3 gap-3 p-4">
-            {renderCromoEntries(match.theyGet, theySel, setTheySel, CROMIO_COLORS.trade.give)}
-          </div>
-        )}
       </div>
 
       <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
