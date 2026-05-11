@@ -1,7 +1,7 @@
 {
   "nav": {
     "album": "Álbum",
-    "mapa": "Mapa",
+    "mapa": "Radar",
     "favoritos": "Contactos",
     "chat": "Chats",
     "perfil": "Perfil",
@@ -21,7 +21,7 @@
     "duplicates": "repetidas"
   },
   "mapa": {
-    "title": "Mapa",
+    "title": "Radar",
     "searchRadius": "Radio de búsqueda",
     "hyperlocal": "Modo hiperlocal · Solo tu manzana"
   },

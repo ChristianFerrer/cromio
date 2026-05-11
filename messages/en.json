@@ -1,7 +1,7 @@
 {
   "nav": {
     "album": "Album",
-    "mapa": "Map",
+    "mapa": "Radar",
     "favoritos": "Contacts",
     "chat": "Chats",
     "perfil": "Profile",
@@ -21,7 +21,7 @@
     "duplicates": "duplicates"
   },
   "mapa": {
-    "title": "Map",
+    "title": "Radar",
     "searchRadius": "Search radius",
     "hyperlocal": "Hyperlocal mode · Just your block"
   },
