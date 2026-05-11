@@ -194,7 +194,7 @@ export default function MapaPage() {
             {(
               [
                 { id: "all", label: "Todo", color: "var(--y-ink)" },
-                { id: "match", label: "Matches", color: "var(--y-green-700)" },
+                { id: "match", label: "Matches", color: "#089258" },
                 { id: "lead", label: "Te interesa", color: CROMIO_COLORS.match.interest },
               ] as const
             ).map((c) => {
@@ -227,7 +227,7 @@ export default function MapaPage() {
             <>
               <h2 className="mb-2.5 mt-2 px-1 font-display text-lg text-ink">
                 Matches{" "}
-                <span className="text-sm text-green-700">· {matches.length}</span>
+                <span className="text-sm" style={{ color: "#089258" }}>· {matches.length}</span>
               </h2>
               {matches.map((u) => (
                 <UserListRow key={u.id} u={u} />
@@ -329,7 +329,7 @@ export default function MapaPage() {
 
 function UserListRow({ u }: { u: ReturnType<typeof useNearbyUsers>["users"][number] }) {
   const isLead = u.kind === "lead";
-  const avatarColor = isLead ? CROMIO_COLORS.match.interest : CROMIO_COLORS.green[500];
+  const avatarColor = isLead ? CROMIO_COLORS.match.interest : "#10C56A";
   return (
     <Link
       href={`/match/${u.id}`}

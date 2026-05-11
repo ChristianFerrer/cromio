@@ -84,7 +84,8 @@ export function AddCromoSheet({
                 <button
                   type="button"
                   onClick={() => sticker && onAdjust(sticker.n, +1)}
-                  className="grid h-11 w-11 place-items-center rounded-md bg-green-500 text-white"
+                  className="grid h-11 w-11 place-items-center rounded-md text-white"
+                  style={{ backgroundColor: "#10C56A" }}
                   aria-label="Añadir uno"
                 >
                   <Plus size={18} strokeWidth={2.2} />

@@ -1,6 +1,6 @@
 /* Cromio service worker — push notifications + offline shell. */
 
-const VERSION = "v7";
+const VERSION = "v8";
 const STATIC_CACHE = `cromio-static-${VERSION}`;
 const TILE_CACHE = "cromio-tiles-v1";
 const RUNTIME_CACHE = `cromio-runtime-${VERSION}`;
