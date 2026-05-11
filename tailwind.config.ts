@@ -25,8 +25,8 @@ export default {
           light: "#FDE68A",
           dark: "#A88008",
         },
-        bone: "#E3F8FA",
-        paper: "#D5EFF2",
+        bone: "#FFFFFF",
+        paper: "#F5F4EE",
         line: {
           DEFAULT: "#E8E6DE",
           strong: "#D8D5C9",

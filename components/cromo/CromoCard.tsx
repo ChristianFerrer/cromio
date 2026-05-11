@@ -43,18 +43,26 @@ export function CromoCard({
   const isLegendary = sticker.rarity === "legendary";
   const isSpecial = sticker.rarity === "special";
 
-  // When the cromo is repeated, the whole card switches to a red
-  // visual identity (border, gradient, center text) so duplicates jump
-  // out at a glance without needing a separate badge.
-  const cardAccent = repe ? "#EF1F3C" : accent;
-  const centerColor = repe ? "#C00020" : have ? accent : "#8A8779";
+  // Card always sits on a flat white background. State is conveyed by
+  // the border: black when the user has the cromo, red when it's a
+  // duplicate. The center code stays black either way; missing cromos
+  // get a muted dashed border + gray code to feel inactive.
+  const centerColor = have ? "#1A1A1A" : "#8A8779";
+  const cardBorder = selectBorder
+    ? `2px solid ${selectBorder}`
+    : repe
+      ? "1.5px solid #EF1F3C"
+      : have
+        ? "1.5px solid #1A1A1A"
+        : "1px dashed #D8D5C9";
 
   const typeLabel = isLegendary
     ? "LEGENDARY"
     : TYPE_LABEL[sticker.type] ?? sticker.type.toUpperCase();
 
   // Type pill styling: legendary → gold gradient, special → soft gold,
-  // common → neutral ink.
+  // common → neutral ink (uses the country flag accent only as a soft
+  // tint of the label; bg stays neutral so the white card reads clean).
   const typePillStyle: React.CSSProperties = isLegendary
     ? {
         background: "linear-gradient(135deg, #FDE68A, #F5C518)",
@@ -67,7 +75,7 @@ export function CromoCard({
           color: "#A88008",
         }
       : {
-          background: have ? `${accent}1F` : "rgba(0,0,0,.06)",
+          background: have ? "rgba(0,0,0,.06)" : "rgba(0,0,0,.04)",
           color: have ? accent : "#5C5A50",
         };
 
@@ -86,32 +94,10 @@ export function CromoCard({
         className="relative flex shrink-0 overflow-hidden rounded-card text-left transition-transform active:scale-[0.97]"
         style={{
           ...cardStyle,
-          background: repe
-            ? `linear-gradient(160deg, ${cardAccent}30, #fff)`
-            : have
-              ? `linear-gradient(160deg, ${accent}22, #fff)`
-              : "#F5F4EE",
-          border: selectBorder
-            ? `2px solid ${selectBorder}`
-            : repe
-              ? `1.5px solid ${cardAccent}`
-              : have
-                ? `1px solid ${accent}55`
-                : `1px dashed #D8D5C9`,
-          opacity: have ? 1 : 0.92,
+          background: "#FFFFFF",
+          border: cardBorder,
         }}
       >
-        <div
-          className="absolute inset-0"
-          style={{
-            background: repe
-              ? `radial-gradient(120% 100% at 0% 0%, ${cardAccent}3D, transparent 65%)`
-              : have
-                ? `radial-gradient(120% 100% at 0% 0%, ${accent}33, transparent 60%)`
-                : "transparent",
-          }}
-        />
-
         <div className="relative flex h-full w-full flex-col p-2">
           {/* Top row: flag (left) + type pill (right) */}
           <div className="flex items-start justify-between gap-1.5">
@@ -136,9 +122,6 @@ export function CromoCard({
                 fontSize: dim.num,
                 color: centerColor,
                 letterSpacing: "-0.02em",
-                textShadow: have
-                  ? `0 1px 0 rgba(255,255,255,0.6)`
-                  : undefined,
               }}
             >
               {sticker.code}
@@ -201,7 +184,8 @@ export function CromoCard({
           <button
             onClick={() => onAdjust(+1)}
             aria-label="Añadir uno"
-            className="grid h-7 w-7 place-items-center rounded-full bg-green-500 text-base font-bold text-white"
+            className="grid h-7 w-7 place-items-center rounded-full text-base font-bold text-white"
+            style={{ backgroundColor: "#10C56A" }}
           >
             +
           </button>
