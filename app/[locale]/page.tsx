@@ -265,9 +265,9 @@ export default async function Home({
         <Link href={prefix || "/"} className="inline-flex items-center gap-2">
           <span
             className="grid place-items-center shadow-sh1"
-            style={{ backgroundColor: "#1abc9c", padding: 6, borderRadius: 10 }}
+            style={{ backgroundColor: "#26C6DA", padding: 6, borderRadius: 10 }}
           >
-            <Image src="/cromio_lg.png" alt="Cromio" width={32} height={32} priority />
+            <Image src="/radar-point.png" alt="Cromio" width={32} height={32} priority />
           </span>
           <span className="font-display text-2xl tracking-tight">CROMIO</span>
         </Link>
@@ -293,9 +293,9 @@ export default async function Home({
         <div className="mx-auto inline-flex items-center justify-center">
           <span
             className="grid place-items-center shadow-sh2"
-            style={{ backgroundColor: "#1abc9c", padding: 18, borderRadius: 24 }}
+            style={{ backgroundColor: "#26C6DA", padding: 18, borderRadius: 24 }}
           >
-            <Image src="/cromio_lg.png" alt="Cromio" width={96} height={96} priority />
+            <Image src="/radar-point.png" alt="Cromio" width={96} height={96} priority />
           </span>
         </div>
         <h1 className="mx-auto mt-4 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
@@ -460,10 +460,10 @@ export default async function Home({
             <div className="flex items-center gap-2.5">
               <span
                 className="grid place-items-center shadow-sh1"
-                style={{ backgroundColor: "#1abc9c", padding: 5, borderRadius: 8 }}
+                style={{ backgroundColor: "#26C6DA", padding: 5, borderRadius: 8 }}
               >
                 <Image
-                  src="/cromio_lg.png"
+                  src="/radar-point.png"
                   alt="Cromio"
                   width={28}
                   height={28}

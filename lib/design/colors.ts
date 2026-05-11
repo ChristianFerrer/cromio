@@ -5,19 +5,19 @@
  */
 export const CROMIO_COLORS = {
   green: {
-    50: "#EBFDF2",
-    100: "#D5F7E1",
-    500: "#10C56A",
-    700: "#089258",
-    900: "#066B40",
+    50: "#F2FBFC",
+    100: "#8CE1EB",
+    500: "#26C6DA",
+    700: "#1FA1B4",
+    900: "#155F6B",
   },
   ink: "#0E0E0E",
   charcoal: "#3A3A3A",
   gold: "#F5C518",
   goldLight: "#FDE68A",
   goldDark: "#A88008",
-  bone: "#FAFAF7",
-  paper: "#F5F4EE",
+  bone: "#E3F8FA",
+  paper: "#D5EFF2",
   line: "#E8E6DE",
   lineStrong: "#D8D5C9",
   mute: "#6B6858",
@@ -30,12 +30,12 @@ export const CROMIO_COLORS = {
   },
   trade: {
     give: "#EF1F3C",
-    get: "#089258",
+    get: "#1FA1B4",
   },
   admin: {
     chart: [
-      "#10C56A",
-      "#089258",
+      "#26C6DA",
+      "#1FA1B4",
       "#22D65E",
       "#0DA84F",
       "#06B6D4",

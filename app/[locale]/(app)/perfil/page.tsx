@@ -62,7 +62,7 @@ export default async function PerfilPage() {
         ) : (
           <div
             className="grid h-20 w-20 place-items-center rounded-full font-display text-3xl text-white shadow-sh2"
-            style={{ background: profile?.color ?? "#10C56A" }}
+            style={{ background: profile?.color ?? "#26C6DA" }}
           >
             {initials}
           </div>
