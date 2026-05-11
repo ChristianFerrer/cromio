@@ -53,7 +53,7 @@ export default function FavoritosPage() {
     let cancelled = false;
     (async () => {
       const ids = [...favs];
-      const [profilesRes, nearbyRes, stickersRes] = await Promise.all([
+      const [profilesRes, nearbyRes, stickersRes, myStickersRes] = await Promise.all([
         supabase
           .from("profiles")
           .select("id, alias, display_name, color, rating, trades_count, plan")
@@ -66,32 +66,43 @@ export default function FavoritosPage() {
           .from("user_stickers")
           .select("user_id, sticker_n, count")
           .in("user_id", ids),
+        supabase
+          .from("user_stickers")
+          .select("sticker_n, count")
+          .eq("user_id", user.id),
       ]);
       if (cancelled) return;
 
-      const nearby = new Map<
-        string,
-        { distance_m: number; you_get_count: number; they_get_count: number }
-      >();
+      const distanceByUser = new Map<string, number>();
       for (const r of (nearbyRes.data ?? []) as Array<{
         user_id: string;
         distance_m: number;
-        you_get: number[];
-        they_get: number[];
       }>) {
-        nearby.set(r.user_id, {
-          distance_m: r.distance_m,
-          you_get_count: r.you_get?.length ?? 0,
-          they_get_count: r.they_get?.length ?? 0,
-        });
+        distanceByUser.set(r.user_id, r.distance_m);
       }
 
+      const myCol = new Map<number, number>();
+      for (const s of (myStickersRes.data ?? []) as Array<{
+        sticker_n: number;
+        count: number;
+      }>) {
+        myCol.set(s.sticker_n, s.count);
+      }
+
+      const colByUser = new Map<string, Map<number, number>>();
       const statsByUser = new Map<string, { owned: number; repes: number }>();
       for (const s of (stickersRes.data ?? []) as Array<{
         user_id: string;
         sticker_n: number;
         count: number;
       }>) {
+        let m = colByUser.get(s.user_id);
+        if (!m) {
+          m = new Map();
+          colByUser.set(s.user_id, m);
+        }
+        m.set(s.sticker_n, s.count);
+
         const cur = statsByUser.get(s.user_id) ?? { owned: 0, repes: 0 };
         if (s.count >= 1) cur.owned++;
         if (s.count >= 2) cur.repes += s.count - 1;
@@ -100,8 +111,16 @@ export default function FavoritosPage() {
 
       setRows(
         (profilesRes.data ?? []).map((p) => {
-          const n = nearby.get(p.id);
           const s = statsByUser.get(p.id) ?? { owned: 0, repes: 0 };
+          const theirCol = colByUser.get(p.id) ?? new Map<number, number>();
+          let youGet = 0;
+          let theyGet = 0;
+          for (let i = 1; i <= TOTAL_STICKERS; i++) {
+            const mine = myCol.get(i) ?? 0;
+            const theirs = theirCol.get(i) ?? 0;
+            if (mine === 0 && theirs >= 2) youGet++;
+            if (mine >= 2 && theirs === 0) theyGet++;
+          }
           return {
             id: p.id,
             alias: p.alias,
@@ -110,9 +129,9 @@ export default function FavoritosPage() {
             rating: p.rating,
             trades_count: p.trades_count,
             plan: p.plan,
-            distance_m: n?.distance_m ?? null,
-            you_get_count: n?.you_get_count ?? 0,
-            they_get_count: n?.they_get_count ?? 0,
+            distance_m: distanceByUser.get(p.id) ?? null,
+            you_get_count: youGet,
+            they_get_count: theyGet,
             owned: s.owned,
             missing: TOTAL_STICKERS - s.owned,
             repes: s.repes,
