@@ -132,7 +132,8 @@
         "sendReset": "Send password reset",
         "promote": "Promote to admin",
         "demote": "Demote admin",
-        "exportData": "Export data (GDPR)"
+        "exportData": "Export data (GDPR)",
+        "delete": "Delete user"
       },
       "detail": {
         "back": "Back",
@@ -147,7 +148,11 @@
         "confirmForceSignOut": "Sign out all sessions",
         "confirmReset": "Send recovery email",
         "saveChanges": "Save changes",
-        "noChanges": "No changes"
+        "noChanges": "No changes",
+        "deleteWarning": "Irreversible action. The profile, stickers, chats, favourites and access are wiped. Consider exporting the data first (GDPR).",
+        "deleteConfirmAlias": "Type «{alias}» to confirm",
+        "confirmDelete": "Delete permanently",
+        "deleted": "User deleted"
       }
     },
     "audit": {
@@ -164,6 +169,7 @@
       "notAdmin": "You don't have admin permissions",
       "selfDemote": "You can't remove your own admin role",
       "selfBan": "You can't ban yourself",
+      "selfDelete": "You can't delete yourself",
       "generic": "Something failed. Check the console."
     }
   },

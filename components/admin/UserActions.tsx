@@ -10,9 +10,11 @@ import {
   LogOut,
   ShieldCheck,
   ShieldOff,
+  Trash2,
 } from "lucide-react";
 import {
   banUser,
+  deleteUser,
   exportUserData,
   forceSignOut,
   sendPasswordReset,
@@ -36,6 +38,8 @@ export function UserActions({ userId, isBanned, isAdmin, alias, isSelf }: Props)
   const [isPending, startTransition] = useTransition();
   const [banReason, setBanReason] = useState("");
   const [showBanForm, setShowBanForm] = useState(false);
+  const [showDeleteForm, setShowDeleteForm] = useState(false);
+  const [deleteAlias, setDeleteAlias] = useState("");
 
   const handle = async (action: () => Promise<{ ok: boolean; error?: string }>) => {
     startTransition(async () => {
@@ -43,14 +47,37 @@ export function UserActions({ userId, isBanned, isAdmin, alias, isSelf }: Props)
         const r = await action();
         if (!r.ok) {
           const code = r.error ?? "generic";
-          const msg = code === "selfBan" || code === "selfDemote"
-            ? tErr(code)
-            : (r.error ?? tErr("generic"));
+          const msg =
+            code === "selfBan" || code === "selfDemote" || code === "selfDelete"
+              ? tErr(code)
+              : (r.error ?? tErr("generic"));
           pushAppToast({ kind: "error", body: msg });
           return;
         }
         pushAppToast({ kind: "success", body: "OK" });
         router.refresh();
+      } catch (e) {
+        pushAppToast({
+          kind: "error",
+          body: e instanceof Error ? e.message : tErr("generic"),
+        });
+      }
+    });
+  };
+
+  const onDelete = () => {
+    startTransition(async () => {
+      try {
+        const r = await deleteUser(userId);
+        if (!r.ok) {
+          const code = r.error ?? "generic";
+          const msg =
+            code === "selfDelete" ? tErr(code) : (r.error ?? tErr("generic"));
+          pushAppToast({ kind: "error", body: msg });
+          return;
+        }
+        pushAppToast({ kind: "success", body: t("detail.deleted") });
+        router.replace("/admin/usuarios");
       } catch (e) {
         pushAppToast({
           kind: "error",
@@ -178,6 +205,58 @@ export function UserActions({ userId, isBanned, isAdmin, alias, isSelf }: Props)
         >
           <Download size={14} /> {t("actions.exportData")}
         </button>
+      </div>
+
+      <div className="mt-4 border-t border-red-200 pt-4">
+        {!showDeleteForm ? (
+          <button
+            type="button"
+            disabled={isPending || isSelf}
+            onClick={() => {
+              setDeleteAlias("");
+              setShowDeleteForm(true);
+            }}
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-red-600 bg-white px-3 text-sm font-bold text-red-700 disabled:opacity-50"
+          >
+            <Trash2 size={14} /> {t("actions.delete")}
+          </button>
+        ) : (
+          <div className="rounded-md border border-red-300 bg-white p-3">
+            <p className="text-xs leading-snug text-red-700">
+              {t("detail.deleteWarning")}
+            </p>
+            <label className="mt-3 block text-xs font-bold text-text">
+              {t("detail.deleteConfirmAlias", { alias })}
+            </label>
+            <input
+              value={deleteAlias}
+              onChange={(e) => setDeleteAlias(e.target.value)}
+              autoComplete="off"
+              placeholder={alias}
+              className="mt-1 w-full rounded-md border border-line p-2 text-sm outline-none focus:border-red-500"
+            />
+            <div className="mt-2 flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowDeleteForm(false);
+                  setDeleteAlias("");
+                }}
+                className="h-9 rounded-md border border-line bg-white px-3 text-sm"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={isPending || deleteAlias.trim() !== alias}
+                onClick={onDelete}
+                className="inline-flex h-9 items-center gap-2 rounded-md bg-red-700 px-3 text-sm font-bold text-white disabled:opacity-50"
+              >
+                <Trash2 size={14} /> {t("detail.confirmDelete")}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
