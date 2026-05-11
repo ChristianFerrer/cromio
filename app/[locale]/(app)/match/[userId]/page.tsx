@@ -214,7 +214,7 @@ export default function MatchDetailPage({
             />
           ))}
         </div>
-        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
+        <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4 backdrop-blur md:max-w-[760px]">
           <div className="h-14 w-full animate-pulse rounded-xl bg-paper" />
         </div>
       </main>
@@ -411,7 +411,7 @@ export default function MatchDetailPage({
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4 backdrop-blur md:max-w-[760px]">
         <Btn
           kind="primaryVibrant"
           full
