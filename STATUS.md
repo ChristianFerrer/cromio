@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-11 10:37 UTC** · branch `claude/review-project-status-ibne5`_
+_Last updated: **2026-05-11 10:41 UTC** · branch `claude/review-project-setup-7OyxZ`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- c87f931 feat(admin): expose hard delete in the user detail UI _(9 minutes ago)_
-- 651175c fix(album): 3-col mobile + responsive desktop + larger +/- targets (#30) _(22 minutes ago)_
-- 72387b5 fix(album): 4-col grid + bigger type label + flag frame (#29) _(30 minutes ago)_
-- c63b3ec fix(album): cromo card compact + counter inside the card (#28) _(64 minutes ago)_
-- 39e0871 feat(album): cromo card layout per mockup (code top-left, flag top-right, type centered) (#27) _(72 minutes ago)_
-- 10d0d4e fix(album): realign sticker dataset to the real 980-cromo Panini album _(2 hours ago)_
-- 0fae7a7 feat(admin): push admins when a new user signs up _(2 hours ago)_
-- c1314ab revert: PR #25 cromo card overhaul (#26) _(3 hours ago)_
-- 8042475 feat(album): cromo card UX overhaul (social signal + tap-to-detail) (#25) _(3 hours ago)_
-- 7c1dd47 copy(landing-es): hero sub ends with Cromio te muestra coleccionistas a tu alrededor (#24) _(4 hours ago)_
-- c6dd435 copy(landing-es): tighter "qué es" + reframed how-it-works steps (#23) _(4 hours ago)_
-- 65f20c6 feat(pwa): bake the green tile into the install/favicon icon (#22) _(8 hours ago)_
-- 908ac82 feat(brand): radar_cromio.png logo + revert palette to original green (#21) _(8 hours ago)_
-- d6d54e8 Add files via upload _(8 hours ago)_
-- 1a3db55 fix(match): pin Iniciar-chat panel to bottom of viewport (#20) _(9 hours ago)_
+- 97ba4cb fix(nav): bottom/side nav no longer slides on route change _(2 minutes ago)_
+- ae38b50 Merge remote-tracking branch origin/claude/setup-cromio-pwa-design-Tnidb into claude/review-project-setup-7OyxZ _(11 hours ago)_
+- 06af235 feat(onboarding): simplify to 2 steps — location + identity only _(11 hours ago)_
+- 5f7f8dd feat(chat): richer list cards + fix iOS input zoom _(11 hours ago)_
+- fb580fe feat(design): bump palette to vivid accents (#8) _(11 hours ago)_
+- 48b25ec style(mapa): locate button matches the top-right toolbar, sits clearly above radius card _(11 hours ago)_
+- 5835256 chore(deploy): trigger rebuild for VAPID env vars (#7) _(11 hours ago)_
+- 486d13f fix(ux): useFavorites no longer flashes loaded=true while auth resolves _(12 hours ago)_
+- 8286204 feat(push): nearby-match server-side trigger + iOS hint + diagnostics (#6) _(12 hours ago)_
+- 7b289e5 fix(ux): no flash of empty state when entering /favoritos and /mapa list _(12 hours ago)_
+- 65e8834 feat(cromo-card): repe → full red card + position in bottom-right _(12 hours ago)_
+- c4be251 Merge pull request #4 from ChristianFerrer/claude/admin-dashboard _(12 hours ago)_
+- 0e438ef feat(nav): rename bottom-nav label Favoritos → Contactos (#5) _(12 hours ago)_
+- 841d769 docs(claude): CLAUDE.md with project conventions for future sessions _(13 hours ago)_
+- a4d4050 refactor(admin): split components, rename guards, drop hex literals _(13 hours ago)_
 <!-- AUTO:COMMITS:END -->

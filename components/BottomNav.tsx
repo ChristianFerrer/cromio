@@ -41,6 +41,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
+      style={{ viewTransitionName: "bottom-nav" }}
       className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-[430px] border-t border-black/5 bg-white/90 pb-[max(env(safe-area-inset-bottom),12px)] pt-1.5 backdrop-blur-xl md:hidden"
     >
       <ul className="grid grid-cols-5">
