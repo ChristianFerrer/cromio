@@ -13,7 +13,7 @@ import {
   Share2,
 } from "lucide-react";
 import { shareOrCopy } from "@/lib/share/client";
-import { STICKERS_BY_N } from "@/lib/data/stickers";
+import { STICKERS_BY_N, TOTAL_STICKERS } from "@/lib/data/stickers";
 import { buildMatch, fmtDistance } from "@/lib/matches";
 import type { CollectionEntry } from "@/lib/types";
 import { useCollection } from "@/hooks/useCollection";
@@ -145,6 +145,21 @@ export default function MatchDetailPage({
     () => buildMatch(collection, theirCol),
     [collection, theirCol],
   );
+
+  const otherStats = useMemo(() => {
+    let owned = 0;
+    let repes = 0;
+    for (const count of theirCol.values()) {
+      if (count >= 1) owned++;
+      if (count >= 2) repes += count - 1;
+    }
+    return {
+      owned,
+      missing: TOTAL_STICKERS - owned,
+      repes,
+      pct: TOTAL_STICKERS > 0 ? (owned / TOTAL_STICKERS) * 100 : 0,
+    };
+  }, [theirCol]);
 
   const isFav = profile ? has(profile.id) : false;
 
@@ -314,6 +329,32 @@ export default function MatchDetailPage({
           {profile.rating && ` · ★${profile.rating}`}
           {profile.trades_count != null && ` · ${profile.trades_count} intercambios`}
         </p>
+      </section>
+
+      <section className="px-5 pb-3">
+        <div className="flex items-baseline gap-2 font-display text-text">
+          <span className="tabular leading-none" style={{ fontSize: 56 }}>
+            {otherStats.owned}
+          </span>
+          <span className="text-xl text-mute">/{TOTAL_STICKERS}</span>
+          <span className="ml-auto text-xl text-green-700">
+            {otherStats.pct.toFixed(1)}%
+          </span>
+        </div>
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-line">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-green-700 to-green-500"
+            style={{ width: `${otherStats.pct}%` }}
+          />
+        </div>
+        <div className="mt-2 flex gap-3.5 text-xs text-text-2">
+          <span>
+            <b className="text-text">{otherStats.repes}</b> repes
+          </span>
+          <span>
+            <b className="text-text">{otherStats.missing}</b> faltan
+          </span>
+        </div>
       </section>
 
       <div

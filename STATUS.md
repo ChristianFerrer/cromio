@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-11 01:12 UTC** · branch `HEAD`_
+_Last updated: **2026-05-11 01:37 UTC** · branch `claude/review-project-status-ibne5`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- df608d2 refactor(landing): remove FAQ section _(2 minutes ago)_
-- a79124d Add files via upload _(6 minutes ago)_
-- c9128be feat(brand): radar.png nav icon + cromio_logo on teal background (#12) _(17 minutes ago)_
-- 1a6529e Add files via upload _(24 minutes ago)_
-- 7d2a0f9 feat(ui): album/chat/match/favoritos polish + bottom-nav fix (#11) _(25 minutes ago)_
-- 06b1bc3 Add files via upload _(33 minutes ago)_
-- caa1ea3 feat(landing): public landing page at / with PWA install instructions _(47 minutes ago)_
-- e7505f4 chore(sw): bump cache to force PWA clients onto vivid palette (#10) _(54 minutes ago)_
-- 2529b7d feat(chat): richer list cards + fix iOS input zoom (#9) _(61 minutes ago)_
-- 06af235 feat(onboarding): simplify to 2 steps — location + identity only _(68 minutes ago)_
-- fb580fe feat(design): bump palette to vivid accents (#8) _(81 minutes ago)_
+- 8b0fdb8 Add files via upload _(9 minutes ago)_
+- b94d01d fix(match): restore left/right split for receive vs deliver grids (#14) _(24 minutes ago)_
+- 8228b7d feat(brand): cromio_lg.png as single logo on teal everywhere (#13) _(25 minutes ago)_
+- df608d2 refactor(landing): remove FAQ section _(27 minutes ago)_
+- a79124d Add files via upload _(31 minutes ago)_
+- c9128be feat(brand): radar.png nav icon + cromio_logo on teal background (#12) _(42 minutes ago)_
+- 1a6529e Add files via upload _(49 minutes ago)_
+- 7d2a0f9 feat(ui): album/chat/match/favoritos polish + bottom-nav fix (#11) _(50 minutes ago)_
+- 06b1bc3 Add files via upload _(58 minutes ago)_
+- caa1ea3 feat(landing): public landing page at / with PWA install instructions _(72 minutes ago)_
+- e7505f4 chore(sw): bump cache to force PWA clients onto vivid palette (#10) _(79 minutes ago)_
+- 2529b7d feat(chat): richer list cards + fix iOS input zoom (#9) _(86 minutes ago)_
+- 06af235 feat(onboarding): simplify to 2 steps — location + identity only _(2 hours ago)_
+- fb580fe feat(design): bump palette to vivid accents (#8) _(2 hours ago)_
 - 48b25ec style(mapa): locate button matches the top-right toolbar, sits clearly above radius card _(2 hours ago)_
-- 5835256 chore(deploy): trigger rebuild for VAPID env vars (#7) _(2 hours ago)_
-- 486d13f fix(ux): useFavorites no longer flashes loaded=true while auth resolves _(2 hours ago)_
-- 8286204 feat(push): nearby-match server-side trigger + iOS hint + diagnostics (#6) _(2 hours ago)_
 <!-- AUTO:COMMITS:END -->
