@@ -40,7 +40,7 @@ export function IconBtn({
       type="button"
       aria-label={ariaLabel}
       {...props}
-      className={`grid shrink-0 place-items-center rounded-md transition-colors disabled:opacity-50 ${SIZES[size]} ${VARIANTS[variant]} ${className}`}
+      className={`grid shrink-0 place-items-center rounded-card transition-colors disabled:opacity-50 ${SIZES[size]} ${VARIANTS[variant]} ${className}`}
     >
       {children}
     </button>
@@ -61,7 +61,7 @@ export function IconLink({
       href={href}
       aria-label={ariaLabel}
       {...props}
-      className={`grid shrink-0 place-items-center rounded-md transition-colors ${SIZES[size]} ${VARIANTS[variant]} ${className}`}
+      className={`grid shrink-0 place-items-center rounded-card transition-colors ${SIZES[size]} ${VARIANTS[variant]} ${className}`}
     >
       {children}
     </Link>

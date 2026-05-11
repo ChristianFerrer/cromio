@@ -27,10 +27,10 @@ export function Btn({
 }) {
   const sz =
     size === "sm"
-      ? "h-9 px-4 text-sm rounded-lg"
+      ? "h-9 px-4 text-sm rounded-card"
       : size === "lg"
-        ? "h-14 px-6 text-base rounded-xl"
-        : "h-11 px-5 text-sm rounded-lg";
+        ? "h-14 px-6 text-base rounded-card"
+        : "h-11 px-5 text-sm rounded-card";
   return (
     <button
       {...props}

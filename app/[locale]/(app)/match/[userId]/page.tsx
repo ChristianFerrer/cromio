@@ -4,7 +4,6 @@ import { use, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeftRight,
-  Check,
   ChevronLeft,
   MessageCircle,
   Flag as FlagIcon,
@@ -478,8 +477,6 @@ export default function MatchDetailPage({
           </Btn>
         </div>
         <TradeButton
-          me={me?.id}
-          otherId={profile.id}
           activeTrade={activeTrade}
           matchEmpty={match.youGet.length === 0 && match.theyGet.length === 0}
           pending={tradePending}
@@ -631,111 +628,57 @@ export default function MatchDetailPage({
   );
 }
 
-type TradeButtonState = "none" | "sent" | "received" | "agreed" | "loading" | "empty";
-
 function TradeButton({
-  me,
-  otherId,
   activeTrade,
   matchEmpty,
   pending,
   onSend,
   onOpenSheet,
 }: {
-  me: string | undefined;
-  otherId: string;
   activeTrade: TradeRequestRow | null;
   matchEmpty: boolean;
   pending: boolean;
   onSend: () => void;
   onOpenSheet: () => void;
 }) {
-  void otherId;
-  let state: TradeButtonState;
-  if (pending) state = "loading";
-  else if (activeTrade?.status === "accepted") state = "agreed";
-  else if (activeTrade?.status === "pending" && me && activeTrade.from_user_id === me)
-    state = "sent";
-  else if (activeTrade?.status === "pending" && me && activeTrade.to_user_id === me)
-    state = "received";
-  else if (matchEmpty) state = "empty";
-  else state = "none";
+  // The button is always green. The only state we surface is "there is an
+  // active trade between us right now" — either pending or accepted but not
+  // yet settled. A red dot with a white ring sits on top while that holds;
+  // it disappears the moment the trade closes (done/rejected/cancelled) or
+  // when no trade exists.
+  const hasActive =
+    activeTrade?.status === "pending" || activeTrade?.status === "accepted";
 
-  const styles: Record<
-    TradeButtonState,
-    { bg: string; border: string; iconColor: string; label?: string; disabled?: boolean }
-  > = {
-    none: {
-      bg: "bg-green-500",
-      border: "border-transparent",
-      iconColor: "text-white",
-      label: "Intercambiar",
-    },
-    sent: {
-      bg: "bg-white",
-      border: "border-line",
-      iconColor: "text-text-2",
-      label: "Enviada",
-    },
-    received: {
-      bg: "bg-green-500",
-      border: "border-transparent",
-      iconColor: "text-white",
-      label: "Solicitud",
-    },
-    agreed: {
-      bg: "bg-green-700",
-      border: "border-transparent",
-      iconColor: "text-white",
-      label: "Realizar",
-    },
-    loading: {
-      bg: "bg-green-500",
-      border: "border-transparent",
-      iconColor: "text-white",
-      disabled: true,
-    },
-    empty: {
-      bg: "bg-paper",
-      border: "border-line",
-      iconColor: "text-text-2/50",
-      disabled: true,
-    },
-  };
-  const s = styles[state];
+  // No active trade and no cromos to swap — keep the button green but
+  // disabled (visually muted via opacity) so a tap doesn't fire an
+  // empty_trade error against the RPC.
+  const isDisabled = pending || (matchEmpty && !hasActive);
 
   const onClick = () => {
-    if (state === "none") onSend();
-    else if (state === "sent" || state === "received" || state === "agreed") onOpenSheet();
+    if (hasActive) onOpenSheet();
+    else onSend();
   };
 
-  const Icon =
-    state === "loading" ? Loader2 : state === "agreed" ? Check : ArrowLeftRight;
+  const Icon = pending ? Loader2 : ArrowLeftRight;
 
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={s.disabled}
-      aria-label={s.label ?? "Intercambiar"}
-      className={`relative flex h-14 w-16 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl border ${s.border} ${s.bg} shadow-sh2 transition-transform active:scale-95 disabled:opacity-50`}
+      disabled={isDisabled}
+      aria-label="Intercambiar"
+      className="relative grid h-14 w-14 shrink-0 place-items-center rounded-card bg-green-500 shadow-sh2 transition-transform active:scale-95 disabled:opacity-50"
     >
       <Icon
-        size={20}
-        strokeWidth={2.2}
-        className={`${s.iconColor} ${state === "loading" ? "animate-spin" : ""}`}
+        size={22}
+        strokeWidth={2.4}
+        className={`text-white ${pending ? "animate-spin" : "rotate-45"}`}
       />
-      {s.label && (
+      {hasActive && (
         <span
-          className={`text-[9px] font-bold uppercase tracking-wider leading-none ${s.iconColor}`}
-        >
-          {s.label}
-        </span>
-      )}
-      {state === "received" && (
-        <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-red-600 text-[10px] font-bold text-white shadow-sh1">
-          1
-        </span>
+          aria-hidden
+          className="absolute right-1.5 top-1.5 h-3 w-3 rounded-full bg-red-600 ring-2 ring-white"
+        />
       )}
     </button>
   );
