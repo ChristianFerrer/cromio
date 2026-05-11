@@ -117,13 +117,13 @@ export function CromoCard({
         {onAdjust && (
           <div
             className="flex items-center justify-between gap-2 border-t border-line/60"
-            style={{ padding: `${Math.max(dim.pad - 2, 6)}px ${dim.pad}px` }}
+            style={{ padding: `${Math.max(dim.pad - 1, 6)}px ${dim.pad}px` }}
           >
             <button
               onClick={() => onAdjust(-1)}
               disabled={count === 0}
               aria-label="Quitar uno"
-              className={`grid h-7 w-7 place-items-center rounded-full text-base font-bold transition-colors disabled:opacity-30 ${
+              className={`grid h-9 w-9 place-items-center rounded-full text-lg font-bold transition-colors disabled:opacity-30 ${
                 repe
                   ? "border border-transparent bg-red-500 text-white"
                   : "border border-line bg-white text-text-2"
@@ -132,7 +132,7 @@ export function CromoCard({
               −
             </button>
             <span
-              className={`font-display tabular text-base ${
+              className={`font-display tabular text-lg ${
                 repe ? "text-red-600" : have ? "text-text" : "text-mute"
               }`}
             >
@@ -141,7 +141,7 @@ export function CromoCard({
             <button
               onClick={() => onAdjust(+1)}
               aria-label="Añadir uno"
-              className="grid h-7 w-7 place-items-center rounded-full text-base font-bold text-white"
+              className="grid h-9 w-9 place-items-center rounded-full text-lg font-bold text-white"
               style={{ backgroundColor: "#10C56A" }}
             >
               +
