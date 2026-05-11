@@ -333,7 +333,7 @@ export default function MatchDetailPage({
       <div
         className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-start gap-3 border-x border-b bg-white p-3.5 shadow-sh2"
         style={{
-          borderColor: isLead ? "rgba(45,125,216,.35)" : "rgba(31,138,77,.25)",
+          borderColor: isLead ? "rgba(30,120,255,.35)" : "rgba(16,197,106,.30)",
         }}
       >
         <div className="grid grid-cols-2 gap-1.5">

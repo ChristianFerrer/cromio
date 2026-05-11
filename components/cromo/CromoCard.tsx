@@ -39,15 +39,15 @@ export function CromoCard({
   const have = count > 0;
   const repe = count >= 2;
 
-  const accent = country?.flag.colors[0] ?? "#0B6E3F";
+  const accent = country?.flag.colors[0] ?? "#066B40";
   const isLegendary = sticker.rarity === "legendary";
   const isSpecial = sticker.rarity === "special";
 
   // When the cromo is repeated, the whole card switches to a red
   // visual identity (border, gradient, center text) so duplicates jump
   // out at a glance without needing a separate badge.
-  const cardAccent = repe ? "#D7263D" : accent;
-  const centerColor = repe ? "#B91C1C" : have ? accent : "#8A8779";
+  const cardAccent = repe ? "#EF1F3C" : accent;
+  const centerColor = repe ? "#C00020" : have ? accent : "#8A8779";
 
   const typeLabel = isLegendary
     ? "LEGENDARY"
@@ -57,14 +57,14 @@ export function CromoCard({
   // common → neutral ink.
   const typePillStyle: React.CSSProperties = isLegendary
     ? {
-        background: "linear-gradient(135deg, #F0DA8E, #D4AF37)",
+        background: "linear-gradient(135deg, #FDE68A, #F5C518)",
         color: "#3A2C00",
-        boxShadow: "0 1px 3px rgba(212,175,55,0.35)",
+        boxShadow: "0 1px 3px rgba(245,197,24,0.40)",
       }
     : isSpecial
       ? {
-          background: "rgba(212,175,55,.18)",
-          color: "#8C7220",
+          background: "rgba(245,197,24,.20)",
+          color: "#A88008",
         }
       : {
           background: have ? `${accent}1F` : "rgba(0,0,0,.06)",

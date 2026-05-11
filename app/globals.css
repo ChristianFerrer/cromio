@@ -3,17 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --y-green-900: #0b6e3f;
-  --y-green-700: #117c4e;
-  --y-green-500: #1fae5a;
-  --y-green-100: #e6f4ec;
-  --y-green-50: #f1faf4;
+  --y-green-900: #066b40;
+  --y-green-700: #089258;
+  --y-green-500: #10c56a;
+  --y-green-100: #d5f7e1;
+  --y-green-50: #ebfdf2;
   --y-ink: #0e0e0e;
   --y-ink-soft: #1a1a1a;
   --y-charcoal: #3a3a3a;
-  --y-gold: #d4af37;
-  --y-gold-light: #f0da8e;
-  --y-gold-dark: #8c7220;
+  --y-gold: #f5c518;
+  --y-gold-light: #fde68a;
+  --y-gold-dark: #a88008;
   --y-bone: #fafaf7;
   --y-paper: #f5f4ee;
   --y-line: #e8e6de;
@@ -87,9 +87,9 @@ select:focus-visible {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #1fae5a;
+  background: #10c56a;
   border: 3px solid #ffffff;
-  box-shadow: 0 0 0 4px rgba(31, 174, 90, 0.25),
+  box-shadow: 0 0 0 4px rgba(16, 197, 106, 0.28),
     0 4px 10px rgba(0, 0, 0, 0.3);
 }
 .cromio-self-dot-btn {
@@ -102,7 +102,7 @@ select:focus-visible {
   display: block;
 }
 .cromio-self-dot-btn:focus-visible {
-  outline: 2px solid #1fae5a;
+  outline: 2px solid #10c56a;
   outline-offset: 2px;
   border-radius: 50%;
 }
@@ -148,9 +148,9 @@ select:focus-visible {
   font-family: var(--font-bebas), system-ui;
   font-size: 14px;
   font-weight: 700;
-  color: #117c4e;
+  color: #089258;
   background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(17, 124, 78, 0.25);
+  border: 1px solid rgba(8, 146, 88, 0.28);
   border-radius: 6px;
   padding: 1px 6px;
   letter-spacing: 0.05em;
@@ -169,14 +169,14 @@ select:focus-visible {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: rgba(31, 174, 90, 0.4);
+  background: rgba(16, 197, 106, 0.42);
   transform: scale(0.05);
   animation: cromio-radar-pulse 2.6s ease-out infinite;
   will-change: transform, opacity;
 }
 .cromio-radar-pulse--late {
   animation-delay: 1.3s;
-  background: rgba(31, 174, 90, 0.25);
+  background: rgba(16, 197, 106, 0.28);
 }
 @keyframes cromio-radar-pulse {
   0% { transform: scale(0.05); opacity: 0.9; }
@@ -203,12 +203,12 @@ select:focus-visible {
   border-radius: 50%;
   background: conic-gradient(
     from 0deg,
-    rgba(31, 174, 90, 0) 0deg,
-    rgba(31, 174, 90, 0) 270deg,
-    rgba(31, 174, 90, 0.1) 290deg,
-    rgba(31, 174, 90, 0.32) 320deg,
-    rgba(31, 174, 90, 0.6) 348deg,
-    rgba(31, 174, 90, 0.85) 360deg
+    rgba(16, 197, 106, 0) 0deg,
+    rgba(16, 197, 106, 0) 270deg,
+    rgba(16, 197, 106, 0.12) 290deg,
+    rgba(16, 197, 106, 0.34) 320deg,
+    rgba(16, 197, 106, 0.62) 348deg,
+    rgba(16, 197, 106, 0.88) 360deg
   );
   -webkit-mask-image: radial-gradient(circle, #000 0%, #000 96%, transparent 100%);
   mask-image: radial-gradient(circle, #000 0%, #000 96%, transparent 100%);
