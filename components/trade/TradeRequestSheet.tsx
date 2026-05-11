@@ -159,14 +159,28 @@ function Column({
   tint: "green" | "red";
   items: { n: number; qty: number }[];
 }) {
+  const isGreen = tint === "green";
   return (
-    <div className="rounded-md border border-line bg-paper p-2">
+    <div className="rounded-card border border-line bg-paper p-2">
       <p
-        className={`mb-2 text-center text-[10px] font-bold uppercase tracking-wider ${
-          tint === "green" ? "text-green-700" : "text-red-600"
+        className={`mb-2 flex items-center justify-center gap-1.5 text-[11px] font-bold uppercase tracking-wider ${
+          isGreen ? "text-green-700" : "text-red-600"
         }`}
       >
-        {label} ({items.length})
+        <span
+          aria-hidden
+          className="inline-block h-0 w-0"
+          style={{
+            borderLeft: "5px solid transparent",
+            borderRight: "5px solid transparent",
+            ...(isGreen
+              ? { borderTop: "7px solid currentColor" }
+              : { borderBottom: "7px solid currentColor" }),
+          }}
+        />
+        <span>{label}</span>
+        <span aria-hidden>–</span>
+        <span>{items.length}</span>
       </p>
       {items.length === 0 ? (
         <p className="py-6 text-center text-[11px] text-text-2">—</p>

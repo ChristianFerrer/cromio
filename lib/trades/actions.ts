@@ -9,10 +9,14 @@ export type TradeItems = { from_gives: TradeItem[]; to_gives: TradeItem[] };
 
 export type TradeResult = { ok: true; id?: string; done?: boolean } | { ok: false; error: string };
 
-// Sender hits the Intercambiar button. We compute the current pairwise match
-// here on the server so the snapshot is honest even if the client view was
-// briefly stale.
-export async function requestTrade(toUserId: string): Promise<TradeResult> {
+// Sender hits the Intercambiar button. The client passes the n's the user
+// kept selected in the match view; we filter the pairwise match against
+// them so a deselected cromo never travels to the recipient.
+export async function requestTrade(
+  toUserId: string,
+  selectedYouGet: number[] = [],
+  selectedTheyGet: number[] = [],
+): Promise<TradeResult> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -31,13 +35,24 @@ export async function requestTrade(toUserId: string): Promise<TradeResult> {
   const theirCol = new Map<number, number>();
   for (const r of theirsRes.data ?? []) theirCol.set(r.sticker_n, r.count);
 
+  const youGetWhitelist = new Set(selectedYouGet);
+  const theyGetWhitelist = new Set(selectedTheyGet);
+  const noFilter =
+    selectedYouGet.length === 0 && selectedTheyGet.length === 0;
+
   const from_gives: TradeItem[] = [];
   const to_gives: TradeItem[] = [];
   for (const n of new Set<number>([...myCol.keys(), ...theirCol.keys()])) {
     const mine = myCol.get(n) ?? 0;
     const theirs = theirCol.get(n) ?? 0;
-    if (mine >= 2 && theirs === 0) from_gives.push({ n, qty: 1 });
-    if (mine === 0 && theirs >= 2) to_gives.push({ n, qty: 1 });
+    // from_gives = sender gives -> matches "Entregas" column on the UI.
+    if (mine >= 2 && theirs === 0 && (noFilter || theyGetWhitelist.has(n))) {
+      from_gives.push({ n, qty: 1 });
+    }
+    // to_gives = receiver gives -> matches "Recibes" column on the UI.
+    if (mine === 0 && theirs >= 2 && (noFilter || youGetWhitelist.has(n))) {
+      to_gives.push({ n, qty: 1 });
+    }
   }
 
   if (from_gives.length === 0 && to_gives.length === 0) {

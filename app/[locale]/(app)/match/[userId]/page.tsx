@@ -76,6 +76,7 @@ export default function MatchDetailPage({
   const [tradeRefreshTick, setTradeRefreshTick] = useState(0);
   const [showTradeSheet, setShowTradeSheet] = useState(false);
   const [tradePending, startTradeTransition] = useTransition();
+  const [existingChatId, setExistingChatId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isUuid) {
@@ -148,28 +149,41 @@ export default function MatchDetailPage({
     };
   }, [userId, isUuid, me]);
 
-  // Active trade between me and this user (pending or accepted). We refetch
-  // on `tradeRefreshTick` and via realtime so the button reflects the latest
-  // state even when the other side acts.
+  // Active trade between me and this user (pending or accepted), plus the
+  // id of any pre-existing chat between us so the CTA can read "Ir al chat"
+  // instead of "Iniciar chat". Both refetch on `tradeRefreshTick` and via
+  // realtime so the button reflects state when the other side acts.
   useEffect(() => {
     if (!me || !isUuid) return;
     const supabase = createClient();
     if (!supabase) return;
     let cancelled = false;
     (async () => {
-      const { data } = await supabase
-        .from("trade_requests")
-        .select(
-          "id, from_user_id, to_user_id, status, items, created_at, accepted_at, done_at, resolved_at",
-        )
-        .in("status", ["pending", "accepted"])
-        .or(
-          `and(from_user_id.eq.${me.id},to_user_id.eq.${userId}),and(from_user_id.eq.${userId},to_user_id.eq.${me.id})`,
-        )
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (!cancelled) setActiveTrade((data as TradeRequestRow | null) ?? null);
+      const [tradeRes, chatRes] = await Promise.all([
+        supabase
+          .from("trade_requests")
+          .select(
+            "id, from_user_id, to_user_id, status, items, created_at, accepted_at, done_at, resolved_at",
+          )
+          .in("status", ["pending", "accepted"])
+          .or(
+            `and(from_user_id.eq.${me.id},to_user_id.eq.${userId}),and(from_user_id.eq.${userId},to_user_id.eq.${me.id})`,
+          )
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from("chats")
+          .select("id")
+          .or(
+            `and(user_a.eq.${me.id},user_b.eq.${userId}),and(user_a.eq.${userId},user_b.eq.${me.id})`,
+          )
+          .limit(1)
+          .maybeSingle(),
+      ]);
+      if (cancelled) return;
+      setActiveTrade((tradeRes.data as TradeRequestRow | null) ?? null);
+      setExistingChatId((chatRes.data?.id as string | null) ?? null);
     })();
 
     const channel = supabase
@@ -359,33 +373,39 @@ export default function MatchDetailPage({
         </div>
       )}
 
-      <section className="mt-3 flex flex-col items-center px-5 pb-4">
-        <div
-          className="grid h-20 w-20 place-items-center rounded-full font-display text-3xl text-white shadow-sh2"
-          style={{ background: accentColor }}
-        >
-          {profile.alias.slice(0, 2).toUpperCase()}
+      <section className="mt-3 px-5 pb-3">
+        {/* Compact header: name + meta on the left, avatar on the right. */}
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h2 className="truncate font-display text-2xl">
+                {profile.display_name ?? profile.alias}
+              </h2>
+              {profile.pro && <Badge kind="gold">Pro</Badge>}
+            </div>
+            <p className="mt-0.5 text-xs text-text-2">
+              {distanceLabel && `≈${distanceLabel}`}
+              {profile.rating && ` · ★${profile.rating}`}
+              {profile.trades_count != null && ` · ${profile.trades_count} intercambios`}
+            </p>
+          </div>
+          <div
+            className="grid h-14 w-14 shrink-0 place-items-center rounded-full font-display text-xl text-white shadow-sh1"
+            style={{ background: accentColor }}
+          >
+            {profile.alias.slice(0, 2).toUpperCase()}
+          </div>
         </div>
-        <div className="mt-3 flex items-center gap-2">
-          <h2 className="font-display text-2xl">
-            {profile.display_name ?? profile.alias}
-          </h2>
-          {profile.pro && <Badge kind="gold">Pro</Badge>}
-        </div>
-        <p className="text-xs text-text-2">
-          {distanceLabel && `≈${distanceLabel}`}
-          {profile.rating && ` · ★${profile.rating}`}
-          {profile.trades_count != null && ` · ${profile.trades_count} intercambios`}
-        </p>
-      </section>
 
-      <section className="px-5 pb-3">
-        <div className="flex items-baseline gap-2 font-display text-text">
-          <span className="tabular leading-none" style={{ fontSize: 56 }}>
+        <p className="mt-3 text-[11px] font-bold uppercase tracking-wider text-text-2">
+          Progreso:
+        </p>
+        <div className="mt-1 flex items-baseline gap-2 font-display text-text">
+          <span className="tabular leading-none" style={{ fontSize: 40 }}>
             {otherStats.owned}
           </span>
-          <span className="text-xl text-mute">/{TOTAL_STICKERS}</span>
-          <span className="ml-auto text-xl text-green-700">
+          <span className="text-base text-mute">/{TOTAL_STICKERS}</span>
+          <span className="ml-auto text-base text-green-700">
             {otherStats.pct.toFixed(1)}%
           </span>
         </div>
@@ -468,12 +488,20 @@ export default function MatchDetailPage({
             disabled={chatPending}
             icon={<MessageCircle size={18} strokeWidth={2} />}
             onClick={() => {
+              if (existingChatId) {
+                router.push(`/chat/${existingChatId}`);
+                return;
+              }
               startChatTransition(async () => {
                 await startChatWith(profile.id);
               });
             }}
           >
-            {chatPending ? "Abriendo chat…" : "Iniciar chat"}
+            {chatPending
+              ? "Abriendo chat…"
+              : existingChatId
+                ? "Ir al chat"
+                : "Iniciar chat"}
           </Btn>
         </div>
         <TradeButton
@@ -482,11 +510,15 @@ export default function MatchDetailPage({
           pending={tradePending}
           onSend={() =>
             startTradeTransition(async () => {
-              const r = await requestTrade(profile.id);
+              const r = await requestTrade(
+                profile.id,
+                [...youSel],
+                [...theySel],
+              );
               if (!r.ok) {
                 const msg =
                   r.error === "empty_trade"
-                    ? "No tenéis cromos para intercambiar todavía."
+                    ? "Selecciona al menos un cromo para intercambiar."
                     : r.error === "already_pending"
                       ? "Ya tenéis una solicitud activa."
                       : "Algo falló. Inténtalo otra vez.";
