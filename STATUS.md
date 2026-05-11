@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-11 06:52 UTC** · branch `claude/review-project-setup-51FCV`_
+_Last updated: **2026-05-11 06:57 UTC** · branch `claude/review-project-setup-51FCV`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,6 +140,7 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
+- c6dd435 copy(landing-es): tighter "qué es" + reframed how-it-works steps (#23) _(5 minutes ago)_
 - 65f20c6 feat(pwa): bake the green tile into the install/favicon icon (#22) _(4 hours ago)_
 - 908ac82 feat(brand): radar_cromio.png logo + revert palette to original green (#21) _(5 hours ago)_
 - d6d54e8 Add files via upload _(5 hours ago)_
@@ -154,5 +155,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - 8228b7d feat(brand): cromio_lg.png as single logo on teal everywhere (#13) _(6 hours ago)_
 - df608d2 refactor(landing): remove FAQ section _(6 hours ago)_
 - a79124d Add files via upload _(6 hours ago)_
-- c9128be feat(brand): radar.png nav icon + cromio_logo on teal background (#12) _(6 hours ago)_
 <!-- AUTO:COMMITS:END -->
