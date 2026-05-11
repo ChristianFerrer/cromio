@@ -33,7 +33,7 @@ const COPY = {
       body:
         "Cromio es una comunidad por proximidad para coleccionistas del álbum Panini Mundial 2026. En vez de buscar en marketplaces, grupos o chats, te muestra en tiempo real quién a tu alrededor tiene lo que te falta y necesita lo que tienes repetido.",
       kpis: [
-        { label: "Cromos en el álbum", value: "993" },
+        { label: "Cromos en el álbum", value: "980" },
         { label: "Selecciones", value: "48" },
         { label: "Sedes Mundial 2026", value: "16" },
       ],
@@ -138,7 +138,7 @@ const COPY = {
       body:
         "Cromio is a proximity community for collectors of the Panini 2026 World Cup album. Instead of trawling marketplaces, you find someone in your neighborhood who has what you need and needs what you have spare.",
       kpis: [
-        { label: "Stickers in album", value: "993" },
+        { label: "Stickers in album", value: "980" },
         { label: "National teams", value: "48" },
         { label: "Host venues", value: "16" },
       ],
