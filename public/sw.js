@@ -1,6 +1,6 @@
 /* Cromio service worker — push notifications + offline shell. */
 
-const VERSION = "v5";
+const VERSION = "v6";
 const STATIC_CACHE = `cromio-static-${VERSION}`;
 const TILE_CACHE = "cromio-tiles-v1";
 const RUNTIME_CACHE = `cromio-runtime-${VERSION}`;
@@ -11,7 +11,7 @@ const PRECACHE_URLS = [
   "/manifest.webmanifest",
   "/icon.svg",
   "/icon-maskable.svg",
-  "/cromio_bg.png",
+  "/cromio_lg.png",
   "/offline.html",
 ];
 
@@ -119,7 +119,7 @@ self.addEventListener("push", (event) => {
   const title = data.title || "Cromio";
   const options = {
     body: data.body || "",
-    icon: "/cromio_bg.png",
+    icon: "/cromio_lg.png",
     badge: "/icon.svg",
     tag: data.tag || undefined,
     renotify: data.tag ? true : false,
