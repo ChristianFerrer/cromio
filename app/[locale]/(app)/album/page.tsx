@@ -213,7 +213,7 @@ export default function AlbumPage() {
         })()}
       </div>
 
-      <div className="grid grid-cols-3 gap-3 px-4 pb-6 pt-1">
+      <div className="grid grid-cols-4 gap-2 px-3 pb-6 pt-1">
         {list.map((s, i) => (
           <div
             key={s.n}
@@ -229,7 +229,7 @@ export default function AlbumPage() {
           </div>
         ))}
         {list.length === 0 && (
-          <div className="col-span-3 py-10 text-center text-sm text-text-2">
+          <div className="col-span-4 py-10 text-center text-sm text-text-2">
             Sin cromos para este filtro
           </div>
         )}
