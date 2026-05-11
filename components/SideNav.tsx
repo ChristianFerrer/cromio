@@ -38,7 +38,6 @@ export function SideNav() {
   return (
     <aside
       aria-label="Primary"
-      style={{ viewTransitionName: "side-nav" }}
       className="sticky top-0 hidden h-dvh w-60 shrink-0 border-r border-line bg-white px-4 py-6 md:block"
     >
       <Link href="/album" aria-label="Cromio · ir al álbum" className="mb-6 block px-2">
