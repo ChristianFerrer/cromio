@@ -214,7 +214,7 @@ export default function MatchDetailPage({
             />
           ))}
         </div>
-        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
+        <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4 backdrop-blur md:max-w-[760px]">
           <div className="h-14 w-full animate-pulse rounded-xl bg-paper" />
         </div>
       </main>
@@ -264,39 +264,88 @@ export default function MatchDetailPage({
 
   return (
     <main className="flex min-h-dvh flex-col pb-24">
-      <div className="flex items-center justify-between px-3 pt-14">
-        <IconBtn
-          ariaLabel="Atrás"
-          onClick={() => {
-            if (window.history.length > 1) router.back();
-            else router.push("/mapa");
-          }}
-        >
-          <ChevronLeft size={18} strokeWidth={2} />
-        </IconBtn>
-        <span className="font-display text-2xl uppercase tracking-wider">
-          {kindLabel}
-        </span>
-        <div className="flex items-center gap-1.5">
+      <header className="sticky top-0 z-30 bg-bone shadow-sh1">
+        <div className="flex items-center justify-between gap-2 px-3 pt-[max(env(safe-area-inset-top),12px)]">
           <IconBtn
-            ariaLabel={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
-            onClick={() => toggle(profile.id)}
+            ariaLabel="Atrás"
+            onClick={() => {
+              if (window.history.length > 1) router.back();
+              else router.push("/mapa");
+            }}
           >
-            <FlagIcon
-              size={16}
-              strokeWidth={2}
-              className={isFav ? "text-green-700" : ""}
-              fill={isFav ? "currentColor" : "none"}
-            />
+            <ChevronLeft size={18} strokeWidth={2} />
           </IconBtn>
-          <IconBtn
-            ariaLabel="Más opciones"
-            onClick={() => setShowActions(true)}
-          >
-            <MoreVertical size={16} strokeWidth={2} />
-          </IconBtn>
+          <span className="font-display text-base uppercase tracking-wider">
+            {kindLabel}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <IconBtn
+              ariaLabel={isFav ? "Quitar de favoritos" : "Añadir a favoritos"}
+              onClick={() => toggle(profile.id)}
+            >
+              <FlagIcon
+                size={16}
+                strokeWidth={2}
+                className={isFav ? "text-green-700" : ""}
+                fill={isFav ? "currentColor" : "none"}
+              />
+            </IconBtn>
+            <IconBtn
+              ariaLabel="Más opciones"
+              onClick={() => setShowActions(true)}
+            >
+              <MoreVertical size={16} strokeWidth={2} />
+            </IconBtn>
+          </div>
         </div>
-      </div>
+
+        <div className="flex items-center gap-3 px-4 pb-3 pt-2">
+          <div
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full font-display text-sm text-white shadow-sh1"
+            style={{ background: accentColor }}
+          >
+            {profile.alias.slice(0, 2).toUpperCase()}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <h2 className="truncate font-display text-base uppercase tracking-wider">
+                {profile.display_name ?? profile.alias}
+              </h2>
+              {profile.pro && <Badge kind="gold">Pro</Badge>}
+            </div>
+            <p className="truncate text-xs text-text-2">
+              {distanceLabel && `≈${distanceLabel}`}
+              {profile.rating && ` · ★${profile.rating}`}
+              {profile.trades_count != null && ` · ${profile.trades_count} cambios`}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-center gap-3 px-4 py-2.5 text-white"
+          style={{ background: bannerBg }}
+        >
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base leading-none text-match-green">▼</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-white">
+              Te da
+            </span>
+            <span className="ml-auto font-display text-xl leading-none">
+              {youSel.size}/{match.youGet.length}
+            </span>
+          </div>
+          <div className="self-stretch bg-white/10" />
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base leading-none text-match-red">▲</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-white">
+              Tú das
+            </span>
+            <span className="ml-auto font-display text-xl leading-none">
+              {theySel.size}/{match.theyGet.length}
+            </span>
+          </div>
+        </div>
+      </header>
 
       {blocked && (
         <div className="mx-3 mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
@@ -311,27 +360,7 @@ export default function MatchDetailPage({
         </div>
       )}
 
-      <section className="mt-3 flex flex-col items-center px-5 pb-4">
-        <div
-          className="grid h-20 w-20 place-items-center rounded-full font-display text-3xl text-white shadow-sh2"
-          style={{ background: accentColor }}
-        >
-          {profile.alias.slice(0, 2).toUpperCase()}
-        </div>
-        <div className="mt-3 flex items-center gap-2">
-          <h2 className="font-display text-2xl">
-            {profile.display_name ?? profile.alias}
-          </h2>
-          {profile.pro && <Badge kind="gold">Pro</Badge>}
-        </div>
-        <p className="text-xs text-text-2">
-          {distanceLabel && `≈${distanceLabel}`}
-          {profile.rating && ` · ★${profile.rating}`}
-          {profile.trades_count != null && ` · ${profile.trades_count} intercambios`}
-        </p>
-      </section>
-
-      <section className="px-5 pb-3">
+      <section className="px-5 pb-3 pt-4">
         <div className="flex items-baseline gap-2 font-display text-text">
           <span className="tabular leading-none" style={{ fontSize: 56 }}>
             {otherStats.owned}
@@ -358,35 +387,6 @@ export default function MatchDetailPage({
       </section>
 
       <div
-        className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-center gap-3 px-3.5 py-3 text-white shadow-sh2"
-        style={{ background: bannerBg }}
-      >
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-lg leading-none text-match-green">▼</span>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-white">
-              Recibes
-            </span>
-            <span className="font-display text-2xl leading-none">
-              {youSel.size}/{match.youGet.length}
-            </span>
-          </div>
-        </div>
-        <div className="self-stretch bg-white/10" />
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-lg leading-none text-match-red">▲</span>
-          <div className="flex flex-col">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-white">
-              Entregas
-            </span>
-            <span className="font-display text-2xl leading-none">
-              {theySel.size}/{match.theyGet.length}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div
         className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-start gap-3 border-x border-b bg-white p-3.5 shadow-sh2"
         style={{
           borderColor: isLead ? "rgba(30,120,255,.35)" : "rgba(38,198,218,.32)",
@@ -411,7 +411,7 @@ export default function MatchDetailPage({
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4 backdrop-blur md:max-w-[760px]">
         <Btn
           kind="primaryVibrant"
           full
