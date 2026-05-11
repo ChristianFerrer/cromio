@@ -5,10 +5,10 @@ import { COUNTRY_BY_CODE } from "@/lib/data/countries";
 import { Flag } from "./Flag";
 
 const SIZES = {
-  sm: { ratio: "78/110", code: "clamp(22px, 8vw, 30px)", type: 10, flag: 18, fixed: null },
-  md: { ratio: "102/144", code: "clamp(28px, 10vw, 40px)", type: 12, flag: 22, fixed: null },
-  lg: { ratio: "140/200", code: "44px", type: 14, flag: 26, fixed: { w: 140, h: 200 } },
-  xl: { ratio: "200/286", code: "60px", type: 17, flag: 34, fixed: { w: 200, h: 286 } },
+  sm: { code: "clamp(30px, 12vw, 40px)", type: 11, flag: 20, pad: 8, fixed: null },
+  md: { code: "clamp(40px, 15vw, 56px)", type: 13, flag: 24, pad: 10, fixed: null },
+  lg: { code: "60px", type: 15, flag: 30, pad: 12, fixed: { w: 160 } },
+  xl: { code: "84px", type: 18, flag: 40, pad: 14, fixed: { w: 220 } },
 } as const;
 
 const TYPE_LABEL: Record<StickerType, string> = {
@@ -40,11 +40,11 @@ export function CromoCard({
   const repe = count >= 2;
   const isLegendary = sticker.rarity === "legendary";
 
-  // Border + text colors driven by state.
+  // Border + text colors per state. Counter row lives inside the card.
   //   missing → dashed gray
-  //   have    → green solid 2px
-  //   repe    → red   solid 2px
-  //   legendary overrides to gold.
+  //   have    → 2px solid green
+  //   repe    → 2px solid red
+  //   legendary → 2px solid gold
   const cardBorder = selectBorder
     ? `2px solid ${selectBorder}`
     : isLegendary
@@ -65,22 +65,16 @@ export function CromoCard({
   const wrapperStyle: React.CSSProperties = dim.fixed
     ? { width: dim.fixed.w }
     : { width: "100%" };
-  const cardStyle: React.CSSProperties = dim.fixed
-    ? { width: dim.fixed.w, height: dim.fixed.h }
-    : { width: "100%", aspectRatio: dim.ratio };
 
   return (
     <div className="flex flex-col items-stretch" style={wrapperStyle}>
-      <button
+      <div
         onClick={onClick}
-        className="relative flex shrink-0 overflow-hidden rounded-card text-left transition-transform active:scale-[0.97]"
-        style={{
-          ...cardStyle,
-          background: "#FFFFFF",
-          border: cardBorder,
-        }}
+        role={onClick ? "button" : undefined}
+        className="relative flex flex-col overflow-hidden rounded-card"
+        style={{ background: "#FFFFFF", border: cardBorder }}
       >
-        <div className="relative flex h-full w-full flex-col p-2.5">
+        <div className="flex flex-col" style={{ padding: dim.pad }}>
           {/* Top row: big code (left) + flag (right) */}
           <div className="flex items-start justify-between gap-2">
             <span
@@ -100,7 +94,7 @@ export function CromoCard({
             )}
           </div>
 
-          {/* Type label centered under the code */}
+          {/* Type label centered just under the code */}
           <div className="mt-1 text-center">
             <span
               className="font-display uppercase leading-none tracking-wider"
@@ -109,44 +103,45 @@ export function CromoCard({
               {typeLabel}
             </span>
           </div>
-
-          {/* Flexible bottom space keeps the card height balanced */}
-          <div className="flex-1" />
         </div>
-      </button>
 
-      {onAdjust && (
-        <div className="mt-1.5 flex items-center justify-between">
-          <button
-            onClick={() => onAdjust(-1)}
-            disabled={count === 0}
-            aria-label="Quitar uno"
-            className={`grid h-7 w-7 place-items-center rounded-full text-base font-bold transition-colors disabled:opacity-30 ${
-              repe
-                ? "border border-transparent bg-red-500 text-white"
-                : "border border-line bg-white text-text-2"
-            }`}
+        {onAdjust && (
+          <div
+            className="flex items-center justify-between gap-2 border-t border-line/60"
+            style={{ padding: `${Math.max(dim.pad - 2, 6)}px ${dim.pad}px` }}
           >
-            −
-          </button>
-          <span
-            className={`font-display tabular text-base ${
-              repe ? "text-red-600" : have ? "text-text" : "text-mute"
-            }`}
-          >
-            {count}
-          </span>
-          <button
-            onClick={() => onAdjust(+1)}
-            aria-label="Añadir uno"
-            className="grid h-7 w-7 place-items-center rounded-full text-base font-bold text-white"
-            style={{ backgroundColor: "#10C56A" }}
-          >
-            +
-          </button>
-        </div>
-      )}
+            <button
+              onClick={() => onAdjust(-1)}
+              disabled={count === 0}
+              aria-label="Quitar uno"
+              className={`grid h-7 w-7 place-items-center rounded-full text-base font-bold transition-colors disabled:opacity-30 ${
+                repe
+                  ? "border border-transparent bg-red-500 text-white"
+                  : "border border-line bg-white text-text-2"
+              }`}
+            >
+              −
+            </button>
+            <span
+              className={`font-display tabular text-base ${
+                repe ? "text-red-600" : have ? "text-text" : "text-mute"
+              }`}
+            >
+              {count}
+            </span>
+            <button
+              onClick={() => onAdjust(+1)}
+              aria-label="Añadir uno"
+              className="grid h-7 w-7 place-items-center rounded-full text-base font-bold text-white"
+              style={{ backgroundColor: "#10C56A" }}
+            >
+              +
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
 
