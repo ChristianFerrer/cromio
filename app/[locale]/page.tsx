@@ -23,7 +23,7 @@ const COPY = {
     nav: { login: "Entrar", signup: "Crear cuenta" },
     hero: {
       h1: "Encuentra coleccionistas cerca de ti",
-      sub: "Intercambia los cromos del Mundial 2026 en persona, sin envíos ni intermediarios. Cromio te empareja con coleccionistas de tu barrio.",
+      sub: "Intercambia los cromos del Mundial 2026 en persona, sin envíos ni intermediarios. Cromio te muestra coleccionistas a tu alrededor.",
       cta1: "Crear cuenta",
       cta2: "Entrar",
       meta: "Gratis · iPhone, Android y escritorio · Sin app store",
