@@ -5,10 +5,10 @@ import { COUNTRY_BY_CODE } from "@/lib/data/countries";
 import { Flag } from "./Flag";
 
 const SIZES = {
-  sm: { code: "clamp(30px, 12vw, 40px)", type: 11, flag: 20, pad: 8, fixed: null },
-  md: { code: "clamp(40px, 15vw, 56px)", type: 13, flag: 24, pad: 10, fixed: null },
-  lg: { code: "60px", type: 15, flag: 30, pad: 12, fixed: { w: 160 } },
-  xl: { code: "84px", type: 18, flag: 40, pad: 14, fixed: { w: 220 } },
+  sm: { code: "clamp(22px, 7.5vw, 30px)", type: "clamp(12px, 4.2vw, 16px)", flag: 16, pad: 7, fixed: null },
+  md: { code: "clamp(36px, 13vw, 50px)", type: "clamp(13px, 4vw, 16px)", flag: 22, pad: 10, fixed: null },
+  lg: { code: "56px", type: "16px", flag: 28, pad: 12, fixed: { w: 160 } },
+  xl: { code: "80px", type: "20px", flag: 38, pad: 14, fixed: { w: 220 } },
 } as const;
 
 const TYPE_LABEL: Record<StickerType, string> = {
@@ -88,7 +88,16 @@ export function CromoCard({
               {sticker.code}
             </span>
             {country ? (
-              <Flag country={country} size={dim.flag} />
+              <span
+                className="inline-block shrink-0 overflow-hidden"
+                style={{
+                  border: "1px solid #D8D5C9",
+                  borderRadius: Math.round(dim.flag / 6) + 1,
+                  lineHeight: 0,
+                }}
+              >
+                <Flag country={country} size={dim.flag} />
+              </span>
             ) : (
               <span className="block" style={{ width: dim.flag, height: dim.flag }} />
             )}
