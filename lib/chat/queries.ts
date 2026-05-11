@@ -20,6 +20,7 @@ export type ChatRow = {
   } | null;
   unread_count: number;
   other_completion_pct: number;
+  distance_m: number | null;
   you_get_count: number;
   they_get_count: number;
 };
@@ -60,25 +61,31 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
   const ids = chats.map((c) => c.id);
   const otherIds = chats.map((c) => (c.user_a === user.id ? c.user_b : c.user_a));
 
-  const [{ data: lastMessages }, { data: unread }, { data: myStickers }, { data: otherStickers }] =
-    await Promise.all([
-      supabase
-        .from("messages")
-        .select("chat_id, sender_id, body, created_at")
-        .in("chat_id", ids)
-        .order("created_at", { ascending: false }),
-      supabase
-        .from("messages")
-        .select("chat_id")
-        .in("chat_id", ids)
-        .neq("sender_id", user.id)
-        .is("read_by_recipient_at", null),
-      supabase.from("user_stickers").select("sticker_n, count").eq("user_id", user.id),
-      supabase
-        .from("user_stickers")
-        .select("user_id, sticker_n, count")
-        .in("user_id", otherIds),
-    ]);
+  const [
+    { data: lastMessages },
+    { data: unread },
+    { data: myStickers },
+    { data: otherStickers },
+    { data: matchInfo },
+  ] = await Promise.all([
+    supabase
+      .from("messages")
+      .select("chat_id, sender_id, body, created_at")
+      .in("chat_id", ids)
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("messages")
+      .select("chat_id")
+      .in("chat_id", ids)
+      .neq("sender_id", user.id)
+      .is("read_by_recipient_at", null),
+    supabase.from("user_stickers").select("sticker_n, count").eq("user_id", user.id),
+    supabase
+      .from("user_stickers")
+      .select("user_id, sticker_n, count")
+      .in("user_id", otherIds),
+    supabase.rpc("chat_partner_match_info", { p_partner_ids: otherIds }),
+  ]);
 
   const lastByChat = new Map<string, NonNullable<ChatRow["last_message"]> & { chat_id: string }>();
   for (const m of lastMessages ?? []) {
@@ -101,6 +108,15 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
       colByUser.set(s.user_id, m);
     }
     m.set(s.sticker_n, s.count);
+  }
+
+  type MatchInfoRow = {
+    partner_id: string;
+    distance_m: number | null;
+  };
+  const distanceByPartner = new Map<string, number | null>();
+  for (const row of (matchInfo ?? []) as MatchInfoRow[]) {
+    distanceByPartner.set(row.partner_id, row.distance_m);
   }
 
   return chats.map((c) => {
@@ -132,6 +148,7 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
         : null,
       unread_count: unreadByChat.get(c.id) ?? 0,
       other_completion_pct: otherCompletionPct,
+      distance_m: distanceByPartner.get(other.id) ?? null,
       you_get_count: youGet,
       they_get_count: theyGet,
     };

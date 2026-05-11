@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-11 00:25 UTC** · branch `main`_
+_Last updated: **2026-05-11 00:47 UTC** · branch `claude/review-project-status-ibne5`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 06af235 feat(onboarding): simplify to 2 steps — location + identity only _(21 minutes ago)_
-- fb580fe feat(design): bump palette to vivid accents (#8) _(34 minutes ago)_
-- 48b25ec style(mapa): locate button matches the top-right toolbar, sits clearly above radius card _(55 minutes ago)_
-- 5835256 chore(deploy): trigger rebuild for VAPID env vars (#7) _(71 minutes ago)_
-- 486d13f fix(ux): useFavorites no longer flashes loaded=true while auth resolves _(81 minutes ago)_
-- 8286204 feat(push): nearby-match server-side trigger + iOS hint + diagnostics (#6) _(84 minutes ago)_
+- 06b1bc3 Add files via upload _(8 minutes ago)_
+- caa1ea3 feat(landing): public landing page at / with PWA install instructions _(22 minutes ago)_
+- e7505f4 chore(sw): bump cache to force PWA clients onto vivid palette (#10) _(29 minutes ago)_
+- 2529b7d feat(chat): richer list cards + fix iOS input zoom (#9) _(36 minutes ago)_
+- 06af235 feat(onboarding): simplify to 2 steps — location + identity only _(43 minutes ago)_
+- fb580fe feat(design): bump palette to vivid accents (#8) _(56 minutes ago)_
+- 48b25ec style(mapa): locate button matches the top-right toolbar, sits clearly above radius card _(77 minutes ago)_
+- 5835256 chore(deploy): trigger rebuild for VAPID env vars (#7) _(2 hours ago)_
+- 486d13f fix(ux): useFavorites no longer flashes loaded=true while auth resolves _(2 hours ago)_
+- 8286204 feat(push): nearby-match server-side trigger + iOS hint + diagnostics (#6) _(2 hours ago)_
 - 7b289e5 fix(ux): no flash of empty state when entering /favoritos and /mapa list _(2 hours ago)_
 - 65e8834 feat(cromo-card): repe → full red card + position in bottom-right _(2 hours ago)_
 - c4be251 Merge pull request #4 from ChristianFerrer/claude/admin-dashboard _(2 hours ago)_
 - 0e438ef feat(nav): rename bottom-nav label Favoritos → Contactos (#5) _(2 hours ago)_
 - 841d769 docs(claude): CLAUDE.md with project conventions for future sessions _(3 hours ago)_
-- a4d4050 refactor(admin): split components, rename guards, drop hex literals _(3 hours ago)_
-- 61f8950 feat(admin): audit log view, profile audit trigger, nightly events retention _(3 hours ago)_
-- c60174b feat(admin): dashboard — KPIs, time series, funnel and breakdowns _(3 hours ago)_
-- e772b85 feat(admin): user CRUD — list with filters, detail, ban / role / reset _(3 hours ago)_
 <!-- AUTO:COMMITS:END -->
