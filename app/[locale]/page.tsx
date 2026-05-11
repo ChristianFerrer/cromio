@@ -108,31 +108,6 @@ const COPY = {
       ],
       desktopNote: "También funciona como sitio web normal sin instalar nada.",
     },
-    faq: {
-      title: "Preguntas frecuentes",
-      items: [
-        {
-          q: "¿Es gratis?",
-          a: "Sí, todo el intercambio entre coleccionistas es 100% gratis. En el futuro habrá un plan Pro opcional con radio más amplio, pero el núcleo del producto seguirá siendo gratuito.",
-        },
-        {
-          q: "¿Y si vivo en una ciudad pequeña?",
-          a: "Cromio crece según se une la gente. Si todavía no hay nadie cerca, amplía el radio o invita a un par de amigos — basta con 2-3 personas para empezar a cambiar.",
-        },
-        {
-          q: "¿Es seguro?",
-          a: "Los intercambios son en persona, en sitios públicos. La app tiene valoraciones, bloqueos y denuncias, y un equipo de moderación que actúa rápido ante avisos.",
-        },
-        {
-          q: "¿Quién está detrás?",
-          a: "Cromio es un proyecto independiente, sin afiliación con Panini Group, FIFA ni la FIFA World Cup 2026™. Los nombres y diseños son de sus respectivos titulares — los usamos solo como referencia para facilitar el intercambio.",
-        },
-        {
-          q: "¿Necesito instalar algo obligatoriamente?",
-          a: "No: Cromio funciona como web. Pero recomendamos instalarlo como PWA para tener notificaciones push y abrir la app como cualquier otra del móvil.",
-        },
-      ],
-    },
     cta: {
       title: "Empieza a completar tu álbum",
       sub: "Crea una cuenta gratis. Solo necesitas tu zona y un alias.",
@@ -237,31 +212,6 @@ const COPY = {
         "Click “Install” and confirm.",
       ],
       desktopNote: "Also works as a normal website without installing anything.",
-    },
-    faq: {
-      title: "FAQ",
-      items: [
-        {
-          q: "Is it free?",
-          a: "Yes — trading between collectors is 100% free. A future optional Pro plan will unlock a wider radius, but the core stays free.",
-        },
-        {
-          q: "What if I live in a small town?",
-          a: "Cromio grows with the community. If no one's nearby yet, widen the radius or invite a couple of friends — 2–3 people is enough to start trading.",
-        },
-        {
-          q: "Is it safe?",
-          a: "Trades happen in person, in public places. The app has ratings, blocks and reports, and a moderation team that acts fast on flags.",
-        },
-        {
-          q: "Who's behind it?",
-          a: "Cromio is an independent project, not affiliated with Panini Group, FIFA or the FIFA World Cup 2026™. Names and designs belong to their respective owners; we use them only as reference to make trading easier.",
-        },
-        {
-          q: "Do I have to install anything?",
-          a: "Not strictly — Cromio works on the web. But we recommend installing it as a PWA for push notifications and to launch it like any other mobile app.",
-        },
-      ],
     },
     cta: {
       title: "Start completing your album",
@@ -463,28 +413,6 @@ export default async function Home({
               desktopNote: t.install.desktopNote,
             }}
           />
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="mx-auto w-full max-w-5xl px-5 pb-12 sm:px-8 sm:pb-20">
-        <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
-          {t.faq.title}
-        </h2>
-        <div className="mt-6 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white shadow-sh1 sm:mt-8">
-          {t.faq.items.map((f) => (
-            <details key={f.q} className="group">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 sm:px-6 sm:py-5">
-                <span className="font-display text-lg sm:text-xl">{f.q}</span>
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-paper text-text-2 transition-transform group-open:rotate-45">
-                  <span className="text-xl leading-none">+</span>
-                </span>
-              </summary>
-              <p className="px-5 pb-5 text-sm leading-relaxed text-text-2 sm:px-6 sm:pb-6 sm:text-base">
-                {f.a}
-              </p>
-            </details>
-          ))}
         </div>
       </section>
 
