@@ -6,19 +6,19 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FAFAF7",
-  "theme_color": "#066B40",
+  "theme_color": "#155F6B",
   "categories": ["sports", "social", "lifestyle"],
   "lang": "es",
   "dir": "ltr",
   "icons": [
     {
-      "src": "/cromio_lg.png",
+      "src": "/radar-point.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/cromio_lg.png",
+      "src": "/radar-point.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

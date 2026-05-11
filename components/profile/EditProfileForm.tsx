@@ -10,8 +10,8 @@ import { Btn } from "@/components/ui/Btn";
 import { IconBtn } from "@/components/ui/IconBtn";
 
 const COLORS = [
-  "#10C56A",
-  "#089258",
+  "#26C6DA",
+  "#1FA1B4",
   "#1E78FF",
   "#6C3FFF",
   "#EF1F3C",

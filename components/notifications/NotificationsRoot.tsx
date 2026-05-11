@@ -194,7 +194,7 @@ export function NotificationsRoot({
               chatId: m.chat_id,
               senderName: prof?.alias ?? "Coleccionista",
               body: m.body,
-              color: prof?.color ?? "#10C56A",
+              color: prof?.color ?? "#26C6DA",
             });
             void playMessageSound();
           },
@@ -354,7 +354,7 @@ function ToastCard({
       >
         <div
           className="grid h-9 w-9 shrink-0 place-items-center rounded-full font-display text-sm text-white"
-          style={{ background: toast.color ?? "#10C56A" }}
+          style={{ background: toast.color ?? "#26C6DA" }}
         >
           {initials}
         </div>

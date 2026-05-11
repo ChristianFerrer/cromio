@@ -193,7 +193,7 @@ export default function FavoritosPage() {
                 >
                   <div
                     className="grid h-9 w-9 shrink-0 place-items-center rounded-full font-display text-sm text-white"
-                    style={{ background: u.color ?? "#10C56A" }}
+                    style={{ background: u.color ?? "#26C6DA" }}
                   >
                     {u.alias.slice(0, 2).toUpperCase()}
                   </div>
@@ -270,7 +270,7 @@ export default function FavoritosPage() {
               <Link
                 href={`/match/${u.id}`}
                 className="grid h-11 w-11 shrink-0 place-items-center rounded-full font-display text-lg text-white"
-                style={{ background: u.color ?? "#10C56A" }}
+                style={{ background: u.color ?? "#26C6DA" }}
               >
                 {u.alias.slice(0, 2).toUpperCase()}
               </Link>

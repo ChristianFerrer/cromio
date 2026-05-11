@@ -30,7 +30,7 @@ export function UserEditForm({
   const [form, setForm] = useState({
     alias,
     display_name: displayName ?? "",
-    color: color ?? "#10C56A",
+    color: color ?? "#26C6DA",
     plan: plan ?? "free",
     bio: bio ?? "",
   });
@@ -38,7 +38,7 @@ export function UserEditForm({
   const dirty =
     form.alias !== alias ||
     form.display_name !== (displayName ?? "") ||
-    form.color !== (color ?? "#10C56A") ||
+    form.color !== (color ?? "#26C6DA") ||
     form.plan !== (plan ?? "free") ||
     form.bio !== (bio ?? "");
 

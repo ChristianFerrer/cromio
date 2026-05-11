@@ -225,7 +225,7 @@ export default function MatchDetailPage({
   const kindLabel = isLead ? "Te interesa" : "Match";
   const bannerBg = isLead
     ? `linear-gradient(135deg, ${CROMIO_COLORS.match.interest} 0%, #1B5DA8 100%)`
-    : "linear-gradient(135deg, #1F8A4D 0%, #166B3B 100%)";
+    : "linear-gradient(135deg, #26C6DA 0%, #1FA1B4 100%)";
   const accentColor = isLead
     ? CROMIO_COLORS.match.interest
     : profile.color ?? CROMIO_COLORS.green[500];
@@ -389,7 +389,7 @@ export default function MatchDetailPage({
       <div
         className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-start gap-3 border-x border-b bg-white p-3.5 shadow-sh2"
         style={{
-          borderColor: isLead ? "rgba(30,120,255,.35)" : "rgba(16,197,106,.30)",
+          borderColor: isLead ? "rgba(30,120,255,.35)" : "rgba(38,198,218,.32)",
         }}
       >
         <div className="grid grid-cols-2 gap-1.5">
