@@ -32,8 +32,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Mapa",
-      "short_name": "Mapa",
+      "name": "Radar",
+      "short_name": "Radar",
       "url": "/mapa",
       "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
     },
