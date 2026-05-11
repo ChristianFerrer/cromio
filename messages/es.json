@@ -1,7 +1,7 @@
 {
   "nav": {
     "album": "Álbum",
-    "mapa": "Mapa",
+    "mapa": "Radar",
     "favoritos": "Contactos",
     "chat": "Chats",
     "perfil": "Perfil",
@@ -21,7 +21,7 @@
     "duplicates": "repetidas"
   },
   "mapa": {
-    "title": "Mapa",
+    "title": "Radar",
     "searchRadius": "Radio de búsqueda",
     "hyperlocal": "Modo hiperlocal · Solo tu manzana"
   },
@@ -132,7 +132,8 @@
         "sendReset": "Enviar reset de contraseña",
         "promote": "Promover a admin",
         "demote": "Quitar admin",
-        "exportData": "Exportar datos (GDPR)"
+        "exportData": "Exportar datos (GDPR)",
+        "delete": "Eliminar usuario"
       },
       "detail": {
         "back": "Volver",
@@ -147,7 +148,11 @@
         "confirmForceSignOut": "Cerrar sesiones de este usuario",
         "confirmReset": "Enviar email de recuperación",
         "saveChanges": "Guardar cambios",
-        "noChanges": "Sin cambios"
+        "noChanges": "Sin cambios",
+        "deleteWarning": "Acción irreversible. Se elimina el perfil, los cromos, los chats, los favoritos y el acceso. Considera exportar los datos antes (GDPR).",
+        "deleteConfirmAlias": "Escribe «{alias}» para confirmar",
+        "confirmDelete": "Eliminar definitivamente",
+        "deleted": "Usuario eliminado"
       }
     },
     "audit": {
@@ -164,6 +169,7 @@
       "notAdmin": "No tienes permisos de administrador",
       "selfDemote": "No puedes quitarte el rol admin a ti mismo",
       "selfBan": "No puedes banearte a ti mismo",
+      "selfDelete": "No puedes eliminarte a ti mismo",
       "generic": "Algo falló. Revisa la consola."
     }
   },

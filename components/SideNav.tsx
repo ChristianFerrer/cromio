@@ -1,12 +1,12 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Logo } from "@/components/Logo";
 import {
   BookMarked,
-  Compass,
   Flag,
   MessageCircle,
   ShieldCheck,
@@ -15,13 +15,19 @@ import {
 import { useNotifications } from "@/components/notifications/NotificationsRoot";
 import { useUser } from "@/hooks/useUser";
 
-const TABS = [
+type LucideIcon = typeof BookMarked;
+
+const TABS: ReadonlyArray<{
+  id: "album" | "mapa" | "favoritos" | "chat" | "perfil";
+  href: string;
+  icon: LucideIcon | "radar";
+}> = [
   { id: "album", href: "/album", icon: BookMarked },
-  { id: "mapa", href: "/mapa", icon: Compass },
+  { id: "mapa", href: "/mapa", icon: "radar" },
   { id: "favoritos", href: "/favoritos", icon: Flag },
   { id: "chat", href: "/chat", icon: MessageCircle },
   { id: "perfil", href: "/perfil", icon: User },
-] as const;
+];
 
 export function SideNav() {
   const pathname = usePathname();
@@ -39,7 +45,8 @@ export function SideNav() {
         <Logo size="md" />
       </Link>
       <ul className="space-y-1">
-        {TABS.map(({ id, href, icon: Icon }) => {
+        {TABS.map((tab) => {
+          const { id, href } = tab;
           const active = pathname === href || pathname.endsWith(href);
           const badge =
             id === "chat"
@@ -47,6 +54,7 @@ export function SideNav() {
               : id === "mapa"
                 ? newNearbyCount
                 : 0;
+          const Icon = tab.icon;
           return (
             <li key={id}>
               <Link
@@ -57,7 +65,18 @@ export function SideNav() {
                     : "font-medium text-text-2 hover:bg-paper hover:text-text"
                 }`}
               >
-                <Icon size={20} strokeWidth={active ? 2.2 : 1.8} aria-hidden />
+                {Icon === "radar" ? (
+                  <Image
+                    src="/radar.png"
+                    alt=""
+                    width={20}
+                    height={20}
+                    aria-hidden
+                    className={active ? "" : "opacity-70"}
+                  />
+                ) : (
+                  <Icon size={20} strokeWidth={active ? 2.2 : 1.8} aria-hidden />
+                )}
                 <span className="flex-1 capitalize">{t(id)}</span>
                 {badge > 0 && (
                   <span className="grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1.5 font-display text-[11px] leading-none text-white">

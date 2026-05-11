@@ -13,9 +13,9 @@ import {
   Share2,
 } from "lucide-react";
 import { shareOrCopy } from "@/lib/share/client";
-import { STICKERS_BY_N } from "@/lib/data/stickers";
+import { STICKERS_BY_N, TOTAL_STICKERS } from "@/lib/data/stickers";
 import { buildMatch, fmtDistance } from "@/lib/matches";
-import type { CollectionEntry, MatchResult } from "@/lib/types";
+import type { CollectionEntry } from "@/lib/types";
 import { useCollection } from "@/hooks/useCollection";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useUser } from "@/hooks/useUser";
@@ -59,7 +59,7 @@ export default function MatchDetailPage({
   const [chatPending, startChatTransition] = useTransition();
 
   const [profile, setProfile] = useState<ProfileLite | null>(null);
-  const [match, setMatch] = useState<MatchResult | null>(null);
+  const [theirCol, setTheirCol] = useState<Map<number, number>>(new Map());
   const [loading, setLoading] = useState(true);
   const [distanceM, setDistanceM] = useState<number | null>(null);
   const [blocked, setBlocked] = useState(false);
@@ -76,6 +76,7 @@ export default function MatchDetailPage({
     if (!supabase) return;
 
     setLoading(true);
+    let cancelled = false;
     (async () => {
       const [profileRes, theirStickersRes] = await Promise.all([
         supabase
@@ -85,17 +86,18 @@ export default function MatchDetailPage({
           .maybeSingle(),
         supabase.from("user_stickers").select("sticker_n, count").eq("user_id", userId),
       ]);
+      if (cancelled) return;
 
       if (!profileRes.data) {
         setLoading(false);
         return;
       }
 
-      const theirCol = new Map<number, number>();
+      const next = new Map<number, number>();
       for (const row of theirStickersRes.data ?? []) {
-        theirCol.set(row.sticker_n, row.count);
+        next.set(row.sticker_n, row.count);
       }
-      setMatch(buildMatch(collection, theirCol));
+      setTheirCol(next);
 
       setProfile({
         id: profileRes.data.id,
@@ -113,6 +115,7 @@ export default function MatchDetailPage({
           p_user_id: me.id,
           p_radius_m: 50000,
         });
+        if (cancelled) return;
         const found = (dist as { user_id: string; distance_m: number }[] | null)?.find(
           (r) => r.user_id === userId,
         );
@@ -124,12 +127,39 @@ export default function MatchDetailPage({
           .eq("blocker_id", me.id)
           .eq("blocked_id", userId)
           .maybeSingle();
+        if (cancelled) return;
         setBlocked(!!blockRow);
       }
 
       setLoading(false);
     })();
-  }, [userId, isUuid, collection, me]);
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, isUuid, me]);
+
+  // buildMatch is reactive on `collection`: this ensures we don't render
+  // a stale "te interesa / sin cromos para entregar" while useCollection
+  // is still hydrating from Supabase.
+  const match = useMemo(
+    () => buildMatch(collection, theirCol),
+    [collection, theirCol],
+  );
+
+  const otherStats = useMemo(() => {
+    let owned = 0;
+    let repes = 0;
+    for (const count of theirCol.values()) {
+      if (count >= 1) owned++;
+      if (count >= 2) repes += count - 1;
+    }
+    return {
+      owned,
+      missing: TOTAL_STICKERS - owned,
+      repes,
+      pct: TOTAL_STICKERS > 0 ? (owned / TOTAL_STICKERS) * 100 : 0,
+    };
+  }, [theirCol]);
 
   const isFav = profile ? has(profile.id) : false;
 
@@ -159,7 +189,7 @@ export default function MatchDetailPage({
     );
   }
 
-  if (!profile || !match) {
+  if (!profile) {
     return (
       <main className="flex min-h-dvh flex-col pb-24">
         <div className="flex items-center justify-between px-3 pt-14">
@@ -184,7 +214,7 @@ export default function MatchDetailPage({
             />
           ))}
         </div>
-        <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
+        <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4 backdrop-blur md:max-w-[760px]">
           <div className="h-14 w-full animate-pulse rounded-xl bg-paper" />
         </div>
       </main>
@@ -195,7 +225,7 @@ export default function MatchDetailPage({
   const kindLabel = isLead ? "Te interesa" : "Match";
   const bannerBg = isLead
     ? `linear-gradient(135deg, ${CROMIO_COLORS.match.interest} 0%, #1B5DA8 100%)`
-    : "linear-gradient(135deg, #1F8A4D 0%, #166B3B 100%)";
+    : "linear-gradient(135deg, #10C56A 0%, #089258 100%)";
   const accentColor = isLead
     ? CROMIO_COLORS.match.interest
     : profile.color ?? CROMIO_COLORS.green[500];
@@ -224,7 +254,7 @@ export default function MatchDetailPage({
         >
           <CromoCard
             sticker={stickerData}
-            count={c.count || 1}
+            count={1}
             size="sm"
             selectBorder={sel ? color : null}
           />
@@ -301,6 +331,32 @@ export default function MatchDetailPage({
         </p>
       </section>
 
+      <section className="px-5 pb-3">
+        <div className="flex items-baseline gap-2 font-display text-text">
+          <span className="tabular leading-none" style={{ fontSize: 56 }}>
+            {otherStats.owned}
+          </span>
+          <span className="text-xl text-mute">/{TOTAL_STICKERS}</span>
+          <span className="ml-auto text-xl text-green-700">
+            {otherStats.pct.toFixed(1)}%
+          </span>
+        </div>
+        <div className="mt-2 h-2 overflow-hidden rounded-full bg-line">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-green-700 to-green-500"
+            style={{ width: `${otherStats.pct}%` }}
+          />
+        </div>
+        <div className="mt-2 flex gap-3.5 text-xs text-text-2">
+          <span>
+            <b className="text-text">{otherStats.repes}</b> repes
+          </span>
+          <span>
+            <b className="text-text">{otherStats.missing}</b> faltan
+          </span>
+        </div>
+      </section>
+
       <div
         className="grid grid-cols-[minmax(0,1fr)_1px_minmax(0,1fr)] items-center gap-3 px-3.5 py-3 text-white shadow-sh2"
         style={{ background: bannerBg }}
@@ -355,7 +411,7 @@ export default function MatchDetailPage({
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-20 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 p-4 backdrop-blur md:bottom-0 md:max-w-[760px]">
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4 backdrop-blur md:max-w-[760px]">
         <Btn
           kind="primaryVibrant"
           full

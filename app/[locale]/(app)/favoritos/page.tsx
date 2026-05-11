@@ -7,6 +7,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import { fmtDistance } from "@/lib/matches";
+import { TOTAL_STICKERS } from "@/lib/data/stickers";
 import { MatchArrows } from "@/components/match/MatchArrows";
 
 type FavRow = {
@@ -20,6 +21,10 @@ type FavRow = {
   distance_m: number | null;
   you_get_count: number;
   they_get_count: number;
+  owned: number;
+  missing: number;
+  repes: number;
+  pct: number;
 };
 
 export default function FavoritosPage() {
@@ -48,7 +53,7 @@ export default function FavoritosPage() {
     let cancelled = false;
     (async () => {
       const ids = [...favs];
-      const [profilesRes, nearbyRes] = await Promise.all([
+      const [profilesRes, nearbyRes, stickersRes] = await Promise.all([
         supabase
           .from("profiles")
           .select("id, alias, display_name, color, rating, trades_count, plan")
@@ -57,6 +62,10 @@ export default function FavoritosPage() {
           p_user_id: user.id,
           p_radius_m: 50000,
         }),
+        supabase
+          .from("user_stickers")
+          .select("user_id, sticker_n, count")
+          .in("user_id", ids),
       ]);
       if (cancelled) return;
 
@@ -77,9 +86,22 @@ export default function FavoritosPage() {
         });
       }
 
+      const statsByUser = new Map<string, { owned: number; repes: number }>();
+      for (const s of (stickersRes.data ?? []) as Array<{
+        user_id: string;
+        sticker_n: number;
+        count: number;
+      }>) {
+        const cur = statsByUser.get(s.user_id) ?? { owned: 0, repes: 0 };
+        if (s.count >= 1) cur.owned++;
+        if (s.count >= 2) cur.repes += s.count - 1;
+        statsByUser.set(s.user_id, cur);
+      }
+
       setRows(
         (profilesRes.data ?? []).map((p) => {
           const n = nearby.get(p.id);
+          const s = statsByUser.get(p.id) ?? { owned: 0, repes: 0 };
           return {
             id: p.id,
             alias: p.alias,
@@ -91,6 +113,10 @@ export default function FavoritosPage() {
             distance_m: n?.distance_m ?? null,
             you_get_count: n?.you_get_count ?? 0,
             they_get_count: n?.they_get_count ?? 0,
+            owned: s.owned,
+            missing: TOTAL_STICKERS - s.owned,
+            repes: s.repes,
+            pct: TOTAL_STICKERS > 0 ? (s.owned / TOTAL_STICKERS) * 100 : 0,
           };
         }),
       );
@@ -140,6 +166,10 @@ export default function FavoritosPage() {
           distance_m: null,
           you_get_count: 0,
           they_get_count: 0,
+          owned: 0,
+          missing: TOTAL_STICKERS,
+          repes: 0,
+          pct: 0,
         })),
       );
       setSearching(false);
@@ -152,7 +182,7 @@ export default function FavoritosPage() {
 
   return (
     <main className="px-5 pb-6 pt-14">
-      <h1 className="font-display text-3xl tracking-tight">Favoritos</h1>
+      <h1 className="font-display text-3xl tracking-tight">Contactos</h1>
       <p className="mt-1 text-xs uppercase tracking-wider text-text-2">
         {favs.size} {favs.size === 1 ? "coleccionista" : "coleccionistas"}
       </p>
@@ -172,18 +202,20 @@ export default function FavoritosPage() {
         )}
       </div>
 
-      {query.trim().length > 0 && (
-        <div className="mt-2 rounded-md border border-line bg-white">
-          {searching ? (
-            <p className="px-3 py-3 text-xs text-text-2">Buscando…</p>
-          ) : searchResults.length === 0 ? (
-            <p className="px-3 py-3 text-xs text-text-2">
-              Sin resultados para «{query.trim()}»
-            </p>
-          ) : (
-            searchResults.map((u) => {
-              const active = has(u.id);
-              return (
+      {query.trim().length > 0 && (() => {
+        const visible = searchResults.filter((u) => !has(u.id));
+        return (
+          <div className="mt-2 rounded-md border border-line bg-white">
+            {searching ? (
+              <p className="px-3 py-3 text-xs text-text-2">Buscando…</p>
+            ) : visible.length === 0 ? (
+              <p className="px-3 py-3 text-xs text-text-2">
+                {searchResults.length === 0
+                  ? `Sin resultados para «${query.trim()}»`
+                  : "Todos los resultados ya están en tus favoritos"}
+              </p>
+            ) : (
+              visible.map((u) => (
                 <button
                   key={u.id}
                   onClick={() => toggle(u.id)}
@@ -193,26 +225,22 @@ export default function FavoritosPage() {
                     className="grid h-9 w-9 shrink-0 place-items-center rounded-full font-display text-sm text-white"
                     style={{ background: u.color ?? "#10C56A" }}
                   >
-                    {u.alias.slice(0, 2).toUpperCase()}
+                    {(u.display_name ?? u.alias).slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-bold">{u.alias}</p>
-                    {u.display_name && (
-                      <p className="text-xs text-text-2">{u.display_name}</p>
-                    )}
+                    <p className="text-sm font-bold">{u.display_name ?? u.alias}</p>
                   </div>
                   <FlagIcon
                     size={18}
-                    className={active ? "text-green-700" : "text-text-2"}
+                    className="text-text-2"
                     strokeWidth={2.2}
-                    fill={active ? "currentColor" : "none"}
                   />
                 </button>
-              );
-            })
-          )}
-        </div>
-      )}
+              ))
+            )}
+          </div>
+        );
+      })()}
 
       <div className="mt-5 space-y-2">
         {!loaded || (loading && rows.length === 0) ? (
@@ -233,7 +261,7 @@ export default function FavoritosPage() {
             <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-green-500 to-green-700 text-white shadow-sh2">
               <FlagIcon size={26} strokeWidth={2} fill="currentColor" />
             </div>
-            <h2 className="mt-4 font-display text-xl">Aún no tienes favoritos</h2>
+            <h2 className="mt-4 font-display text-xl">Aún no tienes contactos</h2>
             <p className="mt-1 max-w-xs text-xs leading-snug text-text-2">
               Marca con la bandera a los coleccionistas que te interesen para tenerlos siempre a un toque, aunque cambien de zona.
             </p>
@@ -261,49 +289,75 @@ export default function FavoritosPage() {
             </div>
           </div>
         ) : (
-          rows.map((u) => (
-            <div
-              key={u.id}
-              className="flex items-center gap-3 rounded-md border border-line bg-white p-3"
-            >
-              <Link
-                href={`/match/${u.id}`}
-                className="grid h-11 w-11 shrink-0 place-items-center rounded-full font-display text-lg text-white"
-                style={{ background: u.color ?? "#10C56A" }}
+          rows.map((u) => {
+            const visibleName = u.display_name ?? u.alias;
+            return (
+              <div
+                key={u.id}
+                className="flex items-start gap-3 rounded-md border border-line bg-white p-3"
               >
-                {u.alias.slice(0, 2).toUpperCase()}
-              </Link>
-              <Link href={`/match/${u.id}`} className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-bold">{u.alias}</span>
-                  {u.plan === "pro" && (
-                    <span className="rounded bg-gold/20 px-1 py-0.5 text-[9px] font-bold uppercase text-gold-dark">
-                      Pro
+                <Link
+                  href={`/match/${u.id}`}
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full font-display text-lg text-white"
+                  style={{ background: u.color ?? "#26C6DA" }}
+                >
+                  {visibleName.slice(0, 2).toUpperCase()}
+                </Link>
+                <Link href={`/match/${u.id}`} className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-bold">{visibleName}</span>
+                      {u.plan === "pro" && (
+                        <span className="rounded bg-gold/20 px-1 py-0.5 text-[9px] font-bold uppercase text-gold-dark">
+                          Pro
+                        </span>
+                      )}
+                    </div>
+                    <MatchArrows
+                      recibes={u.you_get_count}
+                      entregas={u.they_get_count}
+                      size={14}
+                    />
+                  </div>
+                  <div className="mt-0.5 text-xs text-text-2">
+                    {u.distance_m != null ? fmtDistance(u.distance_m) : "—"}
+                    {u.rating != null && ` · ★${u.rating}`}
+                    {u.trades_count != null && ` · ${u.trades_count} intercambios`}
+                  </div>
+                  <div className="mt-2 flex items-baseline justify-between gap-2 text-[11px] text-text-2">
+                    <span>
+                      <b className="text-text">{u.owned}</b>
+                      <span className="text-mute">/{TOTAL_STICKERS}</span>
                     </span>
-                  )}
-                </div>
-                <div className="mt-0.5 text-xs text-text-2">
-                  {u.distance_m != null ? fmtDistance(u.distance_m) : "—"}
-                  {u.rating != null && ` · ★${u.rating}`}
-                  {u.trades_count != null && ` · ${u.trades_count} intercambios`}
-                </div>
-              </Link>
-              <div className="flex flex-col items-end gap-1">
-                <MatchArrows
-                  recibes={u.you_get_count}
-                  entregas={u.they_get_count}
-                  size={16}
-                />
+                    <span className="font-display tabular text-green-700">
+                      {u.pct.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-line">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-green-700 to-green-500"
+                      style={{ width: `${u.pct}%` }}
+                    />
+                  </div>
+                  <div className="mt-1 flex gap-3 text-[11px] text-text-2">
+                    <span>
+                      <b className="text-text">{u.repes}</b> repes
+                    </span>
+                    <span>
+                      <b className="text-text">{u.missing}</b> faltan
+                    </span>
+                  </div>
+                </Link>
                 <button
                   onClick={() => toggle(u.id)}
-                  className="grid h-7 w-7 place-items-center rounded-full bg-green-100 text-green-700"
-                  aria-label="Quitar de favoritos"
+                  className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green-100 text-green-700"
+                  aria-label="Quitar de contactos"
                 >
                   <FlagIcon size={14} strokeWidth={2.4} fill="currentColor" />
                 </button>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </main>

@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { pushNewUserToAdmins } from "@/lib/admin/push-new-user";
 
 export type AuthResult = { error?: string };
 
@@ -41,7 +42,7 @@ export async function signUpWithPassword(formData: FormData): Promise<AuthResult
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -53,6 +54,13 @@ export async function signUpWithPassword(formData: FormData): Promise<AuthResult
 
   if (error) {
     return { error: friendlyError(error.message) };
+  }
+
+  if (data.user) {
+    await pushNewUserToAdmins({
+      newUserId: data.user.id,
+      newUserEmail: email,
+    });
   }
 
   revalidatePath("/", "layout");

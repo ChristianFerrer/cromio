@@ -25,7 +25,7 @@ export default {
           light: "#FDE68A",
           dark: "#A88008",
         },
-        bone: "#FAFAF7",
+        bone: "#FFFFFF",
         paper: "#F5F4EE",
         line: {
           DEFAULT: "#E8E6DE",
@@ -47,7 +47,7 @@ export default {
           interest: "#1E78FF",
         },
         trade: {
-          // Used for ▲ entregas (give) markers on banners and arrows.
+          // ▲ entregas = red; ▼ recibes = green.
           give: "#EF1F3C",
           get: "#089258",
         },

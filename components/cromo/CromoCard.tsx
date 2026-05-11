@@ -5,10 +5,10 @@ import { COUNTRY_BY_CODE } from "@/lib/data/countries";
 import { Flag } from "./Flag";
 
 const SIZES = {
-  sm: { ratio: "78/110", num: "clamp(28px, 11vw, 44px)", type: 9.5, name: 10, flag: 18, fixed: null },
-  md: { ratio: "102/144", num: "clamp(36px, 13vw, 58px)", type: 10.5, name: 12, flag: 22, fixed: null },
-  lg: { ratio: "140/200", num: "64px", type: 11, name: 14, flag: 26, fixed: { w: 140, h: 200 } },
-  xl: { ratio: "200/286", num: "92px", type: 13, name: 16, flag: 34, fixed: { w: 200, h: 286 } },
+  sm: { code: "clamp(22px, 7.5vw, 30px)", type: "clamp(12px, 4.2vw, 16px)", flag: 16, pad: 7, fixed: null },
+  md: { code: "clamp(36px, 13vw, 50px)", type: "clamp(13px, 4vw, 16px)", flag: 22, pad: 10, fixed: null },
+  lg: { code: "56px", type: "16px", flag: 28, pad: 12, fixed: { w: 160 } },
+  xl: { code: "80px", type: "20px", flag: 38, pad: 14, fixed: { w: 220 } },
 } as const;
 
 const TYPE_LABEL: Record<StickerType, string> = {
@@ -38,175 +38,119 @@ export function CromoCard({
   const country = sticker.team_code ? COUNTRY_BY_CODE[sticker.team_code] : undefined;
   const have = count > 0;
   const repe = count >= 2;
-
-  const accent = country?.flag.colors[0] ?? "#066B40";
   const isLegendary = sticker.rarity === "legendary";
-  const isSpecial = sticker.rarity === "special";
 
-  // When the cromo is repeated, the whole card switches to a red
-  // visual identity (border, gradient, center text) so duplicates jump
-  // out at a glance without needing a separate badge.
-  const cardAccent = repe ? "#EF1F3C" : accent;
-  const centerColor = repe ? "#C00020" : have ? accent : "#8A8779";
+  // Border + text colors per state. Counter row lives inside the card.
+  //   missing → dashed gray
+  //   have    → 2px solid green
+  //   repe    → 2px solid red
+  //   legendary → 2px solid gold
+  const cardBorder = selectBorder
+    ? `2px solid ${selectBorder}`
+    : isLegendary
+      ? "2px solid #F5C518"
+      : repe
+        ? "2px solid #EF1F3C"
+        : have
+          ? "2px solid #10C56A"
+          : "1.5px dashed #D8D5C9";
+
+  const codeColor = have ? "#1A1A1A" : "#B5B2A6";
+  const typeColor = have ? "#5C5A50" : "#B5B2A6";
 
   const typeLabel = isLegendary
     ? "LEGENDARY"
     : TYPE_LABEL[sticker.type] ?? sticker.type.toUpperCase();
 
-  // Type pill styling: legendary → gold gradient, special → soft gold,
-  // common → neutral ink.
-  const typePillStyle: React.CSSProperties = isLegendary
-    ? {
-        background: "linear-gradient(135deg, #FDE68A, #F5C518)",
-        color: "#3A2C00",
-        boxShadow: "0 1px 3px rgba(245,197,24,0.40)",
-      }
-    : isSpecial
-      ? {
-          background: "rgba(245,197,24,.20)",
-          color: "#A88008",
-        }
-      : {
-          background: have ? `${accent}1F` : "rgba(0,0,0,.06)",
-          color: have ? accent : "#5C5A50",
-        };
-
   const wrapperStyle: React.CSSProperties = dim.fixed
     ? { width: dim.fixed.w }
     : { width: "100%" };
 
-  const cardStyle: React.CSSProperties = dim.fixed
-    ? { width: dim.fixed.w, height: dim.fixed.h }
-    : { width: "100%", aspectRatio: dim.ratio };
-
   return (
     <div className="flex flex-col items-stretch" style={wrapperStyle}>
-      <button
+      <div
         onClick={onClick}
-        className="relative flex shrink-0 overflow-hidden rounded-card text-left transition-transform active:scale-[0.97]"
-        style={{
-          ...cardStyle,
-          background: repe
-            ? `linear-gradient(160deg, ${cardAccent}30, #fff)`
-            : have
-              ? `linear-gradient(160deg, ${accent}22, #fff)`
-              : "#F5F4EE",
-          border: selectBorder
-            ? `2px solid ${selectBorder}`
-            : repe
-              ? `1.5px solid ${cardAccent}`
-              : have
-                ? `1px solid ${accent}55`
-                : `1px dashed #D8D5C9`,
-          opacity: have ? 1 : 0.92,
-        }}
+        role={onClick ? "button" : undefined}
+        className="relative flex flex-col overflow-hidden rounded-card"
+        style={{ background: "#FFFFFF", border: cardBorder }}
       >
-        <div
-          className="absolute inset-0"
-          style={{
-            background: repe
-              ? `radial-gradient(120% 100% at 0% 0%, ${cardAccent}3D, transparent 65%)`
-              : have
-                ? `radial-gradient(120% 100% at 0% 0%, ${accent}33, transparent 60%)`
-                : "transparent",
-          }}
-        />
-
-        <div className="relative flex h-full w-full flex-col p-2">
-          {/* Top row: flag (left) + type pill (right) */}
-          <div className="flex items-start justify-between gap-1.5">
-            {country ? (
-              <Flag country={country} size={dim.flag} />
-            ) : (
-              <span className="block" style={{ width: dim.flag, height: dim.flag }} />
-            )}
-            <span
-              className="inline-flex shrink-0 rounded-full px-1.5 py-0.5 font-display uppercase leading-none tracking-wider"
-              style={{ fontSize: dim.type, ...typePillStyle }}
-            >
-              {typeLabel}
-            </span>
-          </div>
-
-          {/* Center: big sticker code */}
-          <div className="flex flex-1 items-center justify-center px-1">
+        <div className="flex flex-col" style={{ padding: dim.pad }}>
+          {/* Top row: big code (left) + flag (right) */}
+          <div className="flex items-start justify-between gap-2">
             <span
               className="font-display tabular leading-none"
               style={{
-                fontSize: dim.num,
-                color: centerColor,
+                fontSize: dim.code,
+                color: codeColor,
                 letterSpacing: "-0.02em",
-                textShadow: have
-                  ? `0 1px 0 rgba(255,255,255,0.6)`
-                  : undefined,
               }}
             >
               {sticker.code}
             </span>
-          </div>
-
-          {/* Bottom: player / city (left) + position (right) */}
-          <div className="flex min-h-[14px] items-end justify-between gap-1.5">
-            <span className="min-w-0 flex-1">
-              {sticker.player_name && (
-                <span
-                  className="block line-clamp-1 font-semibold leading-tight"
-                  style={{ fontSize: dim.name, color: have ? "#1A1A1A" : "#5C5A50" }}
-                >
-                  {sticker.player_name}
-                </span>
-              )}
-              {!sticker.player_name && sticker.city && (
-                <span
-                  className="block line-clamp-1 leading-tight text-text-2"
-                  style={{ fontSize: dim.name }}
-                >
-                  {sticker.city}
-                </span>
-              )}
-            </span>
-            {sticker.position && (
+            {country ? (
               <span
-                className="shrink-0 font-display uppercase leading-none tracking-wider text-mute"
-                style={{ fontSize: dim.name }}
+                className="inline-block shrink-0 overflow-hidden"
+                style={{
+                  border: "1px solid #D8D5C9",
+                  borderRadius: Math.round(dim.flag / 6) + 1,
+                  lineHeight: 0,
+                }}
               >
-                {sticker.position}
+                <Flag country={country} size={dim.flag} />
               </span>
+            ) : (
+              <span className="block" style={{ width: dim.flag, height: dim.flag }} />
             )}
           </div>
-        </div>
-      </button>
 
-      {onAdjust && (
-        <div className="mt-1.5 flex items-center justify-between">
-          <button
-            onClick={() => onAdjust(-1)}
-            disabled={count === 0}
-            aria-label="Quitar uno"
-            className={`grid h-7 w-7 place-items-center rounded-full text-base font-bold transition-colors disabled:opacity-30 ${
-              repe
-                ? "border border-transparent bg-red-500 text-white"
-                : "border border-line bg-white text-text-2"
-            }`}
-          >
-            −
-          </button>
-          <span
-            className={`font-display tabular text-base ${
-              repe ? "text-red-600" : "text-text"
-            }`}
-          >
-            {count}
-          </span>
-          <button
-            onClick={() => onAdjust(+1)}
-            aria-label="Añadir uno"
-            className="grid h-7 w-7 place-items-center rounded-full bg-green-500 text-base font-bold text-white"
-          >
-            +
-          </button>
+          {/* Type label centered just under the code */}
+          <div className="mt-1 text-center">
+            <span
+              className="font-display uppercase leading-none tracking-wider"
+              style={{ fontSize: dim.type, color: typeColor }}
+            >
+              {typeLabel}
+            </span>
+          </div>
         </div>
-      )}
+
+        {onAdjust && (
+          <div
+            className="flex items-center justify-between gap-2 border-t border-line/60"
+            style={{ padding: `${Math.max(dim.pad - 1, 6)}px ${dim.pad}px` }}
+          >
+            <button
+              onClick={() => onAdjust(-1)}
+              disabled={count === 0}
+              aria-label="Quitar uno"
+              className={`grid h-9 w-9 place-items-center rounded-full text-lg font-bold transition-colors disabled:opacity-30 ${
+                repe
+                  ? "border border-transparent bg-red-500 text-white"
+                  : "border border-line bg-white text-text-2"
+              }`}
+            >
+              −
+            </button>
+            <span
+              className={`font-display tabular text-lg ${
+                repe ? "text-red-600" : have ? "text-text" : "text-mute"
+              }`}
+            >
+              {count}
+            </span>
+            <button
+              onClick={() => onAdjust(+1)}
+              aria-label="Añadir uno"
+              className="grid h-9 w-9 place-items-center rounded-full text-lg font-bold text-white"
+              style={{ backgroundColor: "#10C56A" }}
+            >
+              +
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
+
+

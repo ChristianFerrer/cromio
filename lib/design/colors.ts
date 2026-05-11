@@ -16,7 +16,7 @@ export const CROMIO_COLORS = {
   gold: "#F5C518",
   goldLight: "#FDE68A",
   goldDark: "#A88008",
-  bone: "#FAFAF7",
+  bone: "#FFFFFF",
   paper: "#F5F4EE",
   line: "#E8E6DE",
   lineStrong: "#D8D5C9",

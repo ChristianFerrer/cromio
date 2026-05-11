@@ -389,9 +389,12 @@ export async function setAdminFlag(
   return { ok: true };
 }
 
-// Hard delete — service-role + auth.admin.deleteUser. Intentionally NOT exposed in UI.
+// Hard delete — service-role + auth.admin.deleteUser. Cascades through
+// every FK on auth.users.id (profiles, user_stickers, chats, messages,
+// etc.). Irreversible; the GDPR export action is the only safety net.
 export async function deleteUser(id: string): Promise<ActionResult> {
   const ctx = await requireAdmin();
+  if (ctx.userId === id) return { ok: false, error: "selfDelete" };
   const admin = createAdminClient();
   const { error } = await admin.auth.admin.deleteUser(id);
   if (error) return { ok: false, error: error.message };
@@ -400,6 +403,7 @@ export async function deleteUser(id: string): Promise<ActionResult> {
     action: "user.delete",
     targetUserId: id,
   });
+  revalidatePath("/admin/usuarios");
   return { ok: true };
 }
 

@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-11 10:39 UTC** · branch `claude/review-project-setup-7OyxZ`_
+_Last updated: **2026-05-11 10:41 UTC** · branch `claude/review-project-setup-7OyxZ`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,7 +140,8 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- ae38b50 Merge remote-tracking branch origin/claude/setup-cromio-pwa-design-Tnidb into claude/review-project-setup-7OyxZ _(10 hours ago)_
+- 97ba4cb fix(nav): bottom/side nav no longer slides on route change _(2 minutes ago)_
+- ae38b50 Merge remote-tracking branch origin/claude/setup-cromio-pwa-design-Tnidb into claude/review-project-setup-7OyxZ _(11 hours ago)_
 - 06af235 feat(onboarding): simplify to 2 steps — location + identity only _(11 hours ago)_
 - 5f7f8dd feat(chat): richer list cards + fix iOS input zoom _(11 hours ago)_
 - fb580fe feat(design): bump palette to vivid accents (#8) _(11 hours ago)_
@@ -154,5 +155,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - 0e438ef feat(nav): rename bottom-nav label Favoritos → Contactos (#5) _(12 hours ago)_
 - 841d769 docs(claude): CLAUDE.md with project conventions for future sessions _(13 hours ago)_
 - a4d4050 refactor(admin): split components, rename guards, drop hex literals _(13 hours ago)_
-- 61f8950 feat(admin): audit log view, profile audit trigger, nightly events retention _(13 hours ago)_
 <!-- AUTO:COMMITS:END -->

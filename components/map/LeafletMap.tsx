@@ -143,7 +143,7 @@ export function LeafletMap({
         radius: radiusM,
         color: "rgba(8,146,88,0.42)",
         weight: 1,
-        fillColor: CROMIO_COLORS.green[500],
+        fillColor: "#10C56A",
         fillOpacity: 0.06,
         interactive: false,
       }).addTo(map);
@@ -169,7 +169,7 @@ export function LeafletMap({
         u.distance_m,
       );
       const color =
-        u.kind === "match" ? CROMIO_COLORS.green[500] : CROMIO_COLORS.match.interest;
+        u.kind === "match" ? "#10C56A" : CROMIO_COLORS.match.interest;
       const initials = u.alias.slice(0, 2).toUpperCase();
 
       // Whistle-style teardrop pin: rounded body with a pointed tip
