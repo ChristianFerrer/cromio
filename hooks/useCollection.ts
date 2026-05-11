@@ -15,62 +15,119 @@ const EMPTY_STATS = {
   pct: 0,
 };
 
+// Cross-navigation cache. Keyed by user id so a logout/login swap doesn't
+// leak the previous user's collection. First mount per identity pays the
+// fetch; every subsequent useCollection() call paints from cache and only
+// refetches in the background to pick up out-of-band edits.
+const cachedByUser = new Map<string, Snapshot>();
+const pendingByUser = new Map<string, Promise<Snapshot>>();
+const subscribers = new Map<string, Set<(s: Snapshot) => void>>();
+
+function publish(userId: string, next: Snapshot) {
+  cachedByUser.set(userId, next);
+  const subs = subscribers.get(userId);
+  if (subs) for (const fn of subs) fn(next);
+}
+
+async function fetchCollection(userId: string): Promise<Snapshot> {
+  const supabase = createClient();
+  if (!supabase) return {};
+  const { data } = await supabase
+    .from("user_stickers")
+    .select("sticker_n, count")
+    .eq("user_id", userId);
+  const map: Snapshot = {};
+  for (const row of data ?? []) map[row.sticker_n] = row.count;
+  cachedByUser.set(userId, map);
+  return map;
+}
+
+async function load(userId: string): Promise<Snapshot> {
+  const cached = cachedByUser.get(userId);
+  if (cached) {
+    // Stale-while-revalidate: surface the cache instantly, refetch in
+    // the background so the next render reflects any out-of-band edits
+    // (e.g. an intercambio settled while the user was on another tab).
+    void fetchCollection(userId).then((fresh) => publish(userId, fresh));
+    return cached;
+  }
+  let inflight = pendingByUser.get(userId);
+  if (!inflight) {
+    inflight = fetchCollection(userId);
+    pendingByUser.set(userId, inflight);
+    inflight.finally(() => pendingByUser.delete(userId));
+  }
+  return inflight;
+}
+
 export function useCollection() {
   const { user, loading: authLoading } = useUser();
-  const [serverMap, setServerMap] = useState<Snapshot | null>(null);
-  const [serverLoading, setServerLoading] = useState(false);
+  const userId = user?.id;
+
+  const [serverMap, setServerMap] = useState<Snapshot | null>(() =>
+    userId ? cachedByUser.get(userId) ?? null : null,
+  );
 
   useEffect(() => {
-    if (authLoading || !user) {
+    if (authLoading) return;
+    if (!userId) {
       setServerMap(null);
       return;
     }
-    const supabase = createClient();
-    if (!supabase) return;
-    setServerLoading(true);
-    supabase
-      .from("user_stickers")
-      .select("sticker_n, count")
-      .eq("user_id", user.id)
-      .then(({ data }) => {
-        const map: Snapshot = {};
-        for (const row of data ?? []) {
-          map[row.sticker_n] = row.count;
-        }
-        setServerMap(map);
-        setServerLoading(false);
-      });
-  }, [authLoading, user]);
+    const c = cachedByUser.get(userId);
+    if (c) setServerMap(c);
 
-  const isInitializing = authLoading || (!!user && serverMap === null);
+    let cancelled = false;
+    let subs = subscribers.get(userId);
+    if (!subs) {
+      subs = new Set();
+      subscribers.set(userId, subs);
+    }
+    const sub = (s: Snapshot) => {
+      if (!cancelled) setServerMap(s);
+    };
+    subs.add(sub);
+
+    load(userId).then((s) => {
+      if (!cancelled) setServerMap(s);
+    });
+
+    return () => {
+      cancelled = true;
+      subs?.delete(sub);
+    };
+  }, [authLoading, userId]);
+
+  const isInitializing = authLoading || (!!userId && serverMap === null);
 
   const collection = useMemo(() => {
     const map = new Map<number, number>();
     for (const s of STICKERS) {
-      map.set(s.n, isInitializing || !user ? 0 : serverMap?.[s.n] ?? 0);
+      map.set(s.n, isInitializing || !userId ? 0 : serverMap?.[s.n] ?? 0);
     }
     return map;
-  }, [isInitializing, user, serverMap]);
+  }, [isInitializing, userId, serverMap]);
 
   const adjust = useCallback(
     (n: number, delta: number) => {
-      if (isInitializing || !user) return;
+      if (isInitializing || !userId) return;
       const cur = serverMap?.[n] ?? 0;
       const next = Math.max(0, cur + delta);
-      setServerMap((prev) => ({ ...(prev ?? {}), [n]: next }));
+      const optimistic = { ...(serverMap ?? {}), [n]: next };
+      publish(userId, optimistic);
       const supabase = createClient();
       if (!supabase) return;
       supabase
         .from("user_stickers")
         .upsert(
-          { user_id: user.id, sticker_n: n, count: next },
+          { user_id: userId, sticker_n: n, count: next },
           { onConflict: "user_id,sticker_n" },
         )
         .then(({ error }) => {
           if (error) console.error("[cromio] user_stickers upsert failed:", error);
         });
     },
-    [isInitializing, user, serverMap],
+    [isInitializing, userId, serverMap],
   );
 
   const stats = useMemo(() => {
@@ -96,6 +153,6 @@ export function useCollection() {
     adjust,
     isAuthenticated: !!user,
     isInitializing,
-    serverLoading,
+    serverLoading: isInitializing,
   };
 }
