@@ -39,7 +39,7 @@ export function CromoCard({
   const have = count > 0;
   const repe = count >= 2;
 
-  const accent = country?.flag.colors[0] ?? "#155F6B";
+  const accent = country?.flag.colors[0] ?? "#066B40";
   const isLegendary = sticker.rarity === "legendary";
   const isSpecial = sticker.rarity === "special";
 

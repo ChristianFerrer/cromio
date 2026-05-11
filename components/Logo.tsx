@@ -23,13 +23,13 @@ export function Logo({
       <span
         className="shrink-0 grid place-items-center shadow-sh1"
         style={{
-          backgroundColor: "#26C6DA",
+          backgroundColor: "#10C56A",
           padding: pad,
           borderRadius: radius,
         }}
       >
         <Image
-          src="/radar-point.png"
+          src="/radar_cromio.png"
           alt="Cromio"
           width={px}
           height={px}

@@ -33,11 +33,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/radar-point.png", type: "image/png" },
+      { url: "/radar_cromio.png", type: "image/png" },
       { url: "/icon.svg", type: "image/svg+xml" },
     ],
-    shortcut: "/radar-point.png",
-    apple: "/radar-point.png",
+    shortcut: "/radar_cromio.png",
+    apple: "/radar_cromio.png",
   },
   formatDetection: {
     telephone: false,
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#155F6B",
+  themeColor: "#066B40",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

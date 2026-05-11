@@ -22,7 +22,7 @@ export default async function EditProfilePage() {
         alias: profile?.alias ?? "",
         display_name: profile?.display_name ?? "",
         avatar_url: profile?.avatar_url ?? null,
-        color: profile?.color ?? "#26C6DA",
+        color: profile?.color ?? "#10C56A",
       }}
     />
   );

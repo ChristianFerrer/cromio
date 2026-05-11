@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-11 01:58 UTC** · branch `HEAD`_
+_Last updated: **2026-05-11 02:22 UTC** · branch `claude/review-project-setup-51FCV`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 6e661c2 revert: PR #17 (sticky match header + flush CTA) (#18) _(4 minutes ago)_
-- 6bcb7f8 feat(match): sticky compact header + bottom CTA flush to viewport (#17) _(13 minutes ago)_
-- 596ab11 feat(brand): radar-point.png logo + cyan base palette (#16) _(19 minutes ago)_
-- 321d833 feat(match): show partner album stats on detail view (#15) _(21 minutes ago)_
-- 8b0fdb8 Add files via upload _(30 minutes ago)_
-- b94d01d fix(match): restore left/right split for receive vs deliver grids (#14) _(46 minutes ago)_
-- 8228b7d feat(brand): cromio_lg.png as single logo on teal everywhere (#13) _(46 minutes ago)_
-- df608d2 refactor(landing): remove FAQ section _(48 minutes ago)_
-- a79124d Add files via upload _(53 minutes ago)_
-- c9128be feat(brand): radar.png nav icon + cromio_logo on teal background (#12) _(63 minutes ago)_
-- 1a6529e Add files via upload _(70 minutes ago)_
-- 7d2a0f9 feat(ui): album/chat/match/favoritos polish + bottom-nav fix (#11) _(71 minutes ago)_
-- 06b1bc3 Add files via upload _(79 minutes ago)_
-- caa1ea3 feat(landing): public landing page at / with PWA install instructions _(2 hours ago)_
-- e7505f4 chore(sw): bump cache to force PWA clients onto vivid palette (#10) _(2 hours ago)_
+- d6d54e8 Add files via upload _(13 minutes ago)_
+- 1a3db55 fix(match): pin Iniciar-chat panel to bottom of viewport (#20) _(23 minutes ago)_
+- 8c1e873 fix(brand): white bg + green radar/FAB/match pins + flat CromoCard (#19) _(24 minutes ago)_
+- 6e661c2 revert: PR #17 (sticky match header + flush CTA) (#18) _(28 minutes ago)_
+- 6bcb7f8 feat(match): sticky compact header + bottom CTA flush to viewport (#17) _(37 minutes ago)_
+- 596ab11 feat(brand): radar-point.png logo + cyan base palette (#16) _(43 minutes ago)_
+- 321d833 feat(match): show partner album stats on detail view (#15) _(45 minutes ago)_
+- 8b0fdb8 Add files via upload _(54 minutes ago)_
+- b94d01d fix(match): restore left/right split for receive vs deliver grids (#14) _(69 minutes ago)_
+- 8228b7d feat(brand): cromio_lg.png as single logo on teal everywhere (#13) _(70 minutes ago)_
+- df608d2 refactor(landing): remove FAQ section _(72 minutes ago)_
+- a79124d Add files via upload _(76 minutes ago)_
+- c9128be feat(brand): radar.png nav icon + cromio_logo on teal background (#12) _(87 minutes ago)_
+- 1a6529e Add files via upload _(2 hours ago)_
+- 7d2a0f9 feat(ui): album/chat/match/favoritos polish + bottom-nav fix (#11) _(2 hours ago)_
 <!-- AUTO:COMMITS:END -->
