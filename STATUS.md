@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-11 13:36 UTC** · branch `main`_
+_Last updated: **2026-05-11 14:00 UTC** · branch `main`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- dc3481f fix(chat): strip stale state/meeting/rating UI from chat list _(28 minutes ago)_
-- b786ca7 feat(trades): trade requests replace meeting/rating, chat is now pure _(40 minutes ago)_
+- a0f5ae9 style(ui): square radius across buttons + simplify trade button _(24 minutes ago)_
+- dc3481f fix(chat): strip stale state/meeting/rating UI from chat list _(52 minutes ago)_
+- b786ca7 feat(trades): trade requests replace meeting/rating, chat is now pure _(64 minutes ago)_
 - 5f34238 chore(deploy): retrigger production build for chat journey UI _(2 hours ago)_
 - 37a5f10 feat(chat): surface meeting + rating journey on chat list cards (#35) _(2 hours ago)_
 - 9ffa742 docs(contactos): document why match counts are computed pairwise _(2 hours ago)_
-- ca87214 chore(deploy): retrigger production build (#34) _(2 hours ago)_
+- ca87214 chore(deploy): retrigger production build (#34) _(3 hours ago)_
 - 74b37eb fix(contactos): compute recibes/entregas pairwise from stickers (#33) _(3 hours ago)_
 - b2de1c9 fix(nav): bottom/side nav no longer slides on route change (#32) _(3 hours ago)_
 - 531b5bf feat(contactos): rename header, show visible name, add album stats per row (#31) _(3 hours ago)_
-- c87f931 feat(admin): expose hard delete in the user detail UI _(3 hours ago)_
-- 651175c fix(album): 3-col mobile + responsive desktop + larger +/- targets (#30) _(3 hours ago)_
-- 72387b5 fix(album): 4-col grid + bigger type label + flag frame (#29) _(3 hours ago)_
+- c87f931 feat(admin): expose hard delete in the user detail UI _(4 hours ago)_
+- 651175c fix(album): 3-col mobile + responsive desktop + larger +/- targets (#30) _(4 hours ago)_
+- 72387b5 fix(album): 4-col grid + bigger type label + flag frame (#29) _(4 hours ago)_
 - c63b3ec fix(album): cromo card compact + counter inside the card (#28) _(4 hours ago)_
-- 39e0871 feat(album): cromo card layout per mockup (code top-left, flag top-right, type centered) (#27) _(4 hours ago)_
-- 10d0d4e fix(album): realign sticker dataset to the real 980-cromo Panini album _(5 hours ago)_
+- 39e0871 feat(album): cromo card layout per mockup (code top-left, flag top-right, type centered) (#27) _(5 hours ago)_
 <!-- AUTO:COMMITS:END -->

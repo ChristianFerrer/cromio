@@ -667,17 +667,17 @@ function TradeButton({
       onClick={onClick}
       disabled={isDisabled}
       aria-label="Intercambiar"
-      className="relative grid h-14 w-14 shrink-0 place-items-center rounded-card bg-green-500 shadow-sh2 transition-transform active:scale-95 disabled:opacity-50"
+      className="relative grid h-14 w-14 shrink-0 place-items-center rounded-card border border-line bg-white transition-colors hover:bg-paper disabled:opacity-50"
     >
       <Icon
         size={22}
         strokeWidth={2.4}
-        className={`text-white ${pending ? "animate-spin" : "rotate-45"}`}
+        className={`text-green-700 ${pending ? "animate-spin" : "rotate-90"}`}
       />
       {hasActive && (
         <span
           aria-hidden
-          className="absolute right-1.5 top-1.5 h-3 w-3 rounded-full bg-red-600 ring-2 ring-white"
+          className="absolute right-2 top-2 h-3 w-3 rounded-full bg-red-600 ring-2 ring-white"
         />
       )}
     </button>
