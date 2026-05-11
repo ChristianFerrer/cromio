@@ -31,7 +31,7 @@ const COPY = {
     what: {
       title: "¿Qué es Cromio?",
       body:
-        "Cromio es una comunidad por proximidad para coleccionistas del álbum Panini Mundial 2026. En vez de buscar en marketplaces, encuentras a alguien en tu zona que tiene lo que te falta y le sobra lo que tú repites.",
+        "Cromio es una comunidad por proximidad para coleccionistas del álbum Panini Mundial 2026. En vez de buscar en marketplaces, grupos o chats, te muestra en tiempo real quién a tu alrededor tiene lo que te falta y necesita lo que tienes repetido.",
       kpis: [
         { label: "Cromos en el álbum", value: "993" },
         { label: "Selecciones", value: "48" },
@@ -43,18 +43,18 @@ const COPY = {
       steps: [
         {
           icon: "layers",
-          title: "Carga tu álbum",
-          body: "Marca los cromos que tienes y los que te faltan. El álbum digital se sincroniza al instante.",
+          title: "Cargar tu álbum",
+          body: "Marca los cromos que tienes. Cromio hace el resto.",
         },
         {
           icon: "radar",
           title: "Activa el radar",
-          body: "Elige el radio (200 m–10 km) y descubre coleccionistas cerca con match: tú das, te dan.",
+          body: "Elige el radio de búsqueda o agrega contactos directos. Cromio identifica qué te falta y quién lo tiene.",
         },
         {
           icon: "handshake",
-          title: "Quedad y cambiad",
-          body: "Chat directo, planificáis dónde veros y os valoráis al terminar. Sin envíos.",
+          title: "Queda y cambia",
+          body: "Chat directo, planifica dónde verse y valoráis al terminar. Sin complicaciones.",
         },
       ],
     },
