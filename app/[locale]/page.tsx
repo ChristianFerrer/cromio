@@ -263,7 +263,12 @@ export default async function Home({
       {/* Top bar */}
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-5 sm:px-8">
         <Link href={prefix || "/"} className="inline-flex items-center gap-2">
-          <Image src="/cromio_bg.png" alt="Cromio" width={36} height={36} priority />
+          <span
+            className="grid place-items-center shadow-sh1"
+            style={{ backgroundColor: "#1abc9c", padding: 6, borderRadius: 10 }}
+          >
+            <Image src="/cromio_lg.png" alt="Cromio" width={32} height={32} priority />
+          </span>
           <span className="font-display text-2xl tracking-tight">CROMIO</span>
         </Link>
         <nav className="flex items-center gap-2">
@@ -286,7 +291,12 @@ export default async function Home({
       {/* Hero */}
       <section className="mx-auto w-full max-w-5xl px-5 pt-6 pb-12 text-center sm:px-8 sm:pt-12 sm:pb-20">
         <div className="mx-auto inline-flex items-center justify-center">
-          <Image src="/cromio_bg.png" alt="Cromio" width={96} height={96} priority />
+          <span
+            className="grid place-items-center shadow-sh2"
+            style={{ backgroundColor: "#1abc9c", padding: 18, borderRadius: 24 }}
+          >
+            <Image src="/cromio_lg.png" alt="Cromio" width={96} height={96} priority />
+          </span>
         </div>
         <h1 className="mx-auto mt-4 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
           {t.hero.h1}
@@ -448,12 +458,17 @@ export default async function Home({
         <div className="mx-auto w-full max-w-5xl px-5 py-10 sm:px-8 sm:py-14">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2.5">
-              <Image
-                src="/cromio_bg.png"
-                alt="Cromio"
-                width={32}
-                height={32}
-              />
+              <span
+                className="grid place-items-center shadow-sh1"
+                style={{ backgroundColor: "#1abc9c", padding: 5, borderRadius: 8 }}
+              >
+                <Image
+                  src="/cromio_lg.png"
+                  alt="Cromio"
+                  width={28}
+                  height={28}
+                />
+              </span>
               <div>
                 <p className="font-display text-xl tracking-tight">CROMIO</p>
                 <p className="text-[11px] uppercase tracking-wider text-text-2">

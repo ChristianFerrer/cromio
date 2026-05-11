@@ -12,13 +12,13 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "/cromio_bg.png",
+      "src": "/cromio_lg.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/cromio_bg.png",
+      "src": "/cromio_lg.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

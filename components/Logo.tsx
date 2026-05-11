@@ -29,7 +29,7 @@ export function Logo({
         }}
       >
         <Image
-          src="/cromio_logo.png"
+          src="/cromio_lg.png"
           alt="Cromio"
           width={px}
           height={px}
