@@ -53,6 +53,13 @@ export default function FavoritosPage() {
     let cancelled = false;
     (async () => {
       const ids = [...favs];
+      // We deliberately compute the match counts pairwise here instead
+      // of reading them from `find_nearby_users`. That RPC only returns
+      // users inside its radius (50 km below), so a contact farther
+      // away (or without home_location) silently fell back to 0/0 and
+      // disagreed with /match/<id>, which always works off the raw
+      // user_stickers rows. The RPC stays in the fan-out for the
+      // distance field, which IS proximity-dependent by design.
       const [profilesRes, nearbyRes, stickersRes, myStickersRes] = await Promise.all([
         supabase
           .from("profiles")
