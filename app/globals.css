@@ -272,3 +272,15 @@ select:focus-visible {
     animation: none !important;
   }
 }
+
+/* iOS Safari auto-zooms when a focused input has font-size < 16px. The
+   viewport keeps user-scalable enabled for WCAG 1.4.4, so the fix has to
+   live on the inputs themselves. Touch devices only to keep desktop
+   typography tight; !important to win against Tailwind text-sm / text-xs. */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}

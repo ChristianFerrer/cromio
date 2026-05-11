@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogIn, MessageCircle } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, LogIn, MessageCircle } from "lucide-react";
 import { getCurrentUser } from "@/lib/profile";
 import { loadChatsForCurrentUser } from "@/lib/chat/queries";
 
@@ -94,20 +94,9 @@ export default async function ChatListPage() {
           {chats.map((c) => {
             const initials = (c.other_user.alias ?? "??").slice(0, 2).toUpperCase();
             const time = formatChatTime(c.last_message_at);
-            const stateLabel =
-              c.state === "pending"
-                ? "Pendiente"
-                : c.state === "confirmed"
-                  ? "Confirmado"
-                  : c.state === "completed"
-                    ? "Completado"
-                    : "Cancelado";
-            const stateClass =
-              c.state === "pending"
-                ? "bg-gold/15 text-gold-dark"
-                : c.state === "confirmed"
-                  ? "bg-green-100 text-green-700"
-                  : "bg-line text-text-2";
+            const pct = Math.max(0, Math.min(100, c.other_completion_pct));
+            const lastBody = c.last_message?.body ?? "Sin mensajes todavía";
+            const isMine = c.last_message?.sender_id === user.id;
 
             return (
               <Link
@@ -115,13 +104,21 @@ export default async function ChatListPage() {
                 href={`/chat/${c.id}`}
                 className="flex items-center gap-3 rounded-md border border-line bg-white p-3"
               >
-                <div className="relative">
-                  <div
-                    className="grid h-12 w-12 place-items-center rounded-full font-display text-lg text-white"
-                    style={{ background: c.other_user.color ?? "#10C56A" }}
-                  >
-                    {initials}
-                  </div>
+                <div className="relative shrink-0">
+                  {c.other_user.avatar_url ? (
+                    <img
+                      src={c.other_user.avatar_url}
+                      alt={c.other_user.display_name ?? c.other_user.alias}
+                      className="h-12 w-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="grid h-12 w-12 place-items-center rounded-full font-display text-lg text-white"
+                      style={{ background: c.other_user.color ?? "#10C56A" }}
+                    >
+                      {initials}
+                    </div>
+                  )}
                   {c.unread_count > 0 && (
                     <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-green-500 text-[10px] font-bold text-white ring-2 ring-white">
                       {c.unread_count}
@@ -135,13 +132,37 @@ export default async function ChatListPage() {
                     </span>
                     {time && <span className="shrink-0 text-[11px] text-text-2">{time}</span>}
                   </div>
-                  <span
-                    className={`mt-1 inline-flex rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${stateClass}`}
-                  >
-                    {stateLabel}
-                  </span>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <div
+                      className="h-1.5 flex-1 overflow-hidden rounded-full bg-line"
+                      role="progressbar"
+                      aria-valuenow={pct}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`Álbum ${pct}%`}
+                    >
+                      <div
+                        className="h-full rounded-full bg-green-500"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <span className="shrink-0 tabular text-[10px] font-bold text-text-2">
+                      {pct}%
+                    </span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-3 text-[11px] font-semibold text-text-2">
+                    <span className="inline-flex items-center gap-1">
+                      <ArrowDownLeft size={12} strokeWidth={2.4} className="text-green-700" />
+                      <span className="tabular">{c.you_get_count}</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <ArrowUpRight size={12} strokeWidth={2.4} className="text-gold-dark" />
+                      <span className="tabular">{c.they_get_count}</span>
+                    </span>
+                  </div>
                   <p className="mt-1 truncate text-xs text-text-2">
-                    {c.last_message?.body ?? "Sin mensajes todavía"}
+                    {isMine && <span className="font-semibold text-text">Tú: </span>}
+                    {lastBody}
                   </p>
                 </div>
               </Link>
