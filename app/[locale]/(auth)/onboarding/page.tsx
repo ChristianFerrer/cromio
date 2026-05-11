@@ -20,7 +20,7 @@ const STEP_TITLES: Record<Step, string> = {
   identity: "Tu perfil",
 };
 
-const DEFAULT_COLOR = "#26C6DA";
+const DEFAULT_COLOR = "#10C56A";
 const ALIAS_RE = /^[a-z0-9_]{3,24}$/;
 
 export default function OnboardingPage() {

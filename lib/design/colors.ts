@@ -5,11 +5,11 @@
  */
 export const CROMIO_COLORS = {
   green: {
-    50: "#F2FBFC",
-    100: "#8CE1EB",
-    500: "#26C6DA",
-    700: "#1FA1B4",
-    900: "#155F6B",
+    50: "#EBFDF2",
+    100: "#D5F7E1",
+    500: "#10C56A",
+    700: "#089258",
+    900: "#066B40",
   },
   ink: "#0E0E0E",
   charcoal: "#3A3A3A",
@@ -30,12 +30,12 @@ export const CROMIO_COLORS = {
   },
   trade: {
     give: "#EF1F3C",
-    get: "#1FA1B4",
+    get: "#089258",
   },
   admin: {
     chart: [
-      "#26C6DA",
-      "#1FA1B4",
+      "#10C56A",
+      "#089258",
       "#22D65E",
       "#0DA84F",
       "#06B6D4",

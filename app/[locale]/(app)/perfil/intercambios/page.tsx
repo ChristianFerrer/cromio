@@ -146,7 +146,7 @@ export default async function IntercambiosPage() {
                   <Link
                     href={`/match/${u.id}`}
                     className="grid h-11 w-11 shrink-0 place-items-center rounded-full font-display text-lg text-white"
-                    style={{ background: u.color ?? "#26C6DA" }}
+                    style={{ background: u.color ?? "#10C56A" }}
                   >
                     {initials}
                   </Link>

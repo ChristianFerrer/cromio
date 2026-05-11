@@ -9,11 +9,11 @@ export default {
     extend: {
       colors: {
         green: {
-          50: "#F2FBFC",
-          100: "#8CE1EB",
-          500: "#26C6DA",
-          700: "#1FA1B4",
-          900: "#155F6B",
+          50: "#EBFDF2",
+          100: "#D5F7E1",
+          500: "#10C56A",
+          700: "#089258",
+          900: "#066B40",
         },
         ink: {
           DEFAULT: "#0E0E0E",
@@ -47,9 +47,9 @@ export default {
           interest: "#1E78FF",
         },
         trade: {
-          // Used for ▲ entregas (give) markers on banners and arrows.
+          // ▲ entregas = red; ▼ recibes = green.
           give: "#EF1F3C",
-          get: "#1FA1B4",
+          get: "#089258",
         },
       },
       fontFamily: {
