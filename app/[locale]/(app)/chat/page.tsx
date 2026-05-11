@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { LogIn, MessageCircle, Calendar, MapPin, Star } from "lucide-react";
+import { LogIn, MessageCircle } from "lucide-react";
 import { getCurrentUser } from "@/lib/profile";
-import { loadChatsForCurrentUser, type ChatRow } from "@/lib/chat/queries";
+import { loadChatsForCurrentUser } from "@/lib/chat/queries";
 import { MatchArrows } from "@/components/match/MatchArrows";
 
 function formatDistance(meters: number | null): string | null {
@@ -39,75 +39,6 @@ function formatChatTime(iso: string | null): string {
   });
 }
 
-function formatMeetingWhen(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return "";
-  const now = new Date();
-  const sameDay =
-    d.getFullYear() === now.getFullYear() &&
-    d.getMonth() === now.getMonth() &&
-    d.getDate() === now.getDate();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(now.getDate() + 1);
-  const isTomorrow =
-    d.getFullYear() === tomorrow.getFullYear() &&
-    d.getMonth() === tomorrow.getMonth() &&
-    d.getDate() === tomorrow.getDate();
-  const hm = d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
-  if (sameDay) return `Hoy ${hm}`;
-  if (isTomorrow) return `Mañana ${hm}`;
-  return `${d.toLocaleDateString("es-ES", { day: "numeric", month: "short" })} ${hm}`;
-}
-
-type StageInfo = {
-  label: string;
-  pillClass: string;
-  barClass: string;
-  pct: number;
-};
-
-function stageInfo(c: ChatRow, meId: string): StageInfo {
-  if (c.state === "cancelled") {
-    return {
-      label: "Cancelado",
-      pillClass: "bg-line text-text-2",
-      barClass: "bg-line",
-      pct: 0,
-    };
-  }
-  if (c.state === "completed") {
-    return {
-      label: c.my_rating ? "Valorado" : "Pendiente de valorar",
-      pillClass: c.my_rating
-        ? "bg-green-100 text-green-700"
-        : "bg-gold/20 text-gold-dark",
-      barClass: "bg-green-500",
-      pct: 100,
-    };
-  }
-  if (c.state === "confirmed") {
-    return {
-      label: "Confirmado",
-      pillClass: "bg-green-100 text-green-700",
-      barClass: "bg-green-500",
-      pct: 66,
-    };
-  }
-  // pending
-  const meetingProposed = c.meeting_at != null;
-  const proposedByMe = c.meeting_proposer_id === meId;
-  return {
-    label: meetingProposed
-      ? proposedByMe
-        ? "Esperando confirmación"
-        : "Pendiente de confirmar"
-      : "Pendiente",
-    pillClass: "bg-gold/15 text-gold-dark",
-    barClass: "bg-gold",
-    pct: meetingProposed ? 33 : 10,
-  };
-}
-
 export default async function ChatListPage() {
   const user = await getCurrentUser();
 
@@ -118,7 +49,7 @@ export default async function ChatListPage() {
         <div className="mt-10 flex flex-col items-center gap-3 rounded-md border border-dashed border-line bg-paper px-5 py-10 text-center">
           <MessageCircle size={32} className="text-mute" />
           <p className="text-sm text-text-2">
-            Inicia sesión para chatear con otros coleccionistas y coordinar intercambios.
+            Inicia sesión para chatear con otros coleccionistas.
           </p>
           <Link
             href="/login"
@@ -148,7 +79,7 @@ export default async function ChatListPage() {
           <h2 className="mt-4 font-display text-xl">Aún no tienes chats</h2>
           <p className="mt-1 max-w-xs text-xs leading-snug text-text-2">
             Cuando encuentres un coleccionista con cromos que te interesen, abre
-            una conversación desde su perfil para coordinar el intercambio.
+            una conversación desde su perfil.
           </p>
           <div className="mt-5 flex flex-col gap-2 sm:flex-row">
             <Link
@@ -174,8 +105,6 @@ export default async function ChatListPage() {
             const lastBody = c.last_message?.body ?? "Sin mensajes todavía";
             const isMine = c.last_message?.sender_id === user.id;
             const dist = formatDistance(c.distance_m);
-            const stage = stageInfo(c, user.id);
-            const meetingWhen = c.meeting_at ? formatMeetingWhen(c.meeting_at) : null;
 
             return (
               <Link
@@ -223,68 +152,9 @@ export default async function ChatListPage() {
                     {dist && (
                       <span className="font-display tabular leading-none">{dist}</span>
                     )}
-                    <span
-                      className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${stage.pillClass}`}
-                    >
-                      {stage.label}
-                    </span>
                   </div>
 
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-line">
-                    <div
-                      className={`h-full rounded-full transition-[width] ${stage.barClass}`}
-                      style={{ width: `${stage.pct}%` }}
-                    />
-                  </div>
-
-                  {c.state === "confirmed" && meetingWhen && (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-text-2">
-                      <Calendar size={12} strokeWidth={2.2} className="shrink-0 text-green-700" />
-                      <span className="font-semibold text-text">{meetingWhen}</span>
-                      {c.meeting_place && (
-                        <>
-                          <MapPin size={12} strokeWidth={2.2} className="shrink-0 text-text-2" />
-                          <span className="truncate">{c.meeting_place}</span>
-                        </>
-                      )}
-                    </div>
-                  )}
-
-                  {c.state === "pending" && meetingWhen && (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-text-2">
-                      <Calendar size={12} strokeWidth={2.2} className="shrink-0 text-gold-dark" />
-                      <span>{meetingWhen}</span>
-                      {c.meeting_place && (
-                        <span className="truncate">· {c.meeting_place}</span>
-                      )}
-                    </div>
-                  )}
-
-                  {c.state === "completed" && (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-text-2">
-                      {c.my_rating ? (
-                        <>
-                          <Star
-                            size={12}
-                            strokeWidth={2.2}
-                            className="shrink-0 text-gold-dark"
-                            fill="currentColor"
-                          />
-                          <span>Diste ★{c.my_rating}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Star size={12} strokeWidth={2.2} className="shrink-0 text-gold-dark" />
-                          <span className="font-semibold text-gold-dark">Valora el intercambio</span>
-                        </>
-                      )}
-                      {c.they_rated_me && (
-                        <span className="ml-auto text-text-2">· Te valoraron</span>
-                      )}
-                    </div>
-                  )}
-
-                  <p className="mt-2 truncate text-xs text-text-2">
+                  <p className="mt-1.5 truncate text-xs text-text-2">
                     {isMine && <span className="font-semibold text-text">Tú: </span>}
                     {lastBody}
                   </p>
