@@ -172,18 +172,20 @@ export default function FavoritosPage() {
         )}
       </div>
 
-      {query.trim().length > 0 && (
-        <div className="mt-2 rounded-md border border-line bg-white">
-          {searching ? (
-            <p className="px-3 py-3 text-xs text-text-2">Buscando…</p>
-          ) : searchResults.length === 0 ? (
-            <p className="px-3 py-3 text-xs text-text-2">
-              Sin resultados para «{query.trim()}»
-            </p>
-          ) : (
-            searchResults.map((u) => {
-              const active = has(u.id);
-              return (
+      {query.trim().length > 0 && (() => {
+        const visible = searchResults.filter((u) => !has(u.id));
+        return (
+          <div className="mt-2 rounded-md border border-line bg-white">
+            {searching ? (
+              <p className="px-3 py-3 text-xs text-text-2">Buscando…</p>
+            ) : visible.length === 0 ? (
+              <p className="px-3 py-3 text-xs text-text-2">
+                {searchResults.length === 0
+                  ? `Sin resultados para «${query.trim()}»`
+                  : "Todos los resultados ya están en tus favoritos"}
+              </p>
+            ) : (
+              visible.map((u) => (
                 <button
                   key={u.id}
                   onClick={() => toggle(u.id)}
@@ -203,16 +205,15 @@ export default function FavoritosPage() {
                   </div>
                   <FlagIcon
                     size={18}
-                    className={active ? "text-green-700" : "text-text-2"}
+                    className="text-text-2"
                     strokeWidth={2.2}
-                    fill={active ? "currentColor" : "none"}
                   />
                 </button>
-              );
-            })
-          )}
-        </div>
-      )}
+              ))
+            )}
+          </div>
+        );
+      })()}
 
       <div className="mt-5 space-y-2">
         {!loaded || (loading && rows.length === 0) ? (

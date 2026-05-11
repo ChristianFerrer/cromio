@@ -1,7 +1,14 @@
 import Link from "next/link";
-import { ArrowDownLeft, ArrowUpRight, LogIn, MessageCircle } from "lucide-react";
+import { LogIn, MessageCircle } from "lucide-react";
 import { getCurrentUser } from "@/lib/profile";
 import { loadChatsForCurrentUser } from "@/lib/chat/queries";
+import { MatchArrows } from "@/components/match/MatchArrows";
+
+function formatDistance(meters: number | null): string | null {
+  if (meters === null || !Number.isFinite(meters)) return null;
+  if (meters < 1000) return `${meters} m`;
+  return `${(meters / 1000).toFixed(meters < 10000 ? 1 : 0)} km`;
+}
 
 function formatChatTime(iso: string | null): string {
   if (!iso) return "";
@@ -97,18 +104,20 @@ export default async function ChatListPage() {
             const pct = Math.max(0, Math.min(100, c.other_completion_pct));
             const lastBody = c.last_message?.body ?? "Sin mensajes todavía";
             const isMine = c.last_message?.sender_id === user.id;
+            const dist = formatDistance(c.distance_m);
 
             return (
               <Link
                 key={c.id}
                 href={`/chat/${c.id}`}
-                className="flex items-center gap-3 rounded-md border border-line bg-white p-3"
+                className="flex items-start gap-3 rounded-md border border-line bg-white p-3"
               >
                 <div className="relative shrink-0">
                   {c.other_user.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={c.other_user.avatar_url}
-                      alt={c.other_user.display_name ?? c.other_user.alias}
+                      alt={c.other_user.alias}
                       className="h-12 w-12 rounded-full object-cover"
                     />
                   ) : (
@@ -125,42 +134,51 @@ export default async function ChatListPage() {
                     </span>
                   )}
                 </div>
+
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
                     <span className="truncate text-sm font-bold">
-                      {c.other_user.display_name ?? c.other_user.alias}
+                      {c.other_user.alias}
                     </span>
-                    {time && <span className="shrink-0 text-[11px] text-text-2">{time}</span>}
+                    {time && (
+                      <span className="shrink-0 text-[11px] text-text-2">{time}</span>
+                    )}
                   </div>
-                  <div className="mt-1.5 flex items-center gap-2">
+                  {c.other_user.display_name && (
+                    <span className="block truncate text-xs text-text-2">
+                      {c.other_user.display_name}
+                    </span>
+                  )}
+
+                  <div className="mt-1.5 flex items-center gap-3 text-[12px] text-text-2">
+                    <MatchArrows
+                      recibes={c.you_get_count}
+                      entregas={c.they_get_count}
+                      size={14}
+                    />
+                    {dist && (
+                      <span className="font-display tabular leading-none">{dist}</span>
+                    )}
+                  </div>
+
+                  <div className="mt-2 text-[11px] text-text-2">
+                    Completado al: <b className="text-text">{pct}%</b>
+                  </div>
+                  <div
+                    className="mt-1 h-1.5 overflow-hidden rounded-full bg-line"
+                    role="progressbar"
+                    aria-valuenow={pct}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`Álbum ${pct}%`}
+                  >
                     <div
-                      className="h-1.5 flex-1 overflow-hidden rounded-full bg-line"
-                      role="progressbar"
-                      aria-valuenow={pct}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-label={`Álbum ${pct}%`}
-                    >
-                      <div
-                        className="h-full rounded-full bg-green-500"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <span className="shrink-0 tabular text-[10px] font-bold text-text-2">
-                      {pct}%
-                    </span>
+                      className="h-full rounded-full bg-green-500"
+                      style={{ width: `${pct}%` }}
+                    />
                   </div>
-                  <div className="mt-1 flex items-center gap-3 text-[11px] font-semibold text-text-2">
-                    <span className="inline-flex items-center gap-1">
-                      <ArrowDownLeft size={12} strokeWidth={2.4} className="text-green-700" />
-                      <span className="tabular">{c.you_get_count}</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <ArrowUpRight size={12} strokeWidth={2.4} className="text-gold-dark" />
-                      <span className="tabular">{c.they_get_count}</span>
-                    </span>
-                  </div>
-                  <p className="mt-1 truncate text-xs text-text-2">
+
+                  <p className="mt-2 truncate text-xs text-text-2">
                     {isMine && <span className="font-semibold text-text">Tú: </span>}
                     {lastBody}
                   </p>

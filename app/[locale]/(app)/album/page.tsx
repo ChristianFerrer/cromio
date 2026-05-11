@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Search, Plus, Globe, MapPin, ArrowRight } from "lucide-react";
+import { Search, Globe, MapPin, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { COUNTRIES } from "@/lib/data/countries";
 import { STICKERS, TOTAL_STICKERS } from "@/lib/data/stickers";
@@ -10,11 +10,9 @@ import { useCollection } from "@/hooks/useCollection";
 import { useUser } from "@/hooks/useUser";
 import { createClient } from "@/lib/supabase/client";
 import { CromoCard } from "@/components/cromo/CromoCard";
-import { AddCromoSheet } from "@/components/cromo/AddCromoSheet";
 import { Flag } from "@/components/cromo/Flag";
 import { Logo } from "@/components/Logo";
 import { Chip } from "@/components/ui/Chip";
-import { IconBtn } from "@/components/ui/IconBtn";
 
 type Tab = "selecciones" | "especiales" | "estadios";
 type Filter = "todos" | "falti" | "repe";
@@ -26,7 +24,6 @@ export default function AlbumPage() {
   const [tab, setTab] = useState<Tab>("selecciones");
   const [filter, setFilter] = useState<Filter>("todos");
   const [country, setCountry] = useState<string>("all");
-  const [showAdd, setShowAdd] = useState(false);
   const [matchBanner, setMatchBanner] = useState<
     { total: number; matches: number; leads: number } | null
   >(null);
@@ -81,15 +78,9 @@ export default function AlbumPage() {
 
   return (
     <main className="flex flex-col">
-      <div className="flex items-center justify-between px-5 pt-14">
+      <div className="px-5 pt-14">
         <Logo size="md" />
         <h1 className="sr-only">Cromio</h1>
-        <IconBtn
-          ariaLabel="Buscar y añadir cromo"
-          onClick={() => setShowAdd(true)}
-        >
-          <Search size={18} strokeWidth={2} />
-        </IconBtn>
       </div>
 
       <section className="px-5 pt-3">
@@ -244,21 +235,6 @@ export default function AlbumPage() {
         )}
       </div>
 
-      <button
-        className="fixed bottom-24 right-5 z-30 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-green-500 to-green-700 text-white shadow-sh3 md:bottom-8"
-        aria-label="Añadir cromo"
-        onClick={() => setShowAdd(true)}
-      >
-        <Plus size={26} strokeWidth={2.4} />
-      </button>
-
-      {showAdd && (
-        <AddCromoSheet
-          collection={collection}
-          onClose={() => setShowAdd(false)}
-          onAdjust={adjust}
-        />
-      )}
     </main>
   );
 }
