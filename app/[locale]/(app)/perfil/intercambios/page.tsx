@@ -1,25 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, CheckCircle2, Star } from "lucide-react";
+import { ArrowDown, ArrowUp, CheckCircle2, ChevronLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { loadCompletedTradesForCurrentUser } from "@/lib/trades/queries";
 import { IconLink } from "@/components/ui/IconBtn";
-
-type CompletedChat = {
-  id: string;
-  user_a: string;
-  user_b: string;
-  meeting_place: string | null;
-  meeting_at: string | null;
-  last_message_at: string | null;
-  other: {
-    id: string;
-    alias: string;
-    display_name: string | null;
-    color: string | null;
-  } | null;
-  myStars: number | null;
-  theirStars: number | null;
-};
 
 export default async function IntercambiosPage() {
   const supabase = await createClient();
@@ -28,62 +12,15 @@ export default async function IntercambiosPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: chats } = await supabase
-    .from("chats")
-    .select(
-      `id, user_a, user_b, meeting_place, meeting_at, last_message_at,
-       a:profiles!chats_user_a_fkey (id, alias, display_name, color),
-       b:profiles!chats_user_b_fkey (id, alias, display_name, color)`,
-    )
-    .eq("state", "completed")
-    .or(`user_a.eq.${user.id},user_b.eq.${user.id}`)
-    .order("meeting_at", { ascending: false, nullsFirst: false });
+  const trades = await loadCompletedTradesForCurrentUser();
 
-  const ids = (chats ?? []).map((c) => c.id);
-  const ratings = ids.length
-    ? (
-        await supabase
-          .from("chat_ratings")
-          .select("chat_id, rater_id, stars, note")
-          .in("chat_id", ids)
-      ).data ?? []
-    : [];
-
-  type RatingRow = { chat_id: string; rater_id: string; stars: number; note: string | null };
-  const ratingsByChat = new Map<string, RatingRow[]>();
-  for (const r of ratings as RatingRow[]) {
-    if (!ratingsByChat.has(r.chat_id)) ratingsByChat.set(r.chat_id, []);
-    ratingsByChat.get(r.chat_id)!.push(r);
+  // Total cromos moved across all my closed trades — a nicer signal than "N
+  // trades" because some trades involve more cromos than others.
+  let totalCromos = 0;
+  for (const t of trades) {
+    totalCromos += t.items.from_gives.reduce((s, i) => s + (i.qty ?? 0), 0);
+    totalCromos += t.items.to_gives.reduce((s, i) => s + (i.qty ?? 0), 0);
   }
-
-  const rows: CompletedChat[] = (chats ?? []).map((c) => {
-    const otherRaw = (c.user_a === user.id ? c.b : c.a) as
-      | CompletedChat["other"]
-      | CompletedChat["other"][];
-    const other = Array.isArray(otherRaw) ? otherRaw[0] ?? null : otherRaw;
-    const rs = ratingsByChat.get(c.id) ?? [];
-    const myStars = rs.find((r) => r.rater_id === user.id)?.stars ?? null;
-    const theirStars = rs.find((r) => r.rater_id !== user.id)?.stars ?? null;
-    return {
-      id: c.id,
-      user_a: c.user_a,
-      user_b: c.user_b,
-      meeting_place: c.meeting_place,
-      meeting_at: c.meeting_at,
-      last_message_at: c.last_message_at,
-      other,
-      myStars,
-      theirStars,
-    };
-  });
-
-  const avgReceived =
-    rows.filter((r) => r.theirStars != null).length === 0
-      ? null
-      : rows
-          .filter((r) => r.theirStars != null)
-          .reduce((s, r) => s + (r.theirStars ?? 0), 0) /
-        rows.filter((r) => r.theirStars != null).length;
 
   return (
     <main className="px-5 pb-10 pt-14">
@@ -97,25 +34,25 @@ export default async function IntercambiosPage() {
       <div className="mt-3 grid grid-cols-2 gap-2">
         <Stat
           label="Completados"
-          value={rows.length.toString()}
+          value={trades.length.toString()}
           icon={<CheckCircle2 size={16} strokeWidth={2.2} className="text-green-700" />}
         />
         <Stat
-          label="Recibido"
-          value={avgReceived == null ? "—" : `${avgReceived.toFixed(1)} ★`}
-          icon={<Star size={16} strokeWidth={2.2} className="text-gold" fill="currentColor" />}
+          label="Cromos movidos"
+          value={totalCromos.toString()}
+          icon={<ArrowDown size={16} strokeWidth={2.2} className="text-text-2" />}
         />
       </div>
 
-      {rows.length === 0 ? (
+      {trades.length === 0 ? (
         <div className="mt-8 flex flex-col items-center rounded-2xl border border-line bg-gradient-to-b from-paper to-bone px-6 py-10 text-center">
           <div className="grid h-14 w-14 place-items-center rounded-full bg-green-100 text-green-700">
             <CheckCircle2 size={22} strokeWidth={2.2} />
           </div>
           <h2 className="mt-3 font-display text-lg">Aún no tienes intercambios</h2>
           <p className="mt-1 max-w-xs text-xs leading-snug text-text-2">
-            Cuando cierres una quedada y la marques como "Hecho", aparecerá aquí
-            con las valoraciones de ambos lados.
+            Cuando aceptes una solicitud y la marquéis como realizada, aparecerá
+            aquí con el detalle de los cromos.
           </p>
           <Link
             href="/mapa"
@@ -126,22 +63,22 @@ export default async function IntercambiosPage() {
         </div>
       ) : (
         <ul className="mt-5 space-y-2">
-          {rows.map((r) => {
-            const u = r.other;
-            if (!u) return null;
+          {trades.map((t) => {
+            const u = t.other;
             const initials = u.alias.slice(0, 2).toUpperCase();
-            const when = r.meeting_at
-              ? new Date(r.meeting_at).toLocaleDateString("es-ES", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })
-              : "Sin fecha";
+            const when = new Date(t.done_at).toLocaleDateString("es-ES", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            });
+            // Normalise to my POV: what I received vs what I gave.
+            const iWasSender = t.direction === "outgoing";
+            const recibi = iWasSender ? t.items.to_gives : t.items.from_gives;
+            const entregue = iWasSender ? t.items.from_gives : t.items.to_gives;
+            const recibiQty = recibi.reduce((s, i) => s + i.qty, 0);
+            const entregueQty = entregue.reduce((s, i) => s + i.qty, 0);
             return (
-              <li
-                key={r.id}
-                className="rounded-md border border-line bg-white p-3"
-              >
+              <li key={t.id} className="rounded-md border border-line bg-white p-3">
                 <div className="flex items-center gap-3">
                   <Link
                     href={`/match/${u.id}`}
@@ -150,32 +87,28 @@ export default async function IntercambiosPage() {
                   >
                     {initials}
                   </Link>
-                  <Link href={`/chat/${r.id}`} className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-bold">
                       {u.display_name ?? `@${u.alias}`}
                     </p>
-                    <p className="truncate text-xs text-text-2">
-                      {when}
-                      {r.meeting_place ? ` · ${r.meeting_place}` : ""}
-                    </p>
-                  </Link>
+                    <p className="truncate text-xs text-text-2">{when}</p>
+                  </div>
                 </div>
                 <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px]">
-                  <RatingPill
-                    label="Tu valoración"
-                    stars={r.myStars}
-                    cta={
-                      r.myStars == null ? (
-                        <Link
-                          href={`/chat/${r.id}`}
-                          className="rounded bg-green-500 px-2 py-0.5 font-bold text-white"
-                        >
-                          Valorar
-                        </Link>
-                      ) : null
-                    }
-                  />
-                  <RatingPill label="Te valoraron" stars={r.theirStars} />
+                  <div className="flex items-center justify-between rounded bg-paper px-2.5 py-1.5">
+                    <span className="inline-flex items-center gap-1 text-text-2">
+                      <ArrowDown size={11} strokeWidth={2.6} className="text-green-700" />
+                      Recibí
+                    </span>
+                    <span className="font-display text-base text-text">{recibiQty}</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded bg-paper px-2.5 py-1.5">
+                    <span className="inline-flex items-center gap-1 text-text-2">
+                      <ArrowUp size={11} strokeWidth={2.6} className="text-red-600" />
+                      Entregué
+                    </span>
+                    <span className="font-display text-base text-text">{entregueQty}</span>
+                  </div>
                 </div>
               </li>
             );
@@ -202,32 +135,6 @@ function Stat({
         {label}
       </div>
       <div className="mt-0.5 font-display text-2xl text-text">{value}</div>
-    </div>
-  );
-}
-
-function RatingPill({
-  label,
-  stars,
-  cta,
-}: {
-  label: string;
-  stars: number | null;
-  cta?: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-2 rounded bg-paper px-2.5 py-1.5">
-      <span className="truncate text-text-2">{label}</span>
-      <span className="flex shrink-0 items-center gap-1 text-text">
-        {stars == null ? (
-          cta ?? <span className="text-text-2">—</span>
-        ) : (
-          <>
-            <Star size={11} strokeWidth={2.2} fill="currentColor" className="text-gold" />
-            <span className="font-display">{stars}</span>
-          </>
-        )}
-      </span>
     </div>
   );
 }

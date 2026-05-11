@@ -412,7 +412,7 @@ export async function exportUserData(id: string): Promise<
 > {
   const ctx = await requireAdmin();
   const admin = createAdminClient();
-  const [profile, stickers, chats, messages, ratings, favs, events, reports, blocks, pushSubs] =
+  const [profile, stickers, chats, messages, trades, favs, events, reports, blocks, pushSubs] =
     await Promise.all([
       admin.from("profiles").select("*").eq("id", id).maybeSingle(),
       admin.from("user_stickers").select("*").eq("user_id", id),
@@ -422,9 +422,9 @@ export async function exportUserData(id: string): Promise<
         .or(`user_a.eq.${id},user_b.eq.${id}`),
       admin.from("messages").select("*").eq("sender_id", id),
       admin
-        .from("chat_ratings")
+        .from("trade_requests")
         .select("*")
-        .or(`rater_id.eq.${id},ratee_id.eq.${id}`),
+        .or(`from_user_id.eq.${id},to_user_id.eq.${id}`),
       admin.from("user_favorites").select("*").eq("user_id", id),
       admin.from("events").select("*").eq("user_id", id),
       admin.from("user_reports").select("*").eq("reporter_id", id),
@@ -447,7 +447,7 @@ export async function exportUserData(id: string): Promise<
       user_stickers: stickers.data,
       chats: chats.data,
       messages: messages.data,
-      chat_ratings: ratings.data,
+      trade_requests: trades.data,
       user_favorites: favs.data,
       events: events.data,
       user_reports: reports.data,

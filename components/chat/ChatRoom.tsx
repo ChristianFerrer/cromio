@@ -1,32 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import {
-  Calendar,
   CheckCheck,
-  CheckCircle2,
   ChevronLeft,
   Clock,
-  Loader2,
-  MapPin,
   Send,
-  X,
 } from "lucide-react";
-import type { ChatMessage, ChatMeeting, ChatState } from "@/lib/chat/queries";
-import {
-  sendMessage,
-  markChatRead,
-  proposeMeeting,
-  respondToMeeting,
-  completeMeeting,
-  rateChat,
-} from "@/lib/chat/actions";
+import type { ChatMessage } from "@/lib/chat/queries";
+import { sendMessage, markChatRead } from "@/lib/chat/actions";
 import { createClient } from "@/lib/supabase/client";
 import { pushAppToast } from "@/lib/notifications/toast";
 import { IconBtn, IconLink } from "@/components/ui/IconBtn";
-import { Sheet } from "@/components/ui/Sheet";
 import { CromoPreviewSheet } from "@/components/cromo/CromoPreviewSheet";
 import { TOTAL_STICKERS } from "@/lib/data/stickers";
 
@@ -51,8 +37,7 @@ function formatDayLabel(ts: string) {
   const diffDays = Math.round((today - that) / 86400000);
   if (diffDays === 0) return "Hoy";
   if (diffDays === 1) return "Ayer";
-  if (diffDays < 7)
-    return d.toLocaleDateString("es-ES", { weekday: "long" });
+  if (diffDays < 7) return d.toLocaleDateString("es-ES", { weekday: "long" });
   return d.toLocaleDateString("es-ES", {
     day: "numeric",
     month: "short",
@@ -72,35 +57,15 @@ export function ChatRoom({
   meId,
   other,
   initialMessages,
-  initialState,
-  initialMeeting,
-  initialMyRated,
 }: {
   chatId: string;
   meId: string;
   other: Other;
   initialMessages: ChatMessage[];
-  initialState: ChatState;
-  initialMeeting: ChatMeeting;
-  initialMyRated: boolean;
 }) {
-  const searchParams = useSearchParams();
-  const draft = searchParams.get("draft") ?? "";
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
-  const [body, setBody] = useState(draft);
+  const [body, setBody] = useState("");
   const [pending, startTransition] = useTransition();
-  // Strip the draft from the URL the first time so refreshes don't re-prefill.
-  useEffect(() => {
-    if (!draft) return;
-    const url = new URL(window.location.href);
-    url.searchParams.delete("draft");
-    window.history.replaceState({}, "", url.toString());
-  }, [draft]);
-  const [chatState, setChatState] = useState<ChatState>(initialState);
-  const [meeting, setMeeting] = useState<ChatMeeting>(initialMeeting);
-  const [myRated, setMyRated] = useState(initialMyRated);
-  const [showProposeSheet, setShowProposeSheet] = useState(false);
-  const [showRateSheet, setShowRateSheet] = useState(false);
   const [previewN, setPreviewN] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const initials = (other.alias ?? "??").slice(0, 2).toUpperCase();
@@ -190,33 +155,6 @@ export function ChatRoom({
             );
           },
         )
-        .on(
-          "postgres_changes",
-          {
-            event: "UPDATE",
-            schema: "public",
-            table: "chats",
-            filter: `id=eq.${chatId}`,
-          },
-          (payload) => {
-            const c = payload.new as {
-              state: ChatState;
-              meeting_place: string | null;
-              meeting_at: string | null;
-              meeting_proposer_id: string | null;
-            };
-            setChatState(c.state);
-            setMeeting(
-              c.meeting_at
-                ? {
-                    place: c.meeting_place ?? "",
-                    at: c.meeting_at,
-                    proposer_id: c.meeting_proposer_id ?? "",
-                  }
-                : null,
-            );
-          },
-        )
         .subscribe((status) => {
           if (status === "SUBSCRIBED") refetch();
         });
@@ -272,13 +210,12 @@ export function ChatRoom({
         pushAppToast({
           kind: "error",
           title: "No se pudo enviar",
-          body: "Revisa tu conexión y vuelve a intentarlo.",
+          body: result.error,
         });
       }
     });
   };
 
-  // Group messages with day separators and consecutive-sender flags
   const grouped = useMemo(() => {
     const out: Array<
       | { type: "day"; key: string; label: string }
@@ -334,36 +271,17 @@ export function ChatRoom({
         >
           {initials}
         </Link>
-        <Link
-          href={`/match/${other.id}`}
-          className="min-w-0 flex-1"
-        >
+        <Link href={`/match/${other.id}`} className="min-w-0 flex-1">
           <p className="truncate text-sm font-bold">
             {other.display_name ?? other.alias}
           </p>
           <p className="truncate text-[11px] text-text-2">
-            {other.rating ? `★ ${other.rating}` : "Coleccionista"}
-            {other.trades_count != null && ` · ${other.trades_count} cambios`}
+            {other.trades_count != null
+              ? `${other.trades_count} intercambios`
+              : "Coleccionista"}
           </p>
         </Link>
       </header>
-
-      <MeetingBanner
-        chatId={chatId}
-        meId={meId}
-        meeting={meeting}
-        chatState={chatState}
-        myRated={myRated}
-        completePending={pending}
-        onPropose={() => setShowProposeSheet(true)}
-        onMarkComplete={() => {
-          startTransition(async () => {
-            const r = await completeMeeting(chatId);
-            if (r?.error) pushAppToast({ kind: "error", body: "No se pudo cerrar la quedada" });
-          });
-        }}
-        onRate={() => setShowRateSheet(true)}
-      />
 
       <div
         ref={scrollRef}
@@ -379,12 +297,12 @@ export function ChatRoom({
             </div>
             <h3 className="mt-3 font-display text-lg">Saluda a @{other.alias}</h3>
             <p className="mt-1 max-w-xs text-xs leading-snug text-text-2">
-              Comparte qué cromos quieres recibir y cuáles ofreces. Puedes referenciarlos por número (ej. <span className="font-semibold text-text">#125</span>) y aparecerán como tarjeta interactiva.
+              Coordina aquí el lugar y la hora. Para el intercambio en sí pulsa
+              el botón verde de la pantalla de match. Puedes referenciar
+              cromos por número (ej.{" "}
+              <span className="font-semibold text-text">#125</span>) y se
+              renderizan como tarjeta interactiva.
             </p>
-            <div className="mt-3 flex items-center gap-1.5 rounded-full border border-line bg-white px-2.5 py-1 text-[11px] text-text-2">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-green-500" />
-              <span>Tip: pulsa el calendario abajo para proponer una quedada</span>
-            </div>
           </div>
         )}
 
@@ -414,15 +332,6 @@ export function ChatRoom({
       </div>
 
       <div className="flex items-end gap-2 border-t border-line bg-white p-3 pb-[max(env(safe-area-inset-bottom),12px)]">
-        <IconBtn
-          ariaLabel="Proponer quedada"
-          onClick={() => setShowProposeSheet(true)}
-          disabled={chatState === "completed" || chatState === "cancelled"}
-          variant="outline"
-          className="text-text-2"
-        >
-          <Calendar size={18} strokeWidth={2} />
-        </IconBtn>
         <textarea
           value={body}
           onChange={(e) => setBody(e.target.value)}
@@ -452,356 +361,11 @@ export function ChatRoom({
         </IconBtn>
       </div>
 
-      {showProposeSheet && (
-        <ProposeMeetingSheet
-          initial={meeting}
-          onClose={() => setShowProposeSheet(false)}
-          onSubmit={(place, whenIso) => {
-            startTransition(async () => {
-              const r = await proposeMeeting(chatId, place, whenIso);
-              if (r?.error) {
-                pushAppToast({ kind: "error", body: "No se pudo enviar la propuesta" });
-                return;
-              }
-              pushAppToast({ kind: "success", body: "Propuesta enviada" });
-              setShowProposeSheet(false);
-            });
-          }}
-        />
-      )}
-
-      {showRateSheet && (
-        <RateChatSheet
-          onClose={() => setShowRateSheet(false)}
-          onSubmit={(stars, note) => {
-            startTransition(async () => {
-              const r = await rateChat(chatId, stars, note);
-              if (r?.error) {
-                pushAppToast({
-                  kind: "error",
-                  body:
-                    r.error === "already_rated"
-                      ? "Ya valoraste este intercambio"
-                      : "No se pudo guardar la valoración",
-                });
-                return;
-              }
-              pushAppToast({ kind: "success", body: "¡Gracias por tu valoración!" });
-              setMyRated(true);
-              setShowRateSheet(false);
-            });
-          }}
-        />
-      )}
-
       {previewN !== null && (
         <CromoPreviewSheet n={previewN} onClose={() => setPreviewN(null)} />
       )}
     </main>
   );
-}
-
-function MeetingBanner({
-  chatId,
-  meId,
-  meeting,
-  chatState,
-  myRated,
-  completePending,
-  onPropose,
-  onMarkComplete,
-  onRate,
-}: {
-  chatId: string;
-  meId: string;
-  meeting: ChatMeeting;
-  chatState: ChatState;
-  myRated: boolean;
-  completePending: boolean;
-  onPropose: () => void;
-  onMarkComplete: () => void;
-  onRate: () => void;
-}) {
-  const [pending, startTransition] = useTransition();
-  const respond = useCallback(
-    (accept: boolean) => {
-      startTransition(async () => {
-        const r = await respondToMeeting(chatId, accept);
-        if (r?.error) pushAppToast({ kind: "error", body: "No se pudo responder" });
-      });
-    },
-    [chatId],
-  );
-
-  if (chatState === "completed") {
-    return (
-      <div className="flex items-center gap-2 border-b border-green-100 bg-green-50 px-3 py-2 text-xs text-green-700">
-        <CheckCircle2 size={14} strokeWidth={2.2} />
-        <span className="flex-1">Intercambio completado</span>
-        {!myRated && (
-          <button
-            onClick={onRate}
-            className="rounded-md bg-green-500 px-2.5 py-1 font-bold text-white transition-transform active:scale-95"
-          >
-            Valorar
-          </button>
-        )}
-      </div>
-    );
-  }
-
-  if (chatState === "cancelled") {
-    return (
-      <div className="flex items-center gap-2 border-b border-line bg-paper px-3 py-2 text-xs text-text-2">
-        <X size={14} strokeWidth={2.2} />
-        <span className="flex-1">Quedada cancelada</span>
-        <button onClick={onPropose} className="rounded-md border border-line bg-white px-2.5 py-1 font-bold">
-          Proponer otra
-        </button>
-      </div>
-    );
-  }
-
-  if (!meeting) return null;
-
-  const when = new Date(meeting.at);
-  const dateLabel = when.toLocaleDateString("es-ES", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  });
-  const timeLabel = when.toLocaleTimeString("es-ES", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-  const iProposed = meeting.proposer_id === meId;
-
-  return (
-    <div
-      className={`flex items-center gap-2.5 border-b px-3 py-2.5 text-xs ${
-        chatState === "confirmed"
-          ? "border-green-100 bg-green-50 text-green-700"
-          : "border-gold/30 bg-gold/10 text-gold-dark"
-      }`}
-    >
-      <div
-        className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${
-          chatState === "confirmed" ? "bg-green-500" : "bg-gold"
-        } text-white`}
-      >
-        {chatState === "confirmed" ? (
-          <CheckCircle2 size={14} strokeWidth={2.4} />
-        ) : (
-          <Calendar size={14} strokeWidth={2.4} />
-        )}
-      </div>
-      <div className="min-w-0 flex-1 leading-tight">
-        <p className="truncate font-bold">
-          {chatState === "confirmed" ? "Quedada confirmada" : "Propuesta de quedada"}
-        </p>
-        <p className="truncate text-[11px] opacity-80">
-          {dateLabel} · {timeLabel} · {meeting.place}
-        </p>
-      </div>
-      {chatState === "pending" && !iProposed && (
-        <div className="flex shrink-0 gap-1">
-          <button
-            disabled={pending}
-            onClick={() => respond(false)}
-            className="inline-flex items-center gap-1 rounded-md border border-line bg-white px-2 py-1 text-text-2 transition-transform active:scale-95 disabled:opacity-50"
-            aria-busy={pending}
-          >
-            {pending ? <Loader2 size={12} className="animate-spin" /> : null}
-            Rechazar
-          </button>
-          <button
-            disabled={pending}
-            onClick={() => respond(true)}
-            className="inline-flex items-center gap-1 rounded-md bg-green-500 px-2 py-1 font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
-            aria-busy={pending}
-          >
-            {pending ? <Loader2 size={12} className="animate-spin" /> : null}
-            Aceptar
-          </button>
-        </div>
-      )}
-      {chatState === "pending" && iProposed && (
-        <span className="shrink-0 text-[11px] opacity-60">Esperando respuesta…</span>
-      )}
-      {chatState === "confirmed" && (
-        <button
-          onClick={onMarkComplete}
-          disabled={completePending}
-          aria-busy={completePending}
-          className="inline-flex shrink-0 items-center gap-1 rounded-md bg-green-500 px-2.5 py-1 font-bold text-white transition-transform active:scale-95 disabled:opacity-50"
-        >
-          {completePending ? <Loader2 size={12} className="animate-spin" /> : null}
-          Hecho
-        </button>
-      )}
-    </div>
-  );
-}
-
-function ProposeMeetingSheet({
-  initial,
-  onClose,
-  onSubmit,
-}: {
-  initial: ChatMeeting;
-  onClose: () => void;
-  onSubmit: (place: string, whenIso: string) => void;
-}) {
-  const defaultWhen = useMemo(() => {
-    const d = initial?.at ? new Date(initial.at) : new Date(Date.now() + 24 * 3600 * 1000);
-    const pad = (n: number) => n.toString().padStart(2, "0");
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
-      d.getHours(),
-    )}:${pad(d.getMinutes())}`;
-  }, [initial]);
-  const [place, setPlace] = useState(initial?.place ?? "");
-  const [when, setWhen] = useState(defaultWhen);
-
-  return (
-    <Sheet title="Proponer quedada" onClose={onClose}>
-      <label className="block">
-        <span className="text-xs font-bold uppercase tracking-wider text-text-2">
-          Lugar
-        </span>
-        <div className="mt-1 flex items-center gap-2 rounded-md border border-line bg-white px-3.5">
-          <MapPin size={14} className="text-text-2" />
-          <input
-            value={place}
-            onChange={(e) => setPlace(e.target.value)}
-            placeholder="Plaza Cataluña, Barcelona"
-            maxLength={200}
-            className="h-11 flex-1 bg-transparent text-sm outline-none"
-          />
-        </div>
-      </label>
-      <label className="mt-3 block">
-        <span className="text-xs font-bold uppercase tracking-wider text-text-2">
-          Fecha y hora
-        </span>
-        <input
-          type="datetime-local"
-          value={when}
-          onChange={(e) => setWhen(e.target.value)}
-          aria-label="Fecha y hora de la quedada"
-          className="mt-1 h-11 w-full rounded-md border border-line bg-white px-3.5 text-sm outline-none focus:border-green-500"
-        />
-      </label>
-      <button
-        onClick={() => {
-          if (!place.trim() || !when) return;
-          const dt = new Date(when);
-          if (Number.isNaN(dt.getTime())) return;
-          onSubmit(place.trim(), dt.toISOString());
-        }}
-        disabled={!place.trim() || !when}
-        className="mt-5 h-12 w-full rounded-md bg-green-500 font-bold text-white disabled:opacity-50"
-      >
-        Enviar propuesta
-      </button>
-    </Sheet>
-  );
-}
-
-function RateChatSheet({
-  onClose,
-  onSubmit,
-}: {
-  onClose: () => void;
-  onSubmit: (stars: number, note: string) => void;
-}) {
-  const [stars, setStars] = useState(0);
-  const [hover, setHover] = useState(0);
-  const [note, setNote] = useState("");
-  const display = hover || stars;
-  return (
-    <Sheet title="¿Cómo fue el intercambio?" onClose={onClose}>
-      <div
-        className="flex justify-center gap-1.5"
-        onMouseLeave={() => setHover(0)}
-        role="radiogroup"
-        aria-label="Valoración en estrellas"
-      >
-        {[1, 2, 3, 4, 5].map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => setStars(s)}
-            onMouseEnter={() => setHover(s)}
-            className="text-3xl transition-transform hover:scale-110"
-            style={{ color: s <= display ? "#F5C518" : "#D8D5C9" }}
-            aria-label={`${s} estrella${s === 1 ? "" : "s"}`}
-            aria-checked={stars === s}
-            role="radio"
-          >
-            ★
-          </button>
-        ))}
-      </div>
-      <p className="mt-2 text-center text-xs text-text-2">
-        {stars === 0 ? "Pulsa una estrella" : `${stars} de 5`}
-      </p>
-      <textarea
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        rows={3}
-        maxLength={280}
-        placeholder="Comentario (opcional)"
-        className="mt-4 w-full resize-none rounded-md border border-line bg-white px-3.5 py-2 text-sm outline-none focus:border-green-500"
-      />
-      <button
-        onClick={() => onSubmit(stars, note)}
-        disabled={stars < 1}
-        className="mt-4 h-12 w-full rounded-md bg-green-500 font-bold text-white disabled:opacity-40"
-      >
-        Enviar valoración
-      </button>
-    </Sheet>
-  );
-}
-
-// Splits a chat message body into text + tappable #NNN chips so a draft like
-// "Te ofrezco #5, #10" becomes interactive previews. Only matches numbers
-// inside the catalog range (1..TOTAL_STICKERS).
-function renderBodyWithCromoChips(
-  body: string,
-  mine: boolean,
-  onCromoClick: (n: number) => void,
-): React.ReactNode {
-  const re = /#(\d{1,4})\b/g;
-  const out: React.ReactNode[] = [];
-  let last = 0;
-  let i = 0;
-  for (let m = re.exec(body); m !== null; m = re.exec(body)) {
-    const n = Number(m[1]);
-    if (n >= 1 && n <= TOTAL_STICKERS) {
-      if (m.index > last) out.push(body.slice(last, m.index));
-      out.push(
-        <button
-          key={`c-${i++}-${m.index}`}
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onCromoClick(n);
-          }}
-          className={`mx-0.5 inline-flex items-center rounded px-1.5 py-0.5 align-baseline font-display text-[12px] leading-none transition-colors ${
-            mine
-              ? "bg-white/20 text-white hover:bg-white/30"
-              : "bg-green-100 text-green-700 hover:bg-green-50"
-          }`}
-        >
-          #{n}
-        </button>,
-      );
-      last = m.index + m[0].length;
-    }
-  }
-  if (last < body.length) out.push(body.slice(last));
-  return out.length === 0 ? body : out;
 }
 
 function MessageRow({
@@ -874,4 +438,41 @@ function MessageRow({
       </div>
     </div>
   );
+}
+
+function renderBodyWithCromoChips(
+  body: string,
+  mine: boolean,
+  onCromoClick: (n: number) => void,
+): React.ReactNode {
+  const re = /#(\d{1,4})\b/g;
+  const out: React.ReactNode[] = [];
+  let last = 0;
+  let i = 0;
+  for (let m = re.exec(body); m !== null; m = re.exec(body)) {
+    const n = Number(m[1]);
+    if (n >= 1 && n <= TOTAL_STICKERS) {
+      if (m.index > last) out.push(body.slice(last, m.index));
+      out.push(
+        <button
+          key={`c-${i++}-${m.index}`}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onCromoClick(n);
+          }}
+          className={`mx-0.5 inline-flex items-center rounded px-1.5 py-0.5 align-baseline font-display text-[12px] leading-none transition-colors ${
+            mine
+              ? "bg-white/20 text-white hover:bg-white/30"
+              : "bg-green-100 text-green-700 hover:bg-green-50"
+          }`}
+        >
+          #{n}
+        </button>,
+      );
+      last = m.index + m[0].length;
+    }
+  }
+  if (last < body.length) out.push(body.slice(last));
+  return out.length === 0 ? body : out;
 }

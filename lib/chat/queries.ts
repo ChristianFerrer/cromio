@@ -3,7 +3,6 @@ import { TOTAL_STICKERS } from "@/lib/data/stickers";
 
 export type ChatRow = {
   id: string;
-  state: "pending" | "confirmed" | "completed" | "cancelled";
   last_message_at: string | null;
   created_at: string;
   other_user: {
@@ -23,11 +22,6 @@ export type ChatRow = {
   distance_m: number | null;
   you_get_count: number;
   they_get_count: number;
-  meeting_place: string | null;
-  meeting_at: string | null;
-  meeting_proposer_id: string | null;
-  my_rating: number | null;
-  they_rated_me: boolean;
 };
 
 export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
@@ -41,8 +35,7 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
     supabase
       .from("chats")
       .select(
-        `id, state, last_message_at, created_at, user_a, user_b,
-         meeting_place, meeting_at, meeting_proposer_id,
+        `id, last_message_at, created_at, user_a, user_b,
          a:profiles!chats_user_a_fkey (id, alias, display_name, avatar_url, color),
          b:profiles!chats_user_b_fkey (id, alias, display_name, avatar_url, color)`,
       )
@@ -73,8 +66,6 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
     { data: myStickers },
     { data: otherStickers },
     { data: matchInfo },
-    { data: myRatings },
-    { data: theirRatings },
   ] = await Promise.all([
     supabase
       .from("messages")
@@ -93,16 +84,6 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
       .select("user_id, sticker_n, count")
       .in("user_id", otherIds),
     supabase.rpc("chat_partner_match_info", { p_partner_ids: otherIds }),
-    supabase
-      .from("chat_ratings")
-      .select("chat_id, stars")
-      .in("chat_id", ids)
-      .eq("rater_id", user.id),
-    supabase
-      .from("chat_ratings")
-      .select("chat_id")
-      .in("chat_id", ids)
-      .eq("ratee_id", user.id),
   ]);
 
   const lastByChat = new Map<string, NonNullable<ChatRow["last_message"]> & { chat_id: string }>();
@@ -137,15 +118,6 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
     distanceByPartner.set(row.partner_id, row.distance_m);
   }
 
-  const myRatingByChat = new Map<string, number>();
-  for (const r of (myRatings ?? []) as Array<{ chat_id: string; stars: number }>) {
-    myRatingByChat.set(r.chat_id, r.stars);
-  }
-  const theyRatedByChat = new Set<string>();
-  for (const r of (theirRatings ?? []) as Array<{ chat_id: string }>) {
-    theyRatedByChat.add(r.chat_id);
-  }
-
   return chats.map((c) => {
     const otherRaw = (c.user_a === user.id ? c.b : c.a) as ChatRow["other_user"] | ChatRow["other_user"][];
     const other = Array.isArray(otherRaw) ? otherRaw[0] : otherRaw;
@@ -166,7 +138,6 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
 
     return {
       id: c.id,
-      state: c.state,
       last_message_at: c.last_message_at,
       created_at: c.created_at,
       other_user: other,
@@ -178,11 +149,6 @@ export async function loadChatsForCurrentUser(): Promise<ChatRow[]> {
       distance_m: distanceByPartner.get(other.id) ?? null,
       you_get_count: youGet,
       they_get_count: theyGet,
-      meeting_place: c.meeting_place ?? null,
-      meeting_at: c.meeting_at ?? null,
-      meeting_proposer_id: c.meeting_proposer_id ?? null,
-      my_rating: myRatingByChat.get(c.id) ?? null,
-      they_rated_me: theyRatedByChat.has(c.id),
     };
   });
 }
@@ -216,14 +182,6 @@ export async function loadUnreadByChat(): Promise<Record<string, number>> {
   return out;
 }
 
-export type ChatState = "pending" | "confirmed" | "completed" | "cancelled";
-
-export type ChatMeeting = {
-  place: string;
-  at: string;
-  proposer_id: string;
-} | null;
-
 export async function loadChatDetail(chatId: string) {
   const supabase = await createClient();
   const {
@@ -234,8 +192,7 @@ export async function loadChatDetail(chatId: string) {
   const { data: chat } = await supabase
     .from("chats")
     .select(
-      `id, state, user_a, user_b,
-       meeting_place, meeting_at, meeting_proposer_id,
+      `id, user_a, user_b,
        a:profiles!chats_user_a_fkey (id, alias, display_name, avatar_url, color, rating, trades_count),
        b:profiles!chats_user_b_fkey (id, alias, display_name, avatar_url, color, rating, trades_count)`,
     )
@@ -247,34 +204,16 @@ export async function loadChatDetail(chatId: string) {
   const otherRaw = (chat.user_a === user.id ? chat.b : chat.a) as never;
   const other = Array.isArray(otherRaw) ? otherRaw[0] : otherRaw;
 
-  const [{ data: messages }, { data: myRating }] = await Promise.all([
-    supabase
-      .from("messages")
-      .select("id, chat_id, sender_id, body, created_at, read_by_recipient_at")
-      .eq("chat_id", chatId)
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("chat_ratings")
-      .select("stars")
-      .eq("chat_id", chatId)
-      .eq("rater_id", user.id)
-      .maybeSingle(),
-  ]);
-
-  const meeting: ChatMeeting = chat.meeting_at
-    ? {
-        place: chat.meeting_place ?? "",
-        at: chat.meeting_at,
-        proposer_id: chat.meeting_proposer_id ?? "",
-      }
-    : null;
+  const { data: messages } = await supabase
+    .from("messages")
+    .select("id, chat_id, sender_id, body, created_at, read_by_recipient_at")
+    .eq("chat_id", chatId)
+    .order("created_at", { ascending: true });
 
   return {
-    chat: { id: chat.id, state: chat.state as ChatState },
+    chat: { id: chat.id },
     me: user.id,
     other,
-    meeting,
-    myRated: !!myRating,
     messages: (messages ?? []) as ChatMessage[],
   };
 }

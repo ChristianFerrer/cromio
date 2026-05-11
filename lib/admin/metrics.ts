@@ -102,17 +102,17 @@ export async function loadDashboard(range: Range): Promise<DashboardPayload> {
   ] = await Promise.all([
     admin.from("profiles").select("id", { head: true, count: "exact" }),
     admin.rpc("admin_active_users"),
+    // "Completed trades" is now closed trade_requests (status='done').
     admin
-      .from("chats")
+      .from("trade_requests")
       .select("id", { head: true, count: "exact" })
-      .eq("state", "completed")
+      .eq("status", "done")
       .gte("created_at", fromIso)
       .lt("created_at", toIso),
-    admin
-      .from("chat_ratings")
-      .select("stars")
-      .gte("created_at", fromIso)
-      .lt("created_at", toIso),
+    // Ratings were removed with the meeting/rating flow. Keep the slot in
+    // the destructure so the rest of the destructure positions stay valid;
+    // it just always returns empty data now.
+    Promise.resolve({ data: [] as { stars: number }[], error: null }),
     admin
       .from("push_subscriptions")
       .select("user_id"),
@@ -135,7 +135,8 @@ export async function loadDashboard(range: Range): Promise<DashboardPayload> {
     admin.rpc("admin_top_wanted", { p_limit: 20 }),
     admin.rpc("admin_top_spare", { p_limit: 20 }),
     admin.rpc("admin_radii_histogram"),
-    admin.rpc("admin_ratings_histogram"),
+    // admin_ratings_histogram backed chat_ratings — table is gone now.
+    Promise.resolve({ data: [] as { stars: number; count: number }[], error: null }),
     admin.rpc("admin_retention_cohort", { p_from: fromIso, p_to: toIso }),
   ]);
 

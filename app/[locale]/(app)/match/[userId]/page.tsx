@@ -3,6 +3,8 @@
 import { use, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
+  ArrowLeftRight,
+  Check,
   ChevronLeft,
   MessageCircle,
   Flag as FlagIcon,
@@ -11,6 +13,7 @@ import {
   ShieldX,
   AlertTriangle,
   Share2,
+  Loader2,
 } from "lucide-react";
 import { shareOrCopy } from "@/lib/share/client";
 import { STICKERS_BY_N, TOTAL_STICKERS } from "@/lib/data/stickers";
@@ -20,6 +23,9 @@ import { useCollection } from "@/hooks/useCollection";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useUser } from "@/hooks/useUser";
 import { startChatWith } from "@/lib/chat/actions";
+import { requestTrade } from "@/lib/trades/actions";
+import type { TradeRequestRow } from "@/lib/trades/queries";
+import { TradeRequestSheet } from "@/components/trade/TradeRequestSheet";
 import { blockUser, unblockUser } from "@/lib/moderation/actions";
 import { createClient } from "@/lib/supabase/client";
 import { CROMIO_COLORS } from "@/lib/design/colors";
@@ -66,6 +72,11 @@ export default function MatchDetailPage({
   const [showActions, setShowActions] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [actionPending, startActionTransition] = useTransition();
+
+  const [activeTrade, setActiveTrade] = useState<TradeRequestRow | null>(null);
+  const [tradeRefreshTick, setTradeRefreshTick] = useState(0);
+  const [showTradeSheet, setShowTradeSheet] = useState(false);
+  const [tradePending, startTradeTransition] = useTransition();
 
   useEffect(() => {
     if (!isUuid) {
@@ -137,6 +148,44 @@ export default function MatchDetailPage({
       cancelled = true;
     };
   }, [userId, isUuid, me]);
+
+  // Active trade between me and this user (pending or accepted). We refetch
+  // on `tradeRefreshTick` and via realtime so the button reflects the latest
+  // state even when the other side acts.
+  useEffect(() => {
+    if (!me || !isUuid) return;
+    const supabase = createClient();
+    if (!supabase) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("trade_requests")
+        .select(
+          "id, from_user_id, to_user_id, status, items, created_at, accepted_at, done_at, resolved_at",
+        )
+        .in("status", ["pending", "accepted"])
+        .or(
+          `and(from_user_id.eq.${me.id},to_user_id.eq.${userId}),and(from_user_id.eq.${userId},to_user_id.eq.${me.id})`,
+        )
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!cancelled) setActiveTrade((data as TradeRequestRow | null) ?? null);
+    })();
+
+    const channel = supabase
+      .channel(`trade-${me.id}-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trade_requests" },
+        () => setTradeRefreshTick((t) => t + 1),
+      )
+      .subscribe();
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
+  }, [me, userId, isUuid, tradeRefreshTick]);
 
   // buildMatch is reactive on `collection`: this ensures we don't render
   // a stale "te interesa / sin cromos para entregar" while useCollection
@@ -411,39 +460,59 @@ export default function MatchDetailPage({
         </div>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[430px] border-t border-black/5 bg-white/95 px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4 backdrop-blur md:max-w-[760px]">
-        <Btn
-          kind="primaryVibrant"
-          full
-          size="lg"
-          disabled={chatPending}
-          icon={<MessageCircle size={18} strokeWidth={2} />}
-          onClick={() => {
-            const youList = [...youSel].sort((a, b) => a - b);
-            const theyList = [...theySel].sort((a, b) => a - b);
-            const draftLines: string[] = [];
-            if (youList.length > 0) {
-              draftLines.push(
-                `Hola! Me interesan tus cromos: ${youList.map((n) => `#${n}`).join(", ")}.`,
-              );
-            }
-            if (theyList.length > 0) {
-              draftLines.push(
-                `A cambio te ofrezco: ${theyList.map((n) => `#${n}`).join(", ")}.`,
-              );
-            }
-            const draftText = draftLines.join(" ");
-            const draftQuery = draftText
-              ? `draft=${encodeURIComponent(draftText)}`
-              : undefined;
-            startChatTransition(async () => {
-              await startChatWith(profile.id, draftQuery);
-            });
-          }}
-        >
-          {chatPending ? "Abriendo chat…" : isLead ? "Proponer intercambio" : "Iniciar chat"}
-        </Btn>
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-[430px] gap-2 border-t border-black/5 bg-white/95 px-4 pb-[max(env(safe-area-inset-bottom),16px)] pt-4 backdrop-blur md:max-w-[760px]">
+        <div className="flex-1">
+          <Btn
+            kind="primaryVibrant"
+            full
+            size="lg"
+            disabled={chatPending}
+            icon={<MessageCircle size={18} strokeWidth={2} />}
+            onClick={() => {
+              startChatTransition(async () => {
+                await startChatWith(profile.id);
+              });
+            }}
+          >
+            {chatPending ? "Abriendo chat…" : "Iniciar chat"}
+          </Btn>
+        </div>
+        <TradeButton
+          me={me?.id}
+          otherId={profile.id}
+          activeTrade={activeTrade}
+          matchEmpty={match.youGet.length === 0 && match.theyGet.length === 0}
+          pending={tradePending}
+          onSend={() =>
+            startTradeTransition(async () => {
+              const r = await requestTrade(profile.id);
+              if (!r.ok) {
+                const msg =
+                  r.error === "empty_trade"
+                    ? "No tenéis cromos para intercambiar todavía."
+                    : r.error === "already_pending"
+                      ? "Ya tenéis una solicitud activa."
+                      : "Algo falló. Inténtalo otra vez.";
+                pushAppToast({ kind: "error", body: msg });
+                return;
+              }
+              pushAppToast({ kind: "success", body: "Solicitud enviada" });
+              setTradeRefreshTick((t) => t + 1);
+            })
+          }
+          onOpenSheet={() => setShowTradeSheet(true)}
+        />
       </div>
+
+      {showTradeSheet && activeTrade && me && (
+        <TradeRequestSheet
+          req={activeTrade}
+          meId={me.id}
+          otherAlias={profile.alias}
+          onClose={() => setShowTradeSheet(false)}
+          onChanged={() => setTradeRefreshTick((t) => t + 1)}
+        />
+      )}
 
       {showActions && (
         <Sheet
@@ -559,5 +628,115 @@ export default function MatchDetailPage({
         />
       )}
     </main>
+  );
+}
+
+type TradeButtonState = "none" | "sent" | "received" | "agreed" | "loading" | "empty";
+
+function TradeButton({
+  me,
+  otherId,
+  activeTrade,
+  matchEmpty,
+  pending,
+  onSend,
+  onOpenSheet,
+}: {
+  me: string | undefined;
+  otherId: string;
+  activeTrade: TradeRequestRow | null;
+  matchEmpty: boolean;
+  pending: boolean;
+  onSend: () => void;
+  onOpenSheet: () => void;
+}) {
+  void otherId;
+  let state: TradeButtonState;
+  if (pending) state = "loading";
+  else if (activeTrade?.status === "accepted") state = "agreed";
+  else if (activeTrade?.status === "pending" && me && activeTrade.from_user_id === me)
+    state = "sent";
+  else if (activeTrade?.status === "pending" && me && activeTrade.to_user_id === me)
+    state = "received";
+  else if (matchEmpty) state = "empty";
+  else state = "none";
+
+  const styles: Record<
+    TradeButtonState,
+    { bg: string; border: string; iconColor: string; label?: string; disabled?: boolean }
+  > = {
+    none: {
+      bg: "bg-green-500",
+      border: "border-transparent",
+      iconColor: "text-white",
+      label: "Intercambiar",
+    },
+    sent: {
+      bg: "bg-white",
+      border: "border-line",
+      iconColor: "text-text-2",
+      label: "Enviada",
+    },
+    received: {
+      bg: "bg-green-500",
+      border: "border-transparent",
+      iconColor: "text-white",
+      label: "Solicitud",
+    },
+    agreed: {
+      bg: "bg-green-700",
+      border: "border-transparent",
+      iconColor: "text-white",
+      label: "Realizar",
+    },
+    loading: {
+      bg: "bg-green-500",
+      border: "border-transparent",
+      iconColor: "text-white",
+      disabled: true,
+    },
+    empty: {
+      bg: "bg-paper",
+      border: "border-line",
+      iconColor: "text-text-2/50",
+      disabled: true,
+    },
+  };
+  const s = styles[state];
+
+  const onClick = () => {
+    if (state === "none") onSend();
+    else if (state === "sent" || state === "received" || state === "agreed") onOpenSheet();
+  };
+
+  const Icon =
+    state === "loading" ? Loader2 : state === "agreed" ? Check : ArrowLeftRight;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={s.disabled}
+      aria-label={s.label ?? "Intercambiar"}
+      className={`relative flex h-14 w-16 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl border ${s.border} ${s.bg} shadow-sh2 transition-transform active:scale-95 disabled:opacity-50`}
+    >
+      <Icon
+        size={20}
+        strokeWidth={2.2}
+        className={`${s.iconColor} ${state === "loading" ? "animate-spin" : ""}`}
+      />
+      {s.label && (
+        <span
+          className={`text-[9px] font-bold uppercase tracking-wider leading-none ${s.iconColor}`}
+        >
+          {s.label}
+        </span>
+      )}
+      {state === "received" && (
+        <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-red-600 text-[10px] font-bold text-white shadow-sh1">
+          1
+        </span>
+      )}
+    </button>
   );
 }
