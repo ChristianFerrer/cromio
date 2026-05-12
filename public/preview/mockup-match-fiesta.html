@@ -168,6 +168,66 @@
         gap: var(--space-2);
       }
 
+
+      /* Match split: Recibes / Entregas en paralelo (2 cols) */
+      .match-split {
+        padding: 0 var(--space-3) var(--space-5);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+      }
+      .match-col {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-md);
+        padding: var(--space-3);
+      }
+      .match-col-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
+      }
+      .match-col-header .left {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .match-col-header .label {
+        font-family: var(--font-display);
+        font-size: var(--text-2xs);
+        font-weight: var(--fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+      }
+      .match-col[data-tint="give"] .match-col-header .label,
+      .match-col[data-tint="give"] .match-col-header .count { color: var(--match-give); }
+      .match-col[data-tint="recv"] .match-col-header .label,
+      .match-col[data-tint="recv"] .match-col-header .count { color: var(--brand-300); }
+      .match-col-header .triangle-down {
+        width: 0; height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 7px solid var(--brand-400);
+      }
+      .match-col-header .triangle-up {
+        width: 0; height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 7px solid var(--match-give);
+      }
+      .match-col-header .count {
+        font-family: var(--font-mono);
+        font-weight: var(--fw-bold);
+        font-size: var(--text-xs);
+      }
+      .match-col-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+      }
+
       .match-cta {
         position: fixed;
         bottom: 0;
@@ -261,22 +321,36 @@
         </div>
       </div>
 
-      <section class="match-section">
-        <h3>Cromos que recibes <span class="tip">tap para seleccionar</span></h3>
-        <div class="cromos-row">
-          <div class="cromo cromo-sm" data-state="owned" data-country="ARG"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">ARG10</span><span class="cromo-bottom"><span>ARG</span><span>FWD</span></span></div>
-          <div class="cromo cromo-sm" data-state="owned" data-country="ARG"><span class="cromo-top"><span class="cromo-pill">Equipo</span></span><span class="cromo-code">ARG2</span><span class="cromo-bottom"><span>ARG</span></span></div>
-          <div class="cromo cromo-sm" data-state="empty" style="opacity:.5"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">BRA9</span><span class="cromo-bottom"><span>BRA</span><span>MID</span></span></div>
-          <div class="cromo cromo-sm" data-state="empty" style="opacity:.5"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">URU5</span><span class="cromo-bottom"><span>URU</span><span>DEF</span></span></div>
+      <section class="match-split cromo-grid">
+        <div class="match-col" data-tint="recv">
+          <div class="match-col-header">
+            <div class="left">
+              <span class="triangle-down"></span>
+              <span class="label">Recibes</span>
+            </div>
+            <span class="count tabular">2/4</span>
+          </div>
+          <div class="match-col-grid">
+            <div class="cromo cromo-sm" data-state="owned" data-country="ARG"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">ARG10</span><span class="cromo-bottom"><span>ARG</span><span>FWD</span></span></div>
+            <div class="cromo cromo-sm" data-state="owned" data-country="ARG"><span class="cromo-top"><span class="cromo-pill">Equipo</span></span><span class="cromo-code">ARG2</span><span class="cromo-bottom"><span>ARG</span></span></div>
+            <div class="cromo cromo-sm" data-state="empty" style="opacity:.5"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">BRA9</span><span class="cromo-bottom"><span>BRA</span><span>MID</span></span></div>
+            <div class="cromo cromo-sm" data-state="empty" style="opacity:.5"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">URU5</span><span class="cromo-bottom"><span>URU</span><span>DEF</span></span></div>
+          </div>
         </div>
-      </section>
 
-      <section class="match-section">
-        <h3>Cromos que entregas <span class="tip">tap para seleccionar</span></h3>
-        <div class="cromos-row">
-          <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">ALG3</span><span class="cromo-bottom"><span>ALG</span><span>×2</span></span></div>
-          <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">ALG5</span><span class="cromo-bottom"><span>ALG</span><span>×2</span></span></div>
-          <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">JPN8</span><span class="cromo-bottom"><span>JPN</span><span>×3</span></span></div>
+        <div class="match-col" data-tint="give">
+          <div class="match-col-header">
+            <div class="left">
+              <span class="triangle-up"></span>
+              <span class="label">Entregas</span>
+            </div>
+            <span class="count tabular">3/3</span>
+          </div>
+          <div class="match-col-grid">
+            <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">ALG3</span><span class="cromo-bottom"><span>ALG</span><span>×2</span></span></div>
+            <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">ALG5</span><span class="cromo-bottom"><span>ALG</span><span>×2</span></span></div>
+            <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">JPN8</span><span class="cromo-bottom"><span>JPN</span><span>×3</span></span></div>
+          </div>
         </div>
       </section>
 

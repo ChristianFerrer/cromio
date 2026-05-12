@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-12 08:40 UTC** · branch `feat/ui-redesign-r4`_
+_Last updated: **2026-05-12 09:05 UTC** · branch `feat/ui-redesign-r5`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 310e57c chore(preview): expose Fase 3 mockups at /preview for Vercel deploy _(40 minutes ago)_
-- cd3becf docs(redesign): Fase 3 - sistema de diseño + tokens + mockups full-screen _(56 minutes ago)_
+- 9334374 feat(redesign-preview): pin v2 + container queries + fiesta mockups _(25 minutes ago)_
+- 310e57c chore(preview): expose Fase 3 mockups at /preview for Vercel deploy _(65 minutes ago)_
+- cd3becf docs(redesign): Fase 3 - sistema de diseño + tokens + mockups full-screen _(81 minutes ago)_
 - 2bd9034 docs(redesign): Fase 2 - previews HTML por dirección _(2 hours ago)_
 - f613d3a docs(redesign): Fase 2 - 3 direcciones visuales (texto) _(2 hours ago)_
-- 8e4d6f5 docs(redesign): Fase 1 - análisis del logo + auditoría UX/UI/PWA/OSM _(2 hours ago)_
+- 8e4d6f5 docs(redesign): Fase 1 - análisis del logo + auditoría UX/UI/PWA/OSM _(3 hours ago)_
 - ad57ef5 perf(hooks): cross-navigation cache for user, collection and favourites _(12 hours ago)_
-- da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(12 hours ago)_
-- ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(18 hours ago)_
+- da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(13 hours ago)_
+- ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(19 hours ago)_
 - b7e8c8b style(match): trade button matches the contacts flag treatment _(19 hours ago)_
 - a0f5ae9 style(ui): square radius across buttons + simplify trade button _(19 hours ago)_
 - dc3481f fix(chat): strip stale state/meeting/rating UI from chat list _(20 hours ago)_
 - b786ca7 feat(trades): trade requests replace meeting/rating, chat is now pure _(20 hours ago)_
 - 5f34238 chore(deploy): retrigger production build for chat journey UI _(21 hours ago)_
 - 37a5f10 feat(chat): surface meeting + rating journey on chat list cards (#35) _(21 hours ago)_
-- 9ffa742 docs(contactos): document why match counts are computed pairwise _(21 hours ago)_
 <!-- AUTO:COMMITS:END -->

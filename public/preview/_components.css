@@ -279,6 +279,65 @@ body {
 .cromo-sm { aspect-ratio: 78 / 110; }
 .cromo-lg .cromo-code { font-size: clamp(28px, 35cqi, 80px); }
 
+/* Counter row inside the cromo (visible bordered − / + buttons) */
+.cromo-counter {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 4cqi;
+  margin: 4cqi -6cqi -6cqi;
+  padding: 3cqi 5cqi;
+  border-top: 1px solid var(--border-default);
+  position: relative;
+  z-index: 1;
+}
+.cromo-counter button {
+  width: 26cqi;
+  height: 26cqi;
+  max-width: 32px;
+  max-height: 32px;
+  min-width: 20px;
+  min-height: 20px;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-size: clamp(14px, 18cqi, 22px);
+  font-weight: var(--fw-black);
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--motion-xs) var(--ease-standard);
+}
+.cromo-counter button:disabled { opacity: 0.4; cursor: not-allowed; }
+.cromo-counter .minus:hover { background: var(--bg-overlay); }
+.cromo-counter .plus {
+  background: var(--brand-500);
+  color: white;
+  border-color: transparent;
+}
+.cromo-counter .plus:hover { background: var(--brand-400); }
+.cromo-counter .count {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 20cqi, 24px);
+  font-weight: var(--fw-black);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5em;
+  text-align: center;
+}
+.cromo[data-state="repe"] .cromo-counter .minus {
+  background: var(--danger);
+  color: white;
+  border-color: transparent;
+}
+.cromo[data-state="repe"] .cromo-counter .count { color: var(--danger); }
+.cromo[data-state="empty"] .cromo-counter .minus { opacity: 0.4; }
+
 /* ============================================================
  * Match arrows (Recibes / Entregas)
  * ============================================================ */
@@ -374,32 +433,33 @@ body {
 .pin-body {
   position: relative;
   width: 38px;
-  height: 44px;
+  height: 38px;
   display: grid;
   place-items: center;
-  /* shape: round head + pointed bottom (front-facing) */
+  /* Cabeza redonda perfecta + cola triangular debajo (forma clásica
+   * de pin de mapa, front-facing, sin rotación). */
   background: var(--bg-elevated);
   border: 1.5px solid var(--pin-accent);
-  border-radius: 50% 50% 50% 50% / 60% 60% 38% 38%;
+  border-radius: 50%;
   box-shadow: var(--pin-glow);
 }
 .pin-body::after {
-  /* small triangular tail glued under the round body */
+  /* Cola triangular pegada justo debajo del círculo */
   content: "";
   position: absolute;
-  bottom: -7px;
+  bottom: -9px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 8px solid var(--pin-accent);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 10px solid var(--pin-accent);
 }
 
 .pin-avatar {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -408,7 +468,6 @@ body {
   font-size: 11px;
   color: var(--pin-avatar-color);
   background: var(--pin-avatar-bg);
-  margin-top: -2px;
 }
 
 .pin[data-kind="lead"] {
