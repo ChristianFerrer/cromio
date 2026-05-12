@@ -31,9 +31,23 @@ export default async function AppLayout({
   const initialUnread = await loadUnreadByChat();
   return (
     <NotificationsRoot initialUnread={initialUnread}>
-      <div className="relative mx-auto flex min-h-dvh w-full max-w-screen-xl bg-bone md:gap-0">
+      <div
+        className="
+          relative mx-auto flex w-full max-w-screen-xl bg-bone
+          h-dvh flex-col overflow-hidden
+          md:h-auto md:min-h-dvh md:flex-row md:overflow-visible md:gap-0
+        "
+      >
         <SideNav />
-        <div className="relative mx-auto w-full max-w-[430px] pb-20 md:max-w-[760px] md:pb-6">
+        <div
+          className="
+            relative mx-auto w-full flex-1
+            overflow-y-auto overscroll-contain
+            max-w-[430px]
+            md:flex-none md:basis-auto md:overflow-visible md:overscroll-auto
+            md:max-w-[760px] md:pb-6
+          "
+        >
           {children}
         </div>
         <BottomNav />
