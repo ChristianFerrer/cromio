@@ -128,6 +128,68 @@ export default function MapaPage() {
                 </button>
               ))}
             </div>
+
+            <div ref={radiusBtnRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setRadiusOpen((o) => !o)}
+                aria-haspopup="listbox"
+                aria-expanded={radiusOpen}
+                className="flex h-9 items-center gap-1 rounded-md border border-line bg-white px-2.5 text-xs font-bold text-text shadow-sh1"
+              >
+                <span className="font-display text-sm tabular">
+                  {fmtRadius(radius)}
+                </span>
+                <ChevronDown
+                  size={12}
+                  strokeWidth={2.4}
+                  className={`text-text-2 transition-transform ${
+                    radiusOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+              {radiusOpen && (
+                <ul
+                  role="listbox"
+                  className="absolute right-0 top-[calc(100%+4px)] z-50 min-w-[120px] overflow-hidden rounded-md border border-line bg-white shadow-sh3"
+                >
+                  {RADII.map((r) => {
+                    const locked = r > FREE_MAX;
+                    const active = r === radius;
+                    return (
+                      <li key={r} role="option" aria-selected={active}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (locked) return;
+                            setRadius(r);
+                            setRadiusOpen(false);
+                          }}
+                          disabled={locked}
+                          className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm ${
+                            active
+                              ? "bg-green-50 font-bold text-green-700"
+                              : locked
+                                ? "text-mute"
+                                : "text-text hover:bg-paper"
+                          }`}
+                        >
+                          <span>{fmtRadius(r)}</span>
+                          {locked && (
+                            <Lock
+                              size={12}
+                              className="text-gold"
+                              strokeWidth={2.4}
+                            />
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
             {isAuthenticated && (
               <button
                 onClick={refreshUsers}
@@ -149,68 +211,6 @@ export default function MapaPage() {
         <p className="mt-1 text-xs uppercase tracking-wider text-text-2">
           {statusText}
         </p>
-
-        <div ref={radiusBtnRef} className="relative mt-3">
-          <button
-            type="button"
-            onClick={() => setRadiusOpen((o) => !o)}
-            aria-haspopup="listbox"
-            aria-expanded={radiusOpen}
-            className="flex w-full items-center justify-between rounded-md border border-line bg-white px-3.5 py-2.5 shadow-sh1"
-          >
-            <span className="flex items-center gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-mute">
-                Radio
-              </span>
-              <span className="font-display text-base text-text">
-                {fmtRadius(radius)}
-              </span>
-            </span>
-            <ChevronDown
-              size={16}
-              strokeWidth={2.2}
-              className={`text-text-2 transition-transform ${
-                radiusOpen ? "rotate-180" : ""
-              }`}
-            />
-          </button>
-          {radiusOpen && (
-            <ul
-              role="listbox"
-              className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 overflow-hidden rounded-md border border-line bg-white shadow-sh3"
-            >
-              {RADII.map((r) => {
-                const locked = r > FREE_MAX;
-                const active = r === radius;
-                return (
-                  <li key={r} role="option" aria-selected={active}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (locked) return;
-                        setRadius(r);
-                        setRadiusOpen(false);
-                      }}
-                      disabled={locked}
-                      className={`flex w-full items-center justify-between px-3.5 py-2.5 text-left text-sm ${
-                        active
-                          ? "bg-green-50 font-bold text-green-700"
-                          : locked
-                            ? "text-mute"
-                            : "text-text hover:bg-paper"
-                      }`}
-                    >
-                      <span>{fmtRadius(r)}</span>
-                      {locked && (
-                        <Lock size={12} className="text-gold" strokeWidth={2.4} />
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
       </header>
 
       <div className="relative flex-1 overflow-hidden">

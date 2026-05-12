@@ -73,20 +73,24 @@ export function LeafletMap({
   // fitBounds instead of setView+zoom because it computes the zoom
   // level dynamically from the container dimensions — the radius prop
   // wins, not a hardcoded zoom table.
-  // Padding is 2% of the smaller container dimension so the radar
-  // perimeter never touches the viewport edges.
+  //
+  // whenReady + invalidateSize make sure we measure the container
+  // AFTER it's been sized; without these the first fitBounds runs
+  // before Leaflet has its dimensions and lands on a too-zoomed-out
+  // initial view.
   const fitRadar = () => {
     const map = mapRef.current;
     if (!map) return;
     programmaticMoveRef.current = true;
-    const size = map.getSize();
-    const padPx = Math.max(2, Math.floor(Math.min(size.x, size.y) * 0.02));
-    const bounds = L.latLng(centerLat, centerLng).toBounds(radiusM * 2);
-    map.fitBounds(bounds, {
-      animate: true,
-      duration: 0.5,
-      padding: [padPx, padPx],
-      maxZoom: 18,
+    map.whenReady(() => {
+      map.invalidateSize({ animate: false });
+      const bounds = L.latLng(centerLat, centerLng).toBounds(radiusM * 2);
+      map.fitBounds(bounds, {
+        animate: true,
+        duration: 0.5,
+        padding: [5, 5],
+        maxZoom: 18,
+      });
     });
     setTimeout(() => {
       programmaticMoveRef.current = false;

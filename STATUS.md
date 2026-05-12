@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-12 23:12 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
+_Last updated: **2026-05-12 23:27 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- d2b5436 fix(ui): 8 ajustes — nav verde+anclado, mapa con header y auto-fit, onboarding radar, badges intercambio activo _(36 minutes ago)_
+- f5d7127 fix(ui): nav compact + radar popup banner + radius dropdown + 2% map padding _(16 minutes ago)_
+- d2b5436 fix(ui): 8 ajustes — nav verde+anclado, mapa con header y auto-fit, onboarding radar, badges intercambio activo _(52 minutes ago)_
 - 090d166 fix(trades): refresh router + cromo numbers + clarify 2-step flow _(2 hours ago)_
 - a0e6477 feat(trades): buzón de intercambios con 4 tabs + badge en álbum _(2 hours ago)_
 - 4606b0d fix(layout): bottom nav en flujo normal con flex column h-dvh _(9 hours ago)_
-- 972619f fix(bottomnav): anclar al visualViewport para evitar gap en iOS _(9 hours ago)_
+- 972619f fix(bottomnav): anclar al visualViewport para evitar gap en iOS _(10 hours ago)_
 - 275cf43 fix: skeleton mapa sin pulse + radar más lento + selección vacía bloquea + sin ★ _(12 hours ago)_
 - 337c518 feat: quick wins no-visuales + avatar uniforme verde + nav estable _(12 hours ago)_
-- ad57ef5 perf(hooks): cross-navigation cache for user, collection and favourites _(26 hours ago)_
+- ad57ef5 perf(hooks): cross-navigation cache for user, collection and favourites _(27 hours ago)_
 - da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(27 hours ago)_
 - ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(33 hours ago)_
 - b7e8c8b style(match): trade button matches the contacts flag treatment _(33 hours ago)_
 - a0f5ae9 style(ui): square radius across buttons + simplify trade button _(34 hours ago)_
 - dc3481f fix(chat): strip stale state/meeting/rating UI from chat list _(34 hours ago)_
-- b786ca7 feat(trades): trade requests replace meeting/rating, chat is now pure _(34 hours ago)_
-- 5f34238 chore(deploy): retrigger production build for chat journey UI _(35 hours ago)_
+- b786ca7 feat(trades): trade requests replace meeting/rating, chat is now pure _(35 hours ago)_
 <!-- AUTO:COMMITS:END -->
