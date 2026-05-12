@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-12 06:55 UTC** · branch `feat/ui-redesign`_
+_Last updated: **2026-05-12 06:56 UTC** · branch `feat/ui-redesign`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,6 +140,7 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
+- f613d3a docs(redesign): Fase 2 - 3 direcciones visuales (texto) _(38 seconds ago)_
 - 8e4d6f5 docs(redesign): Fase 1 - análisis del logo + auditoría UX/UI/PWA/OSM _(26 minutes ago)_
 - ad57ef5 perf(hooks): cross-navigation cache for user, collection and favourites _(10 hours ago)_
 - da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(10 hours ago)_
@@ -154,5 +155,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - ca87214 chore(deploy): retrigger production build (#34) _(20 hours ago)_
 - 74b37eb fix(contactos): compute recibes/entregas pairwise from stickers (#33) _(20 hours ago)_
 - b2de1c9 fix(nav): bottom/side nav no longer slides on route change (#32) _(20 hours ago)_
-- 531b5bf feat(contactos): rename header, show visible name, add album stats per row (#31) _(20 hours ago)_
 <!-- AUTO:COMMITS:END -->

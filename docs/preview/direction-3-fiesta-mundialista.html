@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cromio · Dirección 3 — Fiesta mundialista</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400..900&family=Manrope:wght@400..800&family=JetBrains+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --brand-500: #1fae5a;
+        --accent-red: #e5006d;
+        --accent-blue: #1e78ff;
+        --accent-gold: #f5c518;
+        --accent-orange: #ef8c20;
+        --accent-violet: #7c3bff;
+        --n-50: #f8f8fa;
+        --n-100: #efeff2;
+        --ink-900: #0e0f12;
+        --ink-500: #5a5c66;
+        --line: #e3e3e8;
+        --display: "Cabinet Grotesk", "Manrope", system-ui, sans-serif;
+        --text: "Manrope", system-ui, sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: var(--n-50);
+        color: var(--ink-900);
+        font-family: var(--text);
+        min-height: 100dvh;
+        overflow-x: hidden;
+      }
+      body {
+        padding: 32px 20px 96px;
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .h-eyebrow {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--accent-red);
+        font-weight: 800;
+      }
+      h1 {
+        font-family: var(--display);
+        font-size: clamp(40px, 11vw, 76px);
+        font-weight: 800;
+        line-height: 0.95;
+        margin-top: 8px;
+        letter-spacing: -0.03em;
+      }
+      h1 .word-1 { color: var(--ink-900); }
+      h1 .word-2 { color: var(--brand-500); }
+      h1 .word-3 { color: var(--accent-blue); }
+      h2 {
+        font-family: var(--display);
+        font-size: 24px;
+        font-weight: 700;
+        margin-top: 40px;
+        margin-bottom: 16px;
+        letter-spacing: -0.02em;
+      }
+      .sub {
+        margin-top: 14px;
+        color: var(--ink-500);
+        max-width: 56ch;
+      }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+      }
+      .swatch {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        background: white;
+      }
+      .swatch .chip {
+        height: 64px;
+      }
+      .swatch .meta {
+        padding: 10px 12px 12px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .swatch .meta strong {
+        display: block;
+        font-family: var(--mono);
+        font-weight: 600;
+      }
+      .swatch .meta span {
+        color: var(--ink-500);
+      }
+      /* Cromos: planos, color sólido del país */
+      .cromo-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        max-width: 440px;
+      }
+      .cromo {
+        position: relative;
+        aspect-ratio: 78 / 110;
+        border-radius: 14px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        overflow: hidden;
+        color: white;
+      }
+      .cromo .code {
+        font-family: var(--display);
+        font-size: 60px;
+        line-height: 0.9;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+      .cromo .pill {
+        background: rgba(255, 255, 255, 0.22);
+        color: white;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        padding: 4px 8px;
+        border-radius: 4px;
+        align-self: flex-start;
+      }
+      .cromo .meta-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 600;
+      }
+      .cromo--arg {
+        background: linear-gradient(180deg, #6ec1e4 0%, #6ec1e4 33%, #ffd60a 33%, #ffd60a 66%, #6ec1e4 66%);
+      }
+      .cromo--bra {
+        background: #009c3b;
+      }
+      .cromo--fra {
+        background: linear-gradient(90deg, #002868 33%, white 33%, white 66%, #ce1126 66%);
+      }
+      .cromo--fra .pill,
+      .cromo--fra .code,
+      .cromo--fra .meta-row {
+        color: #0e0f12;
+      }
+      .cromo--legendary {
+        background: linear-gradient(120deg, #f5c518, #f59e0b, #f5c518);
+        color: #1a1500;
+      }
+      .cromo--legendary .pill {
+        background: rgba(0, 0, 0, 0.15);
+        color: #1a1500;
+      }
+      .cromo--legendary .meta-row {
+        color: rgba(0, 0, 0, 0.6);
+      }
+      /* Mapa Positron + pines país-coloreados */
+      .map-bg {
+        background: #f7f5f1;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 24px;
+        overflow: hidden;
+        position: relative;
+        height: 280px;
+        background-image:
+          linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+        background-size: 28px 28px;
+      }
+      .pin {
+        position: absolute;
+        width: 44px;
+        height: 58px;
+      }
+      .pin .body {
+        position: absolute;
+        inset: 0;
+        border-radius: 50% 50% 50% 8px / 50% 50% 50% 8px;
+        transform: rotate(-45deg);
+        overflow: hidden;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+      .pin--arg .body {
+        background: linear-gradient(0deg, #6ec1e4 33%, #ffd60a 33%, #ffd60a 66%, #6ec1e4 66%);
+      }
+      .pin--bra .body {
+        background: #009c3b;
+      }
+      .pin--fra .body {
+        background: linear-gradient(90deg, #002868 33%, white 33%, white 66%, #ce1126 66%);
+      }
+      .pin .avatar {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        top: 9px;
+        left: 9px;
+        border-radius: 50%;
+        background: white;
+        display: grid;
+        place-items: center;
+        font-family: var(--display);
+        font-weight: 800;
+        font-size: 10px;
+        color: var(--ink-900);
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      .pin-1 {
+        top: 18%;
+        left: 22%;
+      }
+      .pin-2 {
+        top: 36%;
+        left: 60%;
+      }
+      .pin-3 {
+        top: 60%;
+        left: 38%;
+      }
+      .me-dot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--brand-500);
+        box-shadow:
+          0 0 0 4px rgba(31, 174, 90, 0.25),
+          0 0 0 16px rgba(31, 174, 90, 0.1);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .btn {
+        height: 48px;
+        padding: 0 24px;
+        border-radius: 14px;
+        font-family: var(--display);
+        font-weight: 800;
+        font-size: 15px;
+        border: 0;
+        cursor: pointer;
+        letter-spacing: -0.01em;
+      }
+      .btn--primary {
+        background: var(--ink-900);
+        color: white;
+      }
+      .btn--accent {
+        background: var(--accent-red);
+        color: white;
+      }
+      .btn--ghost {
+        background: white;
+        color: var(--ink-900);
+        border: 1.5px solid var(--line);
+      }
+      .btn--icon {
+        width: 48px;
+        padding: 0;
+        background: white;
+        border: 1.5px solid var(--line);
+        display: grid;
+        place-items: center;
+        color: var(--brand-500);
+        font-size: 18px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 36px;
+        padding: 0 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        background: white;
+        color: var(--ink-900);
+        border: 1.5px solid var(--line);
+      }
+      .chip--active {
+        background: var(--accent-red);
+        color: white;
+        border-color: var(--accent-red);
+      }
+      .note {
+        color: var(--ink-500);
+        font-size: 12px;
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="h-eyebrow">Dirección 3</p>
+    <h1><span class="word-1">Fiesta</span><br /><span class="word-2">mundi</span><span class="word-3">alista.</span></h1>
+    <p class="sub">
+      Verde marca + 5 acentos derivados de las selecciones (rojo, azul, dorado, naranja, violeta). Pines coloreados con la
+      paleta del país favorito. Tipografía Cabinet Grotesk geométrica, gestos de celebración integrados. Muy social.
+    </p>
+
+    <h2>Paleta</h2>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background: #1fae5a"></div><div class="meta"><strong>#1FAE5A</strong><span>brand.500</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #e5006d"></div><div class="meta"><strong>#E5006D</strong><span>accent.red</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #1e78ff"></div><div class="meta"><strong>#1E78FF</strong><span>accent.blue</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #f5c518"></div><div class="meta"><strong>#F5C518</strong><span>accent.gold</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #ef8c20"></div><div class="meta"><strong>#EF8C20</strong><span>accent.orange</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #7c3bff"></div><div class="meta"><strong>#7C3BFF</strong><span>accent.violet — Pro</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #0e0f12"></div><div class="meta"><strong>#0E0F12</strong><span>ink.900</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #5a5c66"></div><div class="meta"><strong>#5A5C66</strong><span>ink.500</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #efeff2"></div><div class="meta"><strong>#EFEFF2</strong><span>neutral.100</span></div></div>
+    </div>
+
+    <h2>Mapa + pines por selección</h2>
+    <div class="map-bg">
+      <div class="pin pin-1 pin--arg"><div class="body"></div><div class="avatar">DE</div></div>
+      <div class="pin pin-2 pin--bra"><div class="body"></div><div class="avatar">PA</div></div>
+      <div class="pin pin-3 pin--fra"><div class="body"></div><div class="avatar">CF</div></div>
+      <div class="me-dot"></div>
+    </div>
+
+    <h2>Cromos por selección</h2>
+    <div class="cromo-grid">
+      <div class="cromo cromo--arg">
+        <span class="pill">Jugador</span>
+        <span class="code">ARG10</span>
+        <div class="meta-row"><span>Argentina</span><span>FWD</span></div>
+      </div>
+      <div class="cromo cromo--legendary">
+        <span class="pill">Legendario</span>
+        <span class="code">FRA20</span>
+        <div class="meta-row"><span>Francia</span><span>FWD</span></div>
+      </div>
+      <div class="cromo cromo--bra">
+        <span class="pill">Repe ×2</span>
+        <span class="code">BRA15</span>
+        <div class="meta-row"><span>Brasil</span><span>MID</span></div>
+      </div>
+      <div class="cromo cromo--fra">
+        <span class="pill">Equipo</span>
+        <span class="code">FRA2</span>
+        <div class="meta-row"><span>Francia</span><span>—</span></div>
+      </div>
+    </div>
+
+    <h2>Botones + chips</h2>
+    <div class="row">
+      <button class="btn btn--primary">Iniciar chat</button>
+      <button class="btn btn--accent">¡Acepto!</button>
+      <button class="btn btn--ghost">Ir al chat</button>
+      <button class="btn btn--icon" title="Intercambiar">↕</button>
+    </div>
+    <div class="row">
+      <span class="chip chip--active">Selecciones · 248</span>
+      <span class="chip">Especiales · 17</span>
+      <span class="chip">Estadios · 3</span>
+    </div>
+
+    <p class="note">Cabinet Grotesk Variable display · Manrope Variable body · JetBrains Mono data.</p>
+  </body>
+</html>

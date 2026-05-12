@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cromio · Dirección 2 — Álbum vivo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Public+Sans:wght@400..900&family=JetBrains+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --brand-50: #e8f8ee;
+        --brand-100: #cdefd9;
+        --brand-500: #1fae5a;
+        --brand-600: #179049;
+        --paper: #f6f1e6;
+        --bone: #fdfbf5;
+        --line: #e0d9c8;
+        --ink-900: #1a1614;
+        --ink-500: #5c544b;
+        --gold: #c58f0f;
+        --give: #d7263d;
+        --lead: #1659d6;
+        --display: "Bebas Neue", sans-serif;
+        --text: "Public Sans", system-ui, sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        background: var(--paper);
+        color: var(--ink-900);
+        font-family: var(--text);
+        min-height: 100dvh;
+        overflow-x: hidden;
+      }
+      body {
+        padding: 32px 20px 96px;
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .h-eyebrow {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--brand-600);
+        font-weight: 800;
+      }
+      h1 {
+        font-family: var(--display);
+        font-size: clamp(48px, 12vw, 88px);
+        line-height: 0.9;
+        margin-top: 6px;
+        letter-spacing: 0.01em;
+      }
+      h2 {
+        font-family: var(--display);
+        font-size: 28px;
+        margin-top: 40px;
+        margin-bottom: 16px;
+        letter-spacing: 0.02em;
+      }
+      .sub {
+        margin-top: 14px;
+        color: var(--ink-500);
+        max-width: 56ch;
+      }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+      }
+      .swatch {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--bone);
+      }
+      .swatch .chip {
+        height: 64px;
+      }
+      .swatch .meta {
+        padding: 10px 12px 12px;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+      .swatch .meta strong {
+        display: block;
+        font-family: var(--mono);
+        font-weight: 600;
+      }
+      .swatch .meta span {
+        color: var(--ink-500);
+      }
+      .cromo-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        max-width: 440px;
+      }
+      .cromo {
+        position: relative;
+        aspect-ratio: 78 / 110;
+        background: var(--bone);
+        border: 2px solid var(--line);
+        border-radius: 12px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transform: rotate(-0.5deg);
+        box-shadow:
+          0 1px 0 rgba(0, 0, 0, 0.04),
+          0 6px 14px rgba(31, 22, 16, 0.08);
+      }
+      .cromo:nth-child(even) {
+        transform: rotate(0.4deg);
+      }
+      .cromo .code {
+        font-family: var(--display);
+        font-size: 56px;
+        line-height: 1;
+        color: var(--ink-900);
+        letter-spacing: 0.02em;
+      }
+      .cromo .meta-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        font-size: 12px;
+        color: var(--ink-500);
+      }
+      .cromo .pill {
+        background: var(--brand-100);
+        color: var(--brand-600);
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
+      .cromo--legendary {
+        border-color: var(--gold);
+        background:
+          linear-gradient(120deg, rgba(245, 215, 100, 0.15), transparent 40%) var(--bone);
+      }
+      .cromo--legendary .pill {
+        background: rgba(197, 143, 15, 0.2);
+        color: var(--gold);
+      }
+      .cromo--repe {
+        background: linear-gradient(180deg, rgba(215, 38, 61, 0.06), var(--bone));
+      }
+      .cromo--repe::after {
+        content: "×2";
+        position: absolute;
+        top: -10px;
+        right: -10px;
+        background: var(--give);
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-family: var(--display);
+        font-size: 16px;
+        box-shadow: 0 4px 10px rgba(215, 38, 61, 0.3);
+      }
+      /* Mapa estilo Positron */
+      .map-bg {
+        background: #f7f5f1;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 24px;
+        overflow: hidden;
+        position: relative;
+        height: 280px;
+        background-image:
+          linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+        background-size: 28px 28px;
+      }
+      .pin {
+        position: absolute;
+        width: 56px;
+        height: 64px;
+      }
+      .pin .sticker {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: var(--bone);
+        border: 3px solid var(--brand-500);
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-family: var(--display);
+        font-size: 18px;
+        color: var(--ink-900);
+        box-shadow: 0 4px 10px rgba(31, 22, 16, 0.15);
+      }
+      .pin .tail {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 10px solid var(--brand-500);
+      }
+      .pin--lead .sticker {
+        border-color: var(--lead);
+      }
+      .pin--lead .tail {
+        border-top-color: var(--lead);
+      }
+      .pin--gold .sticker {
+        border-color: var(--gold);
+      }
+      .pin--gold .tail {
+        border-top-color: var(--gold);
+      }
+      .pin-1 {
+        top: 18%;
+        left: 22%;
+      }
+      .pin-2 {
+        top: 36%;
+        left: 60%;
+      }
+      .pin-3 {
+        top: 60%;
+        left: 38%;
+      }
+      .me-dot {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--brand-500);
+        box-shadow:
+          0 0 0 4px var(--brand-100),
+          0 0 0 16px rgba(31, 174, 90, 0.12);
+      }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .btn {
+        height: 48px;
+        padding: 0 24px;
+        border-radius: 12px;
+        font-family: var(--display);
+        font-size: 18px;
+        letter-spacing: 0.04em;
+        border: 0;
+        cursor: pointer;
+      }
+      .btn--primary {
+        background: var(--brand-500);
+        color: white;
+      }
+      .btn--ghost {
+        background: var(--bone);
+        color: var(--ink-900);
+        border: 1.5px solid var(--line);
+      }
+      .btn--icon {
+        width: 48px;
+        padding: 0;
+        background: var(--bone);
+        border: 1.5px solid var(--line);
+        display: grid;
+        place-items: center;
+        color: var(--brand-600);
+        font-size: 18px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 36px;
+        padding: 0 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 700;
+        background: var(--bone);
+        color: var(--ink-900);
+        border: 1.5px solid var(--line);
+      }
+      .chip--active {
+        background: var(--ink-900);
+        color: white;
+        border-color: var(--ink-900);
+      }
+      .note {
+        color: var(--ink-500);
+        font-size: 12px;
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="h-eyebrow">Dirección 2</p>
+    <h1>Álbum<br />vivo.</h1>
+    <p class="sub">
+      Light primario sobre papel cálido. Verde de marca como acento. CartoDB Positron como base del mapa. Cromos
+      como stickers físicos con ligera inclinación. Nostálgico-moderno, "tu álbum de toda la vida".
+    </p>
+
+    <h2>Paleta</h2>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background: #1fae5a"></div><div class="meta"><strong>#1FAE5A</strong><span>brand.500</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #179049"></div><div class="meta"><strong>#179049</strong><span>brand.600</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #cdefd9"></div><div class="meta"><strong>#CDEFD9</strong><span>brand.100 — chip match</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #f6f1e6"></div><div class="meta"><strong>#F6F1E6</strong><span>paper — bg</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #fdfbf5"></div><div class="meta"><strong>#FDFBF5</strong><span>bone — cards</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #e0d9c8"></div><div class="meta"><strong>#E0D9C8</strong><span>line</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #1a1614"></div><div class="meta"><strong>#1A1614</strong><span>ink.900 — texto</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #5c544b"></div><div class="meta"><strong>#5C544B</strong><span>ink.500 — texto 2</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #c58f0f"></div><div class="meta"><strong>#C58F0F</strong><span>gold mate</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #d7263d"></div><div class="meta"><strong>#D7263D</strong><span>give</span></div></div>
+      <div class="swatch"><div class="chip" style="background: #1659d6"></div><div class="meta"><strong>#1659D6</strong><span>lead</span></div></div>
+    </div>
+
+    <h2>Mapa + pines</h2>
+    <div class="map-bg">
+      <div class="pin pin-1"><div class="sticker">DE</div><div class="tail"></div></div>
+      <div class="pin pin-2 pin--lead"><div class="sticker">PA</div><div class="tail"></div></div>
+      <div class="pin pin-3 pin--gold"><div class="sticker">CF</div><div class="tail"></div></div>
+      <div class="me-dot"></div>
+    </div>
+
+    <h2>Cromos</h2>
+    <div class="cromo-grid">
+      <div class="cromo">
+        <span class="pill">Jugador</span>
+        <span class="code">ARG10</span>
+        <div class="meta-row"><span>Argentina</span><span>FWD</span></div>
+      </div>
+      <div class="cromo cromo--legendary">
+        <span class="pill">Legendario</span>
+        <span class="code">FRA20</span>
+        <div class="meta-row"><span>Francia</span><span>FWD</span></div>
+      </div>
+      <div class="cromo cromo--repe">
+        <span class="pill">Selecciones</span>
+        <span class="code">BRA15</span>
+        <div class="meta-row"><span>Brasil</span><span>MID</span></div>
+      </div>
+      <div class="cromo">
+        <span class="pill">Estadio</span>
+        <span class="code">FWC6</span>
+        <div class="meta-row"><span>Canadá</span><span>—</span></div>
+      </div>
+    </div>
+
+    <h2>Botones + chips</h2>
+    <div class="row">
+      <button class="btn btn--primary">Iniciar chat</button>
+      <button class="btn btn--ghost">Ir al chat</button>
+      <button class="btn btn--icon" title="Intercambiar">↕</button>
+    </div>
+    <div class="row">
+      <span class="chip chip--active">Selecciones · 248</span>
+      <span class="chip">Especiales · 17</span>
+      <span class="chip">Estadios · 3</span>
+    </div>
+
+    <p class="note">Bebas Neue display · Public Sans Variable body · JetBrains Mono data.</p>
+  </body>
+</html>
