@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cromio · Mockup — Álbum</title>
+    <link rel="stylesheet" href="_tokens.css" />
+    <link rel="stylesheet" href="_components.css" />
+    <style>
+      .mockup-frame { padding: 0 0 96px; }
+      .album-header {
+        padding: max(var(--space-8), env(safe-area-inset-top)) var(--space-5) var(--space-3);
+      }
+      .album-eyebrow { color: var(--text-tertiary); font-size: var(--text-2xs); letter-spacing: 0.18em; text-transform: uppercase; font-weight: var(--fw-bold); }
+      .album-title {
+        font-family: var(--font-display);
+        font-size: var(--text-3xl);
+        font-weight: var(--fw-black);
+        line-height: 1;
+        margin: var(--space-1) 0 var(--space-3);
+      }
+
+      .progress-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+      }
+      .progress-row {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
+      }
+      .progress-row .big {
+        font-family: var(--font-display);
+        font-size: 44px;
+        font-weight: var(--fw-black);
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+      }
+      .progress-row .sep { font-family: var(--font-display); color: var(--text-tertiary); font-size: var(--text-xl); }
+      .progress-row .pct {
+        margin-left: auto;
+        font-family: var(--font-display);
+        font-size: var(--text-2xl);
+        color: var(--brand-300);
+        font-weight: var(--fw-black);
+      }
+      .progress-bar {
+        height: 6px;
+        background: var(--bg-overlay);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--brand-700), var(--brand-400));
+        border-radius: inherit;
+      }
+      .progress-stats {
+        margin-top: var(--space-3);
+        display: flex;
+        gap: var(--space-4);
+        font-size: var(--text-sm);
+        color: var(--text-secondary);
+      }
+      .progress-stats strong { color: var(--text-primary); }
+
+      .tabs {
+        display: flex;
+        gap: var(--space-1);
+        padding: 0 var(--space-5);
+        margin: var(--space-5) 0 var(--space-3);
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .tabs::-webkit-scrollbar { display: none; }
+
+      .countries-row {
+        display: flex;
+        gap: var(--space-2);
+        padding: 0 var(--space-5);
+        margin-bottom: var(--space-3);
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .countries-row::-webkit-scrollbar { display: none; }
+      .countries-row .chip {
+        height: 36px;
+        padding: 0 var(--space-3);
+        font-size: var(--text-xs);
+        flex-shrink: 0;
+      }
+
+      .album-grid {
+        padding: 0 var(--space-3);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-2);
+      }
+
+      /* Microcelebración mock (no triggered) */
+      .complete-toast {
+        position: fixed;
+        top: 80px;
+        left: var(--space-3);
+        right: var(--space-3);
+        max-width: 406px;
+        margin: 0 auto;
+        background: var(--success-bg);
+        color: var(--brand-300);
+        border: 1px solid var(--brand-400);
+        border-radius: var(--radius-md);
+        padding: var(--space-3);
+        font-size: var(--text-sm);
+        font-weight: var(--fw-bold);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        z-index: 60;
+        box-shadow: var(--shadow-glow-brand);
+      }
+    </style>
+  </head>
+  <body>
+    <button class="mockup-theme-toggle" id="themeToggle">DARK</button>
+
+    <main class="mockup-frame">
+      <header class="album-header">
+        <p class="album-eyebrow">Cromio · Mundial 2026</p>
+        <h1 class="album-title">Tu álbum</h1>
+
+        <div class="progress-card">
+          <div class="progress-row">
+            <span class="big tabular">412</span>
+            <span class="sep">/ 980</span>
+            <span class="pct tabular">42.0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar-fill" style="width: 42%"></div>
+          </div>
+          <div class="progress-stats">
+            <span><strong class="tabular">38</strong> repes</span>
+            <span><strong class="tabular">568</strong> faltan</span>
+            <span style="margin-left: auto; color: var(--brand-300);"><strong>+2</strong> esta semana</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="tabs">
+        <button class="chip is-active">Selecciones <span class="chip-count">248</span></button>
+        <button class="chip">Especiales <span class="chip-count">10</span></button>
+        <button class="chip">Estadios <span class="chip-count">3</span></button>
+      </div>
+
+      <div class="countries-row">
+        <button class="chip">Todos</button>
+        <button class="chip">🇦🇷 ARG</button>
+        <button class="chip is-active">🇧🇷 BRA</button>
+        <button class="chip">🇪🇸 ESP</button>
+        <button class="chip">🇫🇷 FRA</button>
+        <button class="chip">🇲🇽 MEX</button>
+        <button class="chip">🇺🇸 USA</button>
+      </div>
+
+      <div class="album-grid">
+        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Escudo</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA1</span><span class="cromo-bottom"><span>Brasil</span><span>—</span></span></div>
+        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Equipo</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA2</span><span class="cromo-bottom"><span>Brasil</span><span>—</span></span></div>
+        <div class="cromo" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA3</span><span class="cromo-bottom"><span>Brasil</span><span>×2</span></span></div>
+
+        <div class="cromo" data-state="empty"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA4</span><span class="cromo-bottom"><span>Brasil</span><span>GK</span></span></div>
+        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA5</span><span class="cromo-bottom"><span>Brasil</span><span>DEF</span></span></div>
+        <div class="cromo" data-state="empty"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA6</span><span class="cromo-bottom"><span>Brasil</span><span>DEF</span></span></div>
+
+        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA7</span><span class="cromo-bottom"><span>Brasil</span><span>MID</span></span></div>
+        <div class="cromo" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA8</span><span class="cromo-bottom"><span>Brasil</span><span>×3</span></span></div>
+        <div class="cromo" data-state="empty"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA9</span><span class="cromo-bottom"><span>Brasil</span><span>MID</span></span></div>
+
+        <div class="cromo" data-state="owned" data-rarity="legendary"><span class="cromo-top"><span class="cromo-pill">Legend</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA20</span><span class="cromo-bottom"><span>Brasil</span><span>FWD</span></span></div>
+        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA10</span><span class="cromo-bottom"><span>Brasil</span><span>FWD</span></span></div>
+        <div class="cromo" data-state="empty"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA11</span><span class="cromo-bottom"><span>Brasil</span><span>FWD</span></span></div>
+      </div>
+
+      <div class="complete-toast" id="toast" style="display:none;">
+        <span>🎉</span>
+        <span>¡Has completado Brasil! +1 grupo lleno</span>
+      </div>
+    </main>
+
+    <script>
+      const toggle = document.getElementById("themeToggle");
+      const setTheme = (t) => {
+        document.documentElement.setAttribute("data-theme", t);
+        toggle.textContent = t.toUpperCase();
+      };
+      toggle.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        setTheme(cur === "dark" ? "light" : "dark");
+      });
+      setTheme("dark");
+    </script>
+  </body>
+</html>

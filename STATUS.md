@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-12 07:44 UTC** · branch `feat/ui-redesign-retry`_
+_Last updated: **2026-05-12 07:59 UTC** · branch `feat/ui-redesign-retry`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,12 +140,13 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 2bd9034 docs(redesign): Fase 2 - previews HTML por dirección _(48 minutes ago)_
-- f613d3a docs(redesign): Fase 2 - 3 direcciones visuales (texto) _(48 minutes ago)_
-- 8e4d6f5 docs(redesign): Fase 1 - análisis del logo + auditoría UX/UI/PWA/OSM _(74 minutes ago)_
+- cd3becf docs(redesign): Fase 3 - sistema de diseño + tokens + mockups full-screen _(16 minutes ago)_
+- 2bd9034 docs(redesign): Fase 2 - previews HTML por dirección _(63 minutes ago)_
+- f613d3a docs(redesign): Fase 2 - 3 direcciones visuales (texto) _(64 minutes ago)_
+- 8e4d6f5 docs(redesign): Fase 1 - análisis del logo + auditoría UX/UI/PWA/OSM _(2 hours ago)_
 - ad57ef5 perf(hooks): cross-navigation cache for user, collection and favourites _(11 hours ago)_
-- da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(11 hours ago)_
-- ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(17 hours ago)_
+- da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(12 hours ago)_
+- ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(18 hours ago)_
 - b7e8c8b style(match): trade button matches the contacts flag treatment _(18 hours ago)_
 - a0f5ae9 style(ui): square radius across buttons + simplify trade button _(18 hours ago)_
 - dc3481f fix(chat): strip stale state/meeting/rating UI from chat list _(19 hours ago)_
@@ -154,5 +155,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - 37a5f10 feat(chat): surface meeting + rating journey on chat list cards (#35) _(20 hours ago)_
 - 9ffa742 docs(contactos): document why match counts are computed pairwise _(20 hours ago)_
 - ca87214 chore(deploy): retrigger production build (#34) _(21 hours ago)_
-- 74b37eb fix(contactos): compute recibes/entregas pairwise from stickers (#33) _(21 hours ago)_
 <!-- AUTO:COMMITS:END -->

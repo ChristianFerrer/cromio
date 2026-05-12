@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cromio · Mockup — Detalle de coleccionista (Match)</title>
+    <link rel="stylesheet" href="_tokens.css" />
+    <link rel="stylesheet" href="_components.css" />
+    <style>
+      .mockup-frame { padding: 0 0 120px; }
+
+      .match-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: max(var(--space-8), env(safe-area-inset-top)) var(--space-3) var(--space-2);
+      }
+      .match-eyebrow {
+        font-family: var(--font-display);
+        font-size: var(--text-xl);
+        font-weight: var(--fw-black);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .match-id {
+        padding: 0 var(--space-5) var(--space-3);
+        display: flex;
+        gap: var(--space-3);
+        align-items: center;
+      }
+      .match-id .body { flex: 1; min-width: 0; }
+      .match-id .alias {
+        font-family: var(--font-display);
+        font-size: var(--text-2xl);
+        font-weight: var(--fw-black);
+        line-height: 1;
+      }
+      .match-id .meta {
+        margin-top: var(--space-1);
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+      }
+      .match-id .meta strong {
+        color: var(--text-primary);
+        font-family: var(--font-mono);
+        font-weight: var(--fw-bold);
+      }
+      .match-avatar {
+        flex-shrink: 0;
+        width: 56px; height: 56px;
+        border-radius: 50%;
+        background: var(--brand-700);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-display);
+        font-size: var(--text-lg);
+        font-weight: var(--fw-black);
+        color: var(--text-primary);
+        box-shadow: var(--shadow-glow-brand);
+      }
+
+      .progress-block {
+        padding: 0 var(--space-5);
+      }
+      .progress-label {
+        font-size: var(--text-2xs);
+        font-weight: var(--fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--text-tertiary);
+        margin-bottom: var(--space-1);
+      }
+      .progress-row {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-2);
+      }
+      .progress-big {
+        font-family: var(--font-display);
+        font-size: 40px;
+        font-weight: var(--fw-black);
+        line-height: 0.9;
+        letter-spacing: -0.03em;
+      }
+      .progress-sep { color: var(--text-tertiary); font-size: var(--text-base); }
+      .progress-pct { margin-left: auto; color: var(--brand-300); font-size: var(--text-lg); font-family: var(--font-display); font-weight: var(--fw-bold); }
+      .progress-bar {
+        margin-top: var(--space-2);
+        height: 6px;
+        background: var(--bg-overlay);
+        border-radius: var(--radius-full);
+        overflow: hidden;
+      }
+      .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--brand-700), var(--brand-400));
+      }
+      .progress-stats {
+        margin-top: var(--space-2);
+        display: flex;
+        gap: var(--space-4);
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+      }
+      .progress-stats strong { color: var(--text-primary); font-family: var(--font-mono); }
+
+      .match-banner {
+        margin: var(--space-4) 0 0;
+        background: linear-gradient(135deg, var(--brand-700), var(--brand-500));
+        padding: var(--space-4) var(--space-5);
+        display: grid;
+        grid-template-columns: 1fr 1px 1fr;
+        gap: var(--space-3);
+        align-items: center;
+      }
+      .match-banner .col {
+        display: flex;
+        align-items: baseline;
+        gap: var(--space-2);
+        color: white;
+      }
+      .match-banner .col .triangle { font-size: 16px; }
+      .match-banner .col .triangle-down { color: var(--brand-300); }
+      .match-banner .col .triangle-up { color: var(--match-give); }
+      .match-banner .col .label {
+        font-size: var(--text-2xs);
+        font-weight: var(--fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        opacity: 0.9;
+      }
+      .match-banner .col .count {
+        font-family: var(--font-display);
+        font-size: var(--text-2xl);
+        font-weight: var(--fw-black);
+      }
+      .match-banner .sep {
+        height: 60%;
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .match-section {
+        padding: var(--space-5);
+      }
+      .match-section h3 {
+        font-family: var(--font-display);
+        font-size: var(--text-base);
+        font-weight: var(--fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: var(--space-3);
+        color: var(--text-secondary);
+      }
+      .match-section h3 .tip {
+        color: var(--text-tertiary);
+        font-size: var(--text-2xs);
+        font-weight: var(--fw-medium);
+        letter-spacing: 0;
+        text-transform: none;
+        margin-left: var(--space-2);
+      }
+
+      .cromos-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-2);
+      }
+
+      .match-cta {
+        position: fixed;
+        bottom: 0;
+        left: 0; right: 0;
+        z-index: 50;
+        background: rgba(14, 18, 15, 0.92);
+        backdrop-filter: blur(var(--blur-md));
+        border-top: 1px solid var(--border-subtle);
+        padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+        display: flex;
+        gap: var(--space-2);
+        max-width: 430px;
+        margin: 0 auto;
+      }
+      [data-theme="light"] .match-cta { background: rgba(255, 255, 255, 0.92); }
+
+      .trade-button {
+        position: relative;
+        width: 56px; height: 56px;
+        flex-shrink: 0;
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border-default);
+        border-radius: var(--radius-md);
+        display: grid;
+        place-items: center;
+        color: var(--brand-300);
+        cursor: pointer;
+        font-size: 22px;
+      }
+      .trade-button svg { transform: rotate(90deg); }
+      .trade-button .dot {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--danger);
+        border: 2px solid var(--bg-surface);
+        animation: cromio-badge-pop 280ms var(--ease-bounce);
+      }
+    </style>
+  </head>
+  <body>
+    <button class="mockup-theme-toggle" id="themeToggle">DARK</button>
+
+    <main class="mockup-frame">
+      <div class="match-top">
+        <button class="icon-btn" title="Atrás">‹</button>
+        <span class="match-eyebrow">Match</span>
+        <button class="icon-btn" title="Más opciones">⋮</button>
+      </div>
+
+      <div class="match-id">
+        <div class="body">
+          <h1 class="alias">Delia</h1>
+          <p class="meta">≈<strong>1.2km</strong> · <strong>★5</strong> · <strong>0</strong> intercambios</p>
+        </div>
+        <div class="match-avatar">DE</div>
+      </div>
+
+      <section class="progress-block">
+        <p class="progress-label">Progreso de su álbum</p>
+        <div class="progress-row">
+          <span class="progress-big tabular">312</span>
+          <span class="progress-sep">/ 980</span>
+          <span class="progress-pct tabular">31.8%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width: 31.8%"></div></div>
+        <div class="progress-stats">
+          <span><strong>22</strong> repes</span>
+          <span><strong>668</strong> faltan</span>
+        </div>
+      </section>
+
+      <div class="match-banner">
+        <div class="col">
+          <span class="triangle triangle-down">▼</span>
+          <div>
+            <p class="label">Recibes</p>
+            <p class="count tabular">2/4</p>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="col">
+          <span class="triangle triangle-up">▲</span>
+          <div>
+            <p class="label">Entregas</p>
+            <p class="count tabular">3/7</p>
+          </div>
+        </div>
+      </div>
+
+      <section class="match-section">
+        <h3>Cromos que recibes <span class="tip">tap para seleccionar</span></h3>
+        <div class="cromos-row">
+          <div class="cromo cromo-sm" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">ARG10</span><span class="cromo-bottom"><span>ARG</span><span>FWD</span></span></div>
+          <div class="cromo cromo-sm" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Equipo</span></span><span class="cromo-code">ARG2</span><span class="cromo-bottom"><span>ARG</span></span></div>
+          <div class="cromo cromo-sm" data-state="empty" style="opacity:.5"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">BRA9</span><span class="cromo-bottom"><span>BRA</span><span>MID</span></span></div>
+          <div class="cromo cromo-sm" data-state="empty" style="opacity:.5"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">URU5</span><span class="cromo-bottom"><span>URU</span><span>DEF</span></span></div>
+        </div>
+      </section>
+
+      <section class="match-section">
+        <h3>Cromos que entregas <span class="tip">tap para seleccionar</span></h3>
+        <div class="cromos-row">
+          <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">ALG3</span><span class="cromo-bottom"><span>ALG</span><span>×2</span></span></div>
+          <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">ALG5</span><span class="cromo-bottom"><span>ALG</span><span>×2</span></span></div>
+          <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">JPN8</span><span class="cromo-bottom"><span>JPN</span><span>×3</span></span></div>
+        </div>
+      </section>
+
+      <div class="match-cta">
+        <button class="btn btn-primary btn-lg" style="flex: 1;">
+          <span>💬</span><span>Ir al chat</span>
+        </button>
+        <button class="trade-button" aria-label="Intercambiar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 16V4M3 8l4-4 4 4"/>
+            <path d="M17 8v12M21 16l-4 4-4-4"/>
+          </svg>
+          <span class="dot"></span>
+        </button>
+      </div>
+    </main>
+
+    <script>
+      const toggle = document.getElementById("themeToggle");
+      const setTheme = (t) => {
+        document.documentElement.setAttribute("data-theme", t);
+        toggle.textContent = t.toUpperCase();
+      };
+      toggle.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        setTheme(cur === "dark" ? "light" : "dark");
+      });
+      setTheme("dark");
+    </script>
+  </body>
+</html>

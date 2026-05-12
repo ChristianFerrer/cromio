@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cromio · Preview de rediseño</title>
+    <link rel="stylesheet" href="_tokens.css" />
+    <link rel="stylesheet" href="_components.css" />
+    <style>
+      .page {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: var(--space-12) var(--space-5);
+      }
+      h1 {
+        font-family: var(--font-display);
+        font-size: var(--text-3xl);
+        font-weight: var(--fw-black);
+        margin-bottom: var(--space-2);
+      }
+      p.lead {
+        color: var(--text-secondary);
+        margin-bottom: var(--space-8);
+        max-width: 50ch;
+      }
+      h2 {
+        font-family: var(--font-display);
+        font-size: var(--text-xl);
+        font-weight: var(--fw-bold);
+        margin: var(--space-8) 0 var(--space-3);
+      }
+      .grid {
+        display: grid;
+        gap: var(--space-3);
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+      .preview-card {
+        display: block;
+        text-decoration: none;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        color: var(--text-primary);
+        transition: border-color var(--motion-sm), transform var(--motion-sm);
+      }
+      .preview-card:hover {
+        border-color: var(--brand-400);
+        transform: translateY(-2px);
+      }
+      .preview-card .label {
+        font-family: var(--font-display);
+        font-size: var(--text-2xs);
+        font-weight: var(--fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--brand-400);
+      }
+      .preview-card .title {
+        font-family: var(--font-display);
+        font-size: var(--text-lg);
+        font-weight: var(--fw-bold);
+        margin: var(--space-1) 0 var(--space-1);
+      }
+      .preview-card .sub {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        line-height: 1.4;
+      }
+      .legend {
+        margin-top: var(--space-12);
+        padding: var(--space-4);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        line-height: 1.5;
+      }
+      .legend code {
+        font-family: var(--font-mono);
+        font-size: var(--text-2xs);
+        background: var(--bg-overlay);
+        padding: 1px 6px;
+        border-radius: var(--radius-xs);
+      }
+      .toggle {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-full);
+        padding: 6px 12px;
+        font-size: var(--text-2xs);
+        font-weight: var(--fw-bold);
+        color: var(--text-secondary);
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="toggle" id="themeToggle">DARK</button>
+
+    <main class="page">
+      <h1>Cromio · Preview de rediseño</h1>
+      <p class="lead">
+        Mockups standalone de la dirección «Estadio nocturno». Cada
+        mockup tiene su propio toggle dark/light arriba a la derecha.
+      </p>
+
+      <h2>Pantallas full-screen</h2>
+      <div class="grid">
+        <a class="preview-card" href="mockup-onboarding.html">
+          <p class="label">Onboarding</p>
+          <p class="title">Activar radar</p>
+          <p class="sub">Pre-prompt amigable con 3 bullets de objeción antes del prompt nativo.</p>
+        </a>
+        <a class="preview-card" href="mockup-map.html">
+          <p class="label">Mapa</p>
+          <p class="title">Radar dark</p>
+          <p class="sub">CartoDB Dark Matter, pines neón, cluster, radio difuso, sweep, nav glass.</p>
+        </a>
+        <a class="preview-card" href="mockup-album.html">
+          <p class="label">Álbum</p>
+          <p class="title">Tu álbum</p>
+          <p class="sub">Progress card + tabs + grid con empty / owned / repe / legendary foil.</p>
+        </a>
+        <a class="preview-card" href="mockup-match.html">
+          <p class="label">Match</p>
+          <p class="title">Detalle de coleccionista</p>
+          <p class="sub">Header compacto, progreso, Recibes/Entregas, CTA + botón intercambiar.</p>
+        </a>
+        <a class="preview-card" href="mockup-trade.html">
+          <p class="label">Trade</p>
+          <p class="title">Sheet de intercambio</p>
+          <p class="sub">Headers triangle, Aceptar dispara micro-confetti.</p>
+        </a>
+      </div>
+
+      <h2>Direcciones (Fase 2)</h2>
+      <div class="grid">
+        <a class="preview-card" href="direction-1-estadio-nocturno.html">
+          <p class="label">D1 · recomendada</p>
+          <p class="title">Estadio nocturno</p>
+          <p class="sub">Dark primario, Geist Variable, foil legendarios.</p>
+        </a>
+        <a class="preview-card" href="direction-2-album-vivo.html">
+          <p class="label">D2</p>
+          <p class="title">Álbum vivo</p>
+          <p class="sub">Paper cálido, Bebas + Public Sans, stickers físicos.</p>
+        </a>
+        <a class="preview-card" href="direction-3-fiesta-mundialista.html">
+          <p class="label">D3</p>
+          <p class="title">Fiesta mundialista</p>
+          <p class="sub">Verde + 5 acentos, pines coloreados por país.</p>
+        </a>
+      </div>
+
+      <div class="legend">
+        <strong style="color: var(--text-primary);">Cómo leer los mockups</strong><br />
+        Cada mockup es HTML standalone que importa <code>_tokens.css</code> +
+        <code>_components.css</code>. Toggle <code>DARK</code>/<code>LIGHT</code>
+        arriba a la derecha cambia <code>data-theme</code> en <code>&lt;html&gt;</code> —
+        igual que se hará en producción desde <code>/perfil</code>.
+        <br /><br />
+        Nada de esto está en producción todavía: vive en <code>/public/preview/</code>
+        para que puedas validarlo antes de la Fase 4 (implementación).
+      </div>
+    </main>
+
+    <script>
+      const toggle = document.getElementById("themeToggle");
+      const setTheme = (t) => {
+        document.documentElement.setAttribute("data-theme", t);
+        toggle.textContent = t.toUpperCase();
+      };
+      toggle.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        setTheme(cur === "dark" ? "light" : "dark");
+      });
+      setTheme("dark");
+    </script>
+  </body>
+</html>
