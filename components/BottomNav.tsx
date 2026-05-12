@@ -47,17 +47,15 @@ export function BottomNav() {
       // bounce) — el flex column elimina esa dependencia: la nav SIEMPRE
       // queda anclada al fondo del contenedor de altura `h-dvh`.
       style={{
-        // Total = 42px de área de iconos + hasta 10px de safe-area (no más,
-        // así no queda un cinturón blanco grande bajo los iconos en iOS PWA
-        // standalone). El home indicator se renderiza sobre los últimos
-        // 8px del nav — el espacio del label queda libre.
-        height:
-          "calc(42px + min(env(safe-area-inset-bottom), 10px))",
-        paddingBottom: "min(env(safe-area-inset-bottom), 10px)",
+        // Como en la referencia (Whistle): altura compacta fija de 52px
+        // sin reservar safe-area-inset abajo. El home indicator pinta
+        // sobre los últimos ~5px del nav — invisible porque queda bajo
+        // los labels y iOS ya gestiona la opacidad de su pill.
+        height: "52px",
       }}
       className="z-50 w-full shrink-0 border-t border-black/5 bg-white/95 backdrop-blur-xl md:hidden"
     >
-      <ul className="grid h-[42px] grid-cols-5">
+      <ul className="grid h-[52px] grid-cols-5">
         {TABS.map((tab) => {
           const { id, href } = tab;
           const active =
