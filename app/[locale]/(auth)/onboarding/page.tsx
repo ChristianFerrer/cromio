@@ -2,12 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ChevronLeft,
-  MapPin,
-  Loader2,
-  AlertTriangle,
-} from "lucide-react";
+import { ChevronLeft, AlertTriangle } from "lucide-react";
 import { Btn } from "@/components/ui/Btn";
 import { IconBtn } from "@/components/ui/IconBtn";
 import { createClient } from "@/lib/supabase/client";
@@ -208,38 +203,43 @@ function LocationStep({
     { label: "Madrid", coords: [-3.7038, 40.4168] },
     { label: "Valencia", coords: [-0.3763, 39.4699] },
     { label: "Sevilla", coords: [-5.9845, 37.3891] },
-    { label: "Bilbao", coords: [-2.9253, 43.2627] },
-    { label: "México DF", coords: [-99.1332, 19.4326] },
-    { label: "Buenos Aires", coords: [-58.3816, -34.6037] },
-    { label: "Bogotá", coords: [-74.0721, 4.711] },
   ];
 
   return (
-    <div className="flex flex-1 flex-col px-6">
-      <h1 className="font-display text-4xl">¿Dónde coleccionas?</h1>
-      <p className="mt-2 text-sm text-text-2">
-        Cromio empareja por proximidad. Necesitamos una ubicación aproximada — no compartiremos tu calle exacta.
-      </p>
-
-      <div className="mt-6 grid place-items-center rounded-2xl bg-paper py-10">
-        <div className="grid h-20 w-20 place-items-center rounded-full bg-green-500 text-white shadow-sh2">
-          {locating ? (
-            <Loader2 size={36} strokeWidth={2} className="animate-spin" />
-          ) : (
-            <MapPin size={36} strokeWidth={2} />
-          )}
-        </div>
-        <p className="mt-4 px-6 text-center text-sm text-text-2">
-          {coords
-            ? `Capturada (${coords[1].toFixed(3)}, ${coords[0].toFixed(3)})`
-            : locating
-              ? "Detectando…"
-              : "Compartiremos un punto difuso, no tu calle exacta."}
-        </p>
+    <div className="flex flex-1 flex-col px-6 pb-6">
+      {/* Centerpiece: animated radar (sweep + pulse rings on the live
+          cromio-radar-* css classes) — no copy, no chrome. The button is
+          the only call to action. */}
+      <div className="relative my-auto flex aspect-square w-full max-w-[320px] self-center items-center justify-center">
+        <div
+          className="absolute inset-0 rounded-full"
+          style={{
+            background:
+              "radial-gradient(circle, rgba(16,197,106,0.14) 0%, rgba(16,197,106,0.04) 60%, transparent 80%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 rounded-full border border-green-500/25"
+          style={{ boxShadow: "inset 0 0 0 1px rgba(16,197,106,0.08)" }}
+        />
+        <div className="cromio-radar-pulse" />
+        <div className="cromio-radar-pulse cromio-radar-pulse--late" />
+        <div className="cromio-radar-sweep" />
+        <div className="relative z-10 cromio-self-dot" />
+        {locating && (
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-xs uppercase tracking-wider text-green-700">
+            Detectando…
+          </div>
+        )}
+        {coords && !locating && (
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 text-xs font-bold uppercase tracking-wider text-green-700">
+            Ubicación capturada
+          </div>
+        )}
       </div>
 
       {error && (
-        <div className="mt-3 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+        <div className="mt-4 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
           <AlertTriangle size={14} className="mt-0.5 shrink-0" strokeWidth={2.2} />
           <p className="leading-snug">{error}</p>
         </div>
@@ -249,32 +249,35 @@ function LocationStep({
         kind="primaryVibrant"
         full
         size="lg"
-        className="mt-4"
+        className="mt-6"
         onClick={onRequest}
         disabled={locating}
       >
-        {locating ? "Detectando…" : error ? "Reintentar" : "Compartir ubicación"}
+        {locating
+          ? "Detectando…"
+          : coords
+            ? "Continuar"
+            : error
+              ? "Reintentar"
+              : "Activar geolocalización"}
       </Btn>
 
-      <div className="mt-5">
-        <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-text-2">
+      <details className="mt-4 text-center">
+        <summary className="cursor-pointer text-[11px] uppercase tracking-wider text-text-2">
           O elige una ciudad de referencia
-        </p>
-        <div className="grid grid-cols-2 gap-1.5">
+        </summary>
+        <div className="mt-3 grid grid-cols-2 gap-1.5 text-left">
           {CITIES.map((c) => (
             <button
               key={c.label}
               onClick={() => onPickFallback(c.coords)}
-              className="rounded-md border border-line bg-white px-3 py-2.5 text-left text-sm text-text hover:bg-paper"
+              className="rounded-md border border-line bg-white px-3 py-2.5 text-sm text-text"
             >
               {c.label}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-[11px] text-text-2">
-          Podrás corregirla más tarde desde el mapa.
-        </p>
-      </div>
+      </details>
     </div>
   );
 }

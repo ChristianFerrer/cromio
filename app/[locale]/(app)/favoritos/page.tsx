@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 import { fmtDistance } from "@/lib/matches";
 import { TOTAL_STICKERS } from "@/lib/data/stickers";
 import { MatchArrows } from "@/components/match/MatchArrows";
+import { ActiveTradeBadge } from "@/components/trades/ActiveTradeBadge";
 
 type FavRow = {
   id: string;
@@ -334,6 +335,7 @@ export default function FavoritosPage() {
                           Pro
                         </span>
                       )}
+                      <ActiveTradeBadge userId={u.id} />
                     </div>
                     <MatchArrows
                       recibes={u.you_get_count}

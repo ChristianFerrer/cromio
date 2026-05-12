@@ -59,6 +59,9 @@ type NotifContext = {
   totalUnread: number;
   newNearbyCount: number;
   pendingTradesIn: number;
+  /** user_ids that have a pending or accepted trade with me. Used by
+   *  /chat and /favoritos to surface a small swap glyph on rows. */
+  activeTradeWithUsers: Set<string>;
   resetNearbyCount: () => void;
   clearChatUnread: (chatId: string) => void;
 };
@@ -87,6 +90,9 @@ export function NotificationsRoot({
   const [unreadByChat, setUnreadByChat] = useState(initialUnread);
   const [newNearbyCount, setNewNearbyCount] = useState(0);
   const [pendingTradesIn, setPendingTradesIn] = useState(initialPendingTradesIn);
+  const [activeTradeWithUsers, setActiveTradeWithUsers] = useState<Set<string>>(
+    () => new Set(),
+  );
   const [toasts, setToasts] = useState<Toast[]>([]);
   const knownNearbyRef = useRef<Set<string>>(new Set());
   const seenSelfMessages = useRef<Set<string>>(new Set());
@@ -313,12 +319,28 @@ export function NotificationsRoot({
     let debounce: ReturnType<typeof setTimeout> | null = null;
 
     const recount = async () => {
-      const { count } = await supabase
-        .from("trade_requests")
-        .select("id", { count: "exact", head: true })
-        .eq("to_user_id", user.id)
-        .eq("status", "pending");
-      if (!cancelled) setPendingTradesIn(count ?? 0);
+      const [pendingRes, activeRes] = await Promise.all([
+        supabase
+          .from("trade_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("to_user_id", user.id)
+          .eq("status", "pending"),
+        supabase
+          .from("trade_requests")
+          .select("from_user_id, to_user_id, status")
+          .in("status", ["pending", "accepted"])
+          .or(`from_user_id.eq.${user.id},to_user_id.eq.${user.id}`),
+      ]);
+      if (cancelled) return;
+      setPendingTradesIn(pendingRes.count ?? 0);
+      const ids = new Set<string>();
+      for (const r of (activeRes.data ?? []) as Array<{
+        from_user_id: string;
+        to_user_id: string;
+      }>) {
+        ids.add(r.from_user_id === user.id ? r.to_user_id : r.from_user_id);
+      }
+      setActiveTradeWithUsers(ids);
     };
 
     const debounced = () => {
@@ -334,6 +356,10 @@ export function NotificationsRoot({
         debounced,
       )
       .subscribe();
+
+    // initial fetch (separate from the realtime trigger, which only
+    // fires on changes after subscription).
+    void recount();
 
     return () => {
       cancelled = true;
@@ -354,6 +380,7 @@ export function NotificationsRoot({
         totalUnread,
         newNearbyCount,
         pendingTradesIn,
+        activeTradeWithUsers,
         resetNearbyCount,
         clearChatUnread,
       }}

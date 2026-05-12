@@ -68,27 +68,37 @@ export function LeafletMap({
     };
   }, []);
 
-  useEffect(() => {
+  // Auto-fit the radar circle inside the viewport so the perimeter
+  // (and the pulse / sweep that ride on it) never get clipped. We use
+  // fitBounds instead of setView+zoom because it computes the zoom
+  // level dynamically from the container dimensions — the radius prop
+  // wins, not a hardcoded zoom table.
+  const fitRadar = () => {
     const map = mapRef.current;
     if (!map) return;
     programmaticMoveRef.current = true;
-    map.setView([centerLat, centerLng], zoom, { animate: true, duration: 0.5 });
+    const bounds = L.latLng(centerLat, centerLng).toBounds(radiusM * 2);
+    map.fitBounds(bounds, {
+      animate: true,
+      duration: 0.5,
+      padding: [28, 28],
+      maxZoom: 18,
+    });
     setTimeout(() => {
       programmaticMoveRef.current = false;
     }, 600);
-  }, [centerLat, centerLng, zoom]);
+  };
+
+  useEffect(() => {
+    fitRadar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [centerLat, centerLng, radiusM]);
 
   // Force-recenter when the parent bumps the token (user pressed
   // "Centrar en mi ubicación" after panning).
   useEffect(() => {
     if (!recenterToken) return;
-    const map = mapRef.current;
-    if (!map) return;
-    programmaticMoveRef.current = true;
-    map.setView([centerLat, centerLng], zoom, { animate: true, duration: 0.5 });
-    setTimeout(() => {
-      programmaticMoveRef.current = false;
-    }, 600);
+    fitRadar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recenterToken]);
 

@@ -3,6 +3,7 @@ import { LogIn, MessageCircle } from "lucide-react";
 import { getCurrentUser } from "@/lib/profile";
 import { loadChatsForCurrentUser } from "@/lib/chat/queries";
 import { MatchArrows } from "@/components/match/MatchArrows";
+import { ActiveTradeBadge } from "@/components/trades/ActiveTradeBadge";
 
 function formatDistance(meters: number | null): string | null {
   if (meters === null || !Number.isFinite(meters)) return null;
@@ -125,7 +126,12 @@ export default async function ChatListPage() {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="truncate text-sm font-bold">{visibleName}</span>
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <span className="truncate text-sm font-bold">
+                        {visibleName}
+                      </span>
+                      <ActiveTradeBadge userId={c.other_user.id} />
+                    </div>
                     {time && (
                       <span className="shrink-0 text-[11px] text-text-2">{time}</span>
                     )}

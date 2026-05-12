@@ -76,7 +76,7 @@ export function BottomNav() {
                 // "lifteando" al cambiar de tab. Usamos solo color para
                 // distinguir activo de inactivo.
                 className={`flex h-full flex-col items-center justify-center gap-0.5 font-medium text-[10px] leading-none tracking-wide ${
-                  active ? "text-text" : "text-mute"
+                  active ? "text-green-700" : "text-mute"
                 }`}
               >
                 <span className="relative">

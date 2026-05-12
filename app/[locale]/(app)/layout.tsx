@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { BottomNav } from "@/components/BottomNav";
 import { SideNav } from "@/components/SideNav";
+import { AppHeightSync } from "@/components/AppHeightSync";
 import { NotificationsRoot } from "@/components/notifications/NotificationsRoot";
 import { loadUnreadByChat } from "@/lib/chat/queries";
 import { loadPendingIncomingCount } from "@/lib/trades/queries";
@@ -38,10 +39,14 @@ export default async function AppLayout({
       initialUnread={initialUnread}
       initialPendingTradesIn={initialPendingTradesIn}
     >
+      <AppHeightSync />
       <div
+        // h-[var(--app-height,100dvh)] anchors the column to the REAL
+        // innerHeight (set by AppHeightSync on every visualViewport
+        // change). 100dvh is the SSR fallback.
         className="
           relative mx-auto flex w-full max-w-screen-xl bg-bone
-          h-dvh flex-col overflow-hidden
+          h-[var(--app-height,100dvh)] flex-col overflow-hidden
           md:h-auto md:min-h-dvh md:flex-row md:overflow-visible md:gap-0
         "
       >
