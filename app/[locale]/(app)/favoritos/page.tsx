@@ -342,9 +342,14 @@ export default function FavoritosPage() {
                     />
                   </div>
                   <div className="mt-0.5 text-xs text-text-2">
-                    {u.distance_m != null ? fmtDistance(u.distance_m) : "—"}
-                    {u.rating != null && ` · ★${u.rating}`}
-                    {u.trades_count != null && ` · ${u.trades_count} intercambios`}
+                    {[
+                      u.distance_m != null ? fmtDistance(u.distance_m) : null,
+                      u.trades_count != null
+                        ? `${u.trades_count} intercambios`
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || "Coleccionista"}
                   </div>
                   <div className="mt-2 flex items-baseline justify-between gap-2 text-[11px] text-text-2">
                     <span>

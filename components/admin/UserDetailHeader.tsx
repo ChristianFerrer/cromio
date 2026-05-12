@@ -13,7 +13,7 @@ export function UserDetailHeader({ user }: { user: UserDetail }) {
           @{user.alias} · {user.email ?? "—"}
         </p>
         <p className="mt-0.5 text-xs text-text-2">
-          ★ {user.rating ?? "—"} · {user.trades_count ?? 0} cambios
+          {user.trades_count ?? 0} cambios
           {user.is_admin && (
             <span className="ml-1 font-bold text-green-700">· admin</span>
           )}

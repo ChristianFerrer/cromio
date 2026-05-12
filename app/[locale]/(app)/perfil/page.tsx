@@ -61,7 +61,7 @@ export default async function PerfilPage() {
         </h2>
         <p className="text-sm text-text-2">@{profile?.alias ?? "—"}</p>
         <p className="mt-1 text-xs text-text-2">
-          ★ {profile?.rating ?? "—"} · {profile?.trades_count ?? 0} intercambios
+          {profile?.trades_count ?? 0} intercambios
         </p>
       </section>
 

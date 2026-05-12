@@ -21,7 +21,7 @@ export function UsersList({ rows }: { rows: UserRow[] }) {
                 @{row.alias} · {row.email ?? "—"}
               </p>
               <p className="mt-0.5 text-xs text-text-2">
-                ★ {row.rating ?? "—"} · {row.trades_count ?? 0} cambios
+                {row.trades_count ?? 0} cambios
               </p>
             </div>
             <UserStatusBadges

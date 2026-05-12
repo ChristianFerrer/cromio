@@ -171,11 +171,11 @@ select:focus-visible {
   border-radius: 50%;
   background: rgba(16, 197, 106, 0.42);
   transform: scale(0.05);
-  animation: cromio-radar-pulse 2.6s ease-out infinite;
+  animation: cromio-radar-pulse 4s ease-out infinite;
   will-change: transform, opacity;
 }
 .cromio-radar-pulse--late {
-  animation-delay: 1.3s;
+  animation-delay: 2s;
   background: rgba(16, 197, 106, 0.28);
 }
 @keyframes cromio-radar-pulse {
@@ -212,7 +212,7 @@ select:focus-visible {
   );
   -webkit-mask-image: radial-gradient(circle, #000 0%, #000 96%, transparent 100%);
   mask-image: radial-gradient(circle, #000 0%, #000 96%, transparent 100%);
-  animation: cromio-radar-spin 3.6s linear infinite;
+  animation: cromio-radar-spin 6s linear infinite;
   will-change: transform;
 }
 

@@ -384,9 +384,14 @@ export default function MatchDetailPage({
               {profile.pro && <Badge kind="gold">Pro</Badge>}
             </div>
             <p className="mt-0.5 text-xs text-text-2">
-              {distanceLabel && `≈${distanceLabel}`}
-              {profile.rating && ` · ★${profile.rating}`}
-              {profile.trades_count != null && ` · ${profile.trades_count} intercambios`}
+              {[
+                distanceLabel ? `≈${distanceLabel}` : null,
+                profile.trades_count != null
+                  ? `${profile.trades_count} intercambios`
+                  : null,
+              ]
+                .filter(Boolean)
+                .join(" · ") || "Coleccionista"}
             </p>
           </div>
           <div
@@ -508,7 +513,17 @@ export default function MatchDetailPage({
           activeTrade={activeTrade}
           matchEmpty={match.youGet.length === 0 && match.theyGet.length === 0}
           pending={tradePending}
-          onSend={() =>
+          onSend={() => {
+            // Validación cliente: si no hay nada seleccionado en ninguna
+            // columna, avisamos inmediatamente sin gastar el round-trip al
+            // servidor (que devolvería empty_trade igualmente).
+            if (youSel.size === 0 && theySel.size === 0) {
+              pushAppToast({
+                kind: "error",
+                body: "Selecciona al menos un cromo para intercambiar.",
+              });
+              return;
+            }
             startTradeTransition(async () => {
               const r = await requestTrade(
                 profile.id,
@@ -527,8 +542,8 @@ export default function MatchDetailPage({
               }
               pushAppToast({ kind: "success", body: "Solicitud enviada" });
               setTradeRefreshTick((t) => t + 1);
-            })
-          }
+            });
+          }}
           onOpenSheet={() => setShowTradeSheet(true)}
         />
       </div>

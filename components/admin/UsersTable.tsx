@@ -24,7 +24,6 @@ export function UsersTable({
             <th className="px-3 py-2">{labels.user}</th>
             <th className="px-3 py-2">{labels.email}</th>
             <th className="px-3 py-2">{labels.plan}</th>
-            <th className="px-3 py-2">{labels.rating}</th>
             <th className="px-3 py-2">{labels.trades}</th>
             <th className="px-3 py-2">{labels.lastSeen}</th>
             <th className="px-3 py-2">{labels.createdAt}</th>
@@ -62,7 +61,6 @@ export function UsersTable({
                   {row.plan ?? "free"}
                 </span>
               </td>
-              <td className="px-3 py-2">{row.rating ?? "—"}</td>
               <td className="px-3 py-2">{row.trades_count ?? 0}</td>
               <td className="px-3 py-2 text-text-2">
                 {fmtDate(row.last_event_at)}

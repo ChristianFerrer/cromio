@@ -353,7 +353,7 @@ function UserListRow({ u }: { u: ReturnType<typeof useNearbyUsers>["users"][numb
           )}
         </div>
         <div className="mt-0.5 text-xs text-text-2">
-          {fmtDistance(u.distance_m)} · ★{u.rating} · {u.trades_count} intercambios
+          {fmtDistance(u.distance_m)} · {u.trades_count} intercambios
         </div>
       </div>
       <MatchArrows
