@@ -29,7 +29,7 @@ const TABS: ReadonlyArray<{
 export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations("nav");
-  const { totalUnread, newNearbyCount } = useNotifications();
+  const { totalUnread, newNearbyCount, pendingTradesIn } = useNotifications();
 
   // Hide on chat detail (/chat/[id]) and match detail (/match/[id]) so the
   // input / sticky CTA can sit at the bottom of the viewport.
@@ -62,7 +62,9 @@ export function BottomNav() {
               ? totalUnread
               : id === "mapa"
                 ? newNearbyCount
-                : 0;
+                : id === "album"
+                  ? pendingTradesIn
+                  : 0;
           const Icon = tab.icon;
           return (
             <li key={id}>

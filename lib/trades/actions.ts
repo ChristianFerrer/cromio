@@ -83,6 +83,7 @@ export async function requestTrade(
   });
 
   revalidatePath("/match/[userId]", "page");
+  revalidatePath("/perfil/intercambios", "page");
   return { ok: true, id: data ?? undefined };
 }
 
@@ -116,6 +117,7 @@ export async function acceptTradeRequest(reqId: string): Promise<TradeResult> {
     });
   }
   revalidatePath("/match/[userId]", "page");
+  revalidatePath("/perfil/intercambios", "page");
   return { ok: true };
 }
 
@@ -124,6 +126,7 @@ export async function rejectTradeRequest(reqId: string): Promise<TradeResult> {
   const { error } = await supabase.rpc("reject_trade_request", { p_req_id: reqId });
   if (error) return { ok: false, error: error.message.replace(/^.*: /, "") };
   revalidatePath("/match/[userId]", "page");
+  revalidatePath("/perfil/intercambios", "page");
   return { ok: true };
 }
 
@@ -132,6 +135,7 @@ export async function cancelTradeRequest(reqId: string): Promise<TradeResult> {
   const { error } = await supabase.rpc("cancel_trade_request", { p_req_id: reqId });
   if (error) return { ok: false, error: error.message.replace(/^.*: /, "") };
   revalidatePath("/match/[userId]", "page");
+  revalidatePath("/perfil/intercambios", "page");
   return { ok: true };
 }
 
@@ -167,5 +171,6 @@ export async function markTradeDone(reqId: string): Promise<TradeResult> {
 
   revalidatePath("/match/[userId]", "page");
   revalidatePath("/album", "page");
+  revalidatePath("/perfil/intercambios", "page");
   return { ok: true, done: true };
 }

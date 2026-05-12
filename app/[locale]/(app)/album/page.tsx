@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Search, Globe, MapPin, ArrowRight } from "lucide-react";
+import { Search, Globe, MapPin, ArrowRight, ArrowLeftRight } from "lucide-react";
 import Link from "next/link";
 import { COUNTRIES } from "@/lib/data/countries";
 import { STICKERS, TOTAL_STICKERS } from "@/lib/data/stickers";
 import { useCollection } from "@/hooks/useCollection";
 import { useUser } from "@/hooks/useUser";
+import { useNotifications } from "@/components/notifications/NotificationsRoot";
 import { createClient } from "@/lib/supabase/client";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { Flag } from "@/components/cromo/Flag";
@@ -21,6 +22,7 @@ export default function AlbumPage() {
   const t = useTranslations();
   const { collection, stats, adjust } = useCollection();
   const { user } = useUser();
+  const { pendingTradesIn } = useNotifications();
   const [tab, setTab] = useState<Tab>("selecciones");
   const [filter, setFilter] = useState<Filter>("todos");
   const [country, setCountry] = useState<string>("all");
@@ -78,9 +80,21 @@ export default function AlbumPage() {
 
   return (
     <main className="flex flex-col">
-      <div className="px-5 pt-14">
+      <div className="flex items-center justify-between px-5 pt-14">
         <Logo size="md" />
         <h1 className="sr-only">Cromio</h1>
+        <Link
+          href="/perfil/intercambios"
+          aria-label="Intercambios"
+          className="relative grid h-10 w-10 place-items-center rounded-md border border-line bg-white text-green-700 shadow-sh1"
+        >
+          <ArrowLeftRight size={18} strokeWidth={2.2} />
+          {pendingTradesIn > 0 && (
+            <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 font-display text-[11px] leading-none text-white shadow-sh1 ring-2 ring-white">
+              {pendingTradesIn > 9 ? "9+" : pendingTradesIn}
+            </span>
+          )}
+        </Link>
       </div>
 
       <section className="px-5 pt-3">

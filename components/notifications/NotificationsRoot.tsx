@@ -58,6 +58,7 @@ type NotifContext = {
   unreadByChat: Record<string, number>;
   totalUnread: number;
   newNearbyCount: number;
+  pendingTradesIn: number;
   resetNearbyCount: () => void;
   clearChatUnread: (chatId: string) => void;
 };
@@ -75,14 +76,17 @@ const TOAST_TTL = 4500;
 export function NotificationsRoot({
   children,
   initialUnread,
+  initialPendingTradesIn,
 }: {
   children: React.ReactNode;
   initialUnread: Record<string, number>;
+  initialPendingTradesIn: number;
 }) {
   const { user } = useUser();
   const pathname = usePathname();
   const [unreadByChat, setUnreadByChat] = useState(initialUnread);
   const [newNearbyCount, setNewNearbyCount] = useState(0);
+  const [pendingTradesIn, setPendingTradesIn] = useState(initialPendingTradesIn);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const knownNearbyRef = useRef<Set<string>>(new Set());
   const seenSelfMessages = useRef<Set<string>>(new Set());
@@ -296,6 +300,48 @@ export function NotificationsRoot({
     onMapaRef.current = onMapa;
   }, [onMapa]);
 
+  // Realtime: keep pending incoming trade count fresh. Any insert/update/
+  // delete on trade_requests where I'm involved triggers a recount via
+  // the head=true count query — cheap and avoids stale badges after a
+  // sender cancels or I accept/reject from another tab.
+  useEffect(() => {
+    if (!user) return;
+    const supabase = createClient();
+    if (!supabase) return;
+
+    let cancelled = false;
+    let debounce: ReturnType<typeof setTimeout> | null = null;
+
+    const recount = async () => {
+      const { count } = await supabase
+        .from("trade_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("to_user_id", user.id)
+        .eq("status", "pending");
+      if (!cancelled) setPendingTradesIn(count ?? 0);
+    };
+
+    const debounced = () => {
+      if (debounce) clearTimeout(debounce);
+      debounce = setTimeout(recount, 250);
+    };
+
+    const channel = supabase
+      .channel(`trade-inbox-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "trade_requests" },
+        debounced,
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      if (debounce) clearTimeout(debounce);
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   const totalUnread = useMemo(
     () => Object.values(unreadByChat).reduce((a, b) => a + b, 0),
     [unreadByChat],
@@ -307,6 +353,7 @@ export function NotificationsRoot({
         unreadByChat,
         totalUnread,
         newNearbyCount,
+        pendingTradesIn,
         resetNearbyCount,
         clearChatUnread,
       }}

@@ -3,6 +3,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { SideNav } from "@/components/SideNav";
 import { NotificationsRoot } from "@/components/notifications/NotificationsRoot";
 import { loadUnreadByChat } from "@/lib/chat/queries";
+import { loadPendingIncomingCount } from "@/lib/trades/queries";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AppLayout({
@@ -28,9 +29,15 @@ export default async function AppLayout({
   if (profile?.banned_at) redirect("/banned");
   if (!profile?.home_location) redirect("/onboarding");
 
-  const initialUnread = await loadUnreadByChat();
+  const [initialUnread, initialPendingTradesIn] = await Promise.all([
+    loadUnreadByChat(),
+    loadPendingIncomingCount(user.id),
+  ]);
   return (
-    <NotificationsRoot initialUnread={initialUnread}>
+    <NotificationsRoot
+      initialUnread={initialUnread}
+      initialPendingTradesIn={initialPendingTradesIn}
+    >
       <div
         className="
           relative mx-auto flex w-full max-w-screen-xl bg-bone
