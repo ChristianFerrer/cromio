@@ -47,12 +47,12 @@ export function BottomNav() {
       // bounce) — el flex column elimina esa dependencia: la nav SIEMPRE
       // queda anclada al fondo del contenedor de altura `h-dvh`.
       style={{
-        height: "calc(58px + env(safe-area-inset-bottom))",
+        height: "calc(46px + env(safe-area-inset-bottom))",
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
       className="z-50 w-full shrink-0 border-t border-black/5 bg-white/95 backdrop-blur-xl md:hidden"
     >
-      <ul className="grid h-[58px] grid-cols-5">
+      <ul className="grid h-[46px] grid-cols-5">
         {TABS.map((tab) => {
           const { id, href } = tab;
           const active =

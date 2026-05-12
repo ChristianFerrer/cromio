@@ -7,6 +7,8 @@ import {
   Lock,
   RefreshCw,
   LocateFixed,
+  ChevronDown,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { useNearbyUsers } from "@/hooks/useNearbyUsers";
@@ -29,6 +31,24 @@ export default function MapaPage() {
   const [view, setView] = useState<"map" | "list">("map");
   const [listFilter, setListFilter] = useState<"all" | "match" | "lead">("all");
   const [recenterToken, setRecenterToken] = useState(0);
+  const [radiusOpen, setRadiusOpen] = useState(false);
+  const [emptyBannerDismissed, setEmptyBannerDismissed] = useState(false);
+  // Re-show the empty banner whenever the radius changes — the message
+  // depends on radius so dismissing for 200m shouldn't hide it for 5km.
+  useEffect(() => {
+    setEmptyBannerDismissed(false);
+  }, [radius]);
+  const radiusBtnRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!radiusOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (!radiusBtnRef.current?.contains(e.target as Node)) {
+        setRadiusOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, [radiusOpen]);
 
   const {
     users,
@@ -66,25 +86,22 @@ export default function MapaPage() {
     });
   }, [isAuthenticated, device.coords, refreshUsers]);
 
-  // Single status line at the top — when the list is empty we surface
-  // it here ("Sin coleccionistas en 1 km") instead of with a separate
-  // dismissible banner over the map. One source of truth for the
-  // count, so it can never read twice on screen.
+  // Header subtitle: only count + radius when there ARE users (or
+  // while loading). The "Sin coleccionistas" message is shown as a
+  // floating popup over the map area instead, per request.
   const statusText = useMemo(() => {
     if (usersLoading) return "Buscando…";
     if (!isAuthenticated) return "";
-    if (device.permissionDenied)
-      return `Ubicación bloqueada · centramos en tu zona guardada`;
-    if (users.length === 0)
-      return `Sin coleccionistas en ${fmtRadius(radius)} — amplía el radio`;
+    if (users.length === 0) return fmtRadius(radius);
     return `${users.length} ${users.length === 1 ? "coleccionista" : "coleccionistas"} en ${fmtRadius(radius)}`;
-  }, [
-    usersLoading,
-    isAuthenticated,
-    device.permissionDenied,
-    users.length,
-    radius,
-  ]);
+  }, [usersLoading, isAuthenticated, users.length, radius]);
+
+  const showEmptyPopup =
+    isAuthenticated &&
+    !usersLoading &&
+    users.length === 0 &&
+    !device.permissionDenied &&
+    !emptyBannerDismissed;
 
   return (
     <main className="absolute inset-0 flex flex-col bg-bone">
@@ -133,40 +150,66 @@ export default function MapaPage() {
           {statusText}
         </p>
 
-        <div className="mt-3 rounded-xl border border-black/5 bg-white p-3 shadow-sh1">
-          <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-mute">
-              Radio
+        <div ref={radiusBtnRef} className="relative mt-3">
+          <button
+            type="button"
+            onClick={() => setRadiusOpen((o) => !o)}
+            aria-haspopup="listbox"
+            aria-expanded={radiusOpen}
+            className="flex w-full items-center justify-between rounded-md border border-line bg-white px-3.5 py-2.5 shadow-sh1"
+          >
+            <span className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-mute">
+                Radio
+              </span>
+              <span className="font-display text-base text-text">
+                {fmtRadius(radius)}
+              </span>
             </span>
-            <span className="font-display text-base">
-              {radius >= 1000 ? `${radius / 1000}km` : `${radius}m`}
-            </span>
-          </div>
-          <div className="flex gap-1">
-            {RADII.map((r) => {
-              const locked = r > FREE_MAX;
-              const active = r === radius;
-              return (
-                <button
-                  key={r}
-                  onClick={() => !locked && setRadius(r)}
-                  className={`flex h-7 flex-1 items-center justify-center gap-0.5 rounded text-[11px] font-semibold transition-colors ${
-                    active
-                      ? "bg-ink text-white"
-                      : locked
-                        ? "bg-paper text-mute"
-                        : "bg-paper text-text"
-                  }`}
-                  disabled={locked}
-                >
-                  {locked && (
-                    <Lock size={10} className="text-gold" strokeWidth={2.4} />
-                  )}
-                  {r >= 1000 ? `${r / 1000}km` : `${r}m`}
-                </button>
-              );
-            })}
-          </div>
+            <ChevronDown
+              size={16}
+              strokeWidth={2.2}
+              className={`text-text-2 transition-transform ${
+                radiusOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+          {radiusOpen && (
+            <ul
+              role="listbox"
+              className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 overflow-hidden rounded-md border border-line bg-white shadow-sh3"
+            >
+              {RADII.map((r) => {
+                const locked = r > FREE_MAX;
+                const active = r === radius;
+                return (
+                  <li key={r} role="option" aria-selected={active}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (locked) return;
+                        setRadius(r);
+                        setRadiusOpen(false);
+                      }}
+                      disabled={locked}
+                      className={`flex w-full items-center justify-between px-3.5 py-2.5 text-left text-sm ${
+                        active
+                          ? "bg-green-50 font-bold text-green-700"
+                          : locked
+                            ? "text-mute"
+                            : "text-text hover:bg-paper"
+                      }`}
+                    >
+                      <span>{fmtRadius(r)}</span>
+                      {locked && (
+                        <Lock size={12} className="text-gold" strokeWidth={2.4} />
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       </header>
 
@@ -183,6 +226,38 @@ export default function MapaPage() {
                 recenterToken={recenterToken}
               />
             </div>
+
+            {showEmptyPopup && (
+              <div className="absolute left-3 right-3 top-3 z-30 flex items-start gap-2 rounded-md border border-line bg-white/95 p-3 text-xs text-text-2 shadow-sh2 backdrop-blur">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-text">
+                    Sin coleccionistas en {fmtRadius(radius)}
+                  </p>
+                  <p className="mt-1 leading-snug">
+                    Amplía el radio o invita a un amigo a Cromio.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEmptyBannerDismissed(true)}
+                  aria-label="Cerrar aviso"
+                  className="grid h-6 w-6 shrink-0 place-items-center rounded text-text-2 hover:bg-paper"
+                >
+                  <X size={14} strokeWidth={2.2} />
+                </button>
+              </div>
+            )}
+
+            {device.permissionDenied && (
+              <div className="absolute left-3 right-3 top-3 z-30 rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 shadow-sh2">
+                <p className="font-semibold">Ubicación bloqueada</p>
+                <p className="mt-1 leading-snug">
+                  Centramos en tu zona guardada. Actívala en Ajustes para
+                  que el mapa te siga en vivo.
+                </p>
+              </div>
+            )}
+
             <button
               onClick={() => setRecenterToken((t) => t + 1)}
               aria-label="Centrar en mi ubicación"
@@ -191,7 +266,7 @@ export default function MapaPage() {
               <LocateFixed size={14} strokeWidth={2} className="text-text-2" />
             </button>
             {radius === 200 && (
-              <div className="pointer-events-none absolute left-1/2 top-3 z-30 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink px-3.5 py-2 text-xs font-bold text-gold-light shadow-sh3">
+              <div className="pointer-events-none absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-ink px-3.5 py-2 text-xs font-bold text-gold-light shadow-sh3">
                 <span>🔥</span> Modo hiperlocal · Solo tu manzana
               </div>
             )}
