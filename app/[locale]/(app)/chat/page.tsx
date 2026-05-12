@@ -113,21 +113,9 @@ export default async function ChatListPage() {
                 className="flex items-start gap-3 rounded-md border border-line bg-white p-3"
               >
                 <div className="relative shrink-0">
-                  {c.other_user.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={c.other_user.avatar_url}
-                      alt={visibleName}
-                      className="h-12 w-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div
-                      className="grid h-12 w-12 place-items-center rounded-full font-display text-lg text-white"
-                      style={{ background: c.other_user.color ?? "#10C56A" }}
-                    >
-                      {initials}
-                    </div>
-                  )}
+                  <div className="grid h-12 w-12 place-items-center rounded-full bg-green-500 font-display text-lg text-white">
+                    {initials}
+                  </div>
                   {c.unread_count > 0 && (
                     <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center rounded-full bg-green-500 text-[10px] font-bold text-white ring-2 ring-white">
                       {c.unread_count}

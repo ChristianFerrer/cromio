@@ -1,12 +1,12 @@
 {
   "name": "Cromio",
   "short_name": "Cromio",
-  "description": "Encuentra coleccionistas del álbum Panini Mundial 2026 cerca de ti.",
-  "start_url": "/",
+  "description": "Encuentra coleccionistas a tu alrededor e intercambia cromos en persona.",
+  "start_url": "/album",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FAFAF7",
-  "theme_color": "#066B40",
+  "theme_color": "#1FAE5A",
   "categories": ["sports", "social", "lifestyle"],
   "lang": "es",
   "dir": "ltr",
@@ -18,9 +18,9 @@
       "purpose": "any"
     },
     {
-      "src": "/cromio_icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "maskable"
     },
     {
@@ -35,19 +35,19 @@
       "name": "Radar",
       "short_name": "Radar",
       "url": "/mapa",
-      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/cromio_icon.png", "sizes": "512x512", "type": "image/png" }]
     },
     {
       "name": "Álbum",
       "short_name": "Álbum",
       "url": "/album",
-      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/cromio_icon.png", "sizes": "512x512", "type": "image/png" }]
     },
     {
       "name": "Chat",
       "short_name": "Chat",
       "url": "/chat",
-      "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/cromio_icon.png", "sizes": "512x512", "type": "image/png" }]
     }
   ],
   "prefer_related_applications": false

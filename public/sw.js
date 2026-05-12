@@ -1,9 +1,15 @@
 /* Cromio service worker — push notifications + offline shell. */
 
-const VERSION = "v10";
+const VERSION = "v11";
 const STATIC_CACHE = `cromio-static-${VERSION}`;
-const TILE_CACHE = "cromio-tiles-v1";
+const TILE_CACHE = "cromio-tiles-v2";
 const RUNTIME_CACHE = `cromio-runtime-${VERSION}`;
+
+// Cap del cache de tiles para evitar que crezca sin límite.
+// 600 tiles cubren ~25 MB en raster .png 256x256 (~40 KB cada uno).
+// Cuando se supera el límite, se podan las entradas más antiguas.
+const TILE_CACHE_MAX_ENTRIES = 600;
+const TILE_CACHE_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000; // 14 días
 
 // Files we want available without network. The HTML routes are handled
 // network-first with a runtime cache, so we don't list them here.
@@ -34,8 +40,9 @@ self.addEventListener("activate", (event) => {
         keys
           .filter(
             (k) =>
-              k.startsWith("cromio-static-") && k !== STATIC_CACHE
-              || (k.startsWith("cromio-runtime-") && k !== RUNTIME_CACHE),
+              (k.startsWith("cromio-static-") && k !== STATIC_CACHE) ||
+              (k.startsWith("cromio-runtime-") && k !== RUNTIME_CACHE) ||
+              (k.startsWith("cromio-tiles-") && k !== TILE_CACHE),
           )
           .map((k) => caches.delete(k)),
       );
@@ -53,15 +60,31 @@ self.addEventListener("fetch", (event) => {
 
   // 1) Map tiles — cache first, long lived. The /tiles edge route already
   //    proxies to OSM with sensible cache headers; we mirror them here so a
-  //    re-pan re-zoom on a flaky network reuses recent tiles.
+  //    re-pan re-zoom on a flaky network reuses recent tiles. Capamos el
+  //    tamaño (600 tiles ≈ 25 MB) y la edad (14 días) para no acumular sin
+  //    límite en dispositivos con poco storage.
   if (url.pathname.startsWith("/tiles/")) {
     event.respondWith(
       caches.open(TILE_CACHE).then(async (cache) => {
         const hit = await cache.match(req);
-        if (hit) return hit;
+        if (hit) {
+          const cachedAt = Number(hit.headers.get("x-cromio-cached-at") || 0);
+          if (cachedAt && Date.now() - cachedAt < TILE_CACHE_MAX_AGE_MS) {
+            return hit;
+          }
+          // Caducada: intentamos refrescar pero servimos el hit si falla.
+        }
         try {
           const fresh = await fetch(req);
-          if (fresh.ok) cache.put(req, fresh.clone()).catch(() => {});
+          if (fresh.ok) {
+            const cloned = new Response(fresh.clone().body, {
+              status: fresh.status,
+              statusText: fresh.statusText,
+              headers: new Headers(fresh.headers),
+            });
+            cloned.headers.set("x-cromio-cached-at", String(Date.now()));
+            cache.put(req, cloned).then(() => trimTileCache(cache)).catch(() => {});
+          }
           return fresh;
         } catch {
           return hit ?? Response.error();
@@ -106,6 +129,21 @@ self.addEventListener("fetch", (event) => {
     }),
   );
 });
+
+/* ---------- Tile cache trim (LRU por orden de keys) ---------- */
+
+async function trimTileCache(cache) {
+  try {
+    const keys = await cache.keys();
+    if (keys.length <= TILE_CACHE_MAX_ENTRIES) return;
+    // cache.keys() devuelve los Request en orden de inserción
+    // (más antiguos primero). Borramos el exceso desde el principio.
+    const excess = keys.length - TILE_CACHE_MAX_ENTRIES;
+    for (let i = 0; i < excess; i++) await cache.delete(keys[i]);
+  } catch {
+    // Si trim falla, no es crítico — el navegador hará evict eventualmente.
+  }
+}
 
 /* ---------- Web Push ---------- */
 

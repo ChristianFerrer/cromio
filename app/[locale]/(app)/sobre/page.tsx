@@ -42,7 +42,7 @@ export default function SobrePage() {
 
       <h2>No oficial</h2>
       <p>
-        Cromio es una app independiente <strong>sin afiliación con Panini Group,
+        Cromio es una app independiente <strong>sin afiliación con la editorial del álbum oficial,
         FIFA ni la FIFA World Cup 2026™</strong>. Los nombres y diseños de los
         cromos pertenecen a sus respectivos titulares; los usamos solo como
         referencia para facilitar el intercambio entre coleccionistas reales.

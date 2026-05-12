@@ -28,13 +28,10 @@ export async function saveHomeLocation(lng: number, lat: number) {
 }
 
 const ALIAS_RE = /^[a-z0-9_]{3,24}$/;
-const COLOR_RE = /^#[0-9a-fA-F]{6}$/;
 
 type ProfileUpdate = {
   alias?: string;
   display_name?: string | null;
-  color?: string;
-  avatar_url?: string | null;
 };
 
 export async function updateProfile(input: ProfileUpdate) {
@@ -53,13 +50,6 @@ export async function updateProfile(input: ProfileUpdate) {
   }
   if (input.display_name !== undefined) {
     payload.display_name = input.display_name?.trim().slice(0, 60) || null;
-  }
-  if (input.color !== undefined) {
-    if (!COLOR_RE.test(input.color)) return { error: "invalid_color" };
-    payload.color = input.color;
-  }
-  if (input.avatar_url !== undefined) {
-    payload.avatar_url = input.avatar_url || null;
   }
 
   if (Object.keys(payload).length === 0) return { ok: true };

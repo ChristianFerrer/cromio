@@ -247,10 +247,7 @@ export default function FavoritosPage() {
                   onClick={() => toggle(u.id)}
                   className="flex w-full items-center gap-3 border-b border-line p-3 text-left last:border-b-0"
                 >
-                  <div
-                    className="grid h-9 w-9 shrink-0 place-items-center rounded-full font-display text-sm text-white"
-                    style={{ background: u.color ?? "#10C56A" }}
-                  >
+                  <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-green-500 font-display text-sm text-white">
                     {(u.display_name ?? u.alias).slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1">
@@ -324,8 +321,7 @@ export default function FavoritosPage() {
               >
                 <Link
                   href={`/match/${u.id}`}
-                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full font-display text-lg text-white"
-                  style={{ background: u.color ?? "#26C6DA" }}
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-green-500 font-display text-lg text-white"
                 >
                   {visibleName.slice(0, 2).toUpperCase()}
                 </Link>

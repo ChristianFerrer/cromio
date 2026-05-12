@@ -266,8 +266,7 @@ export function ChatRoom({
         <Link
           href={`/match/${other.id}`}
           aria-label={`Ver perfil de ${other.display_name ?? other.alias}`}
-          className="grid h-10 w-10 place-items-center rounded-full font-display text-base text-white"
-          style={{ background: other.color ?? "#10C56A" }}
+          className="grid h-10 w-10 place-items-center rounded-full bg-green-500 font-display text-base text-white"
         >
           {initials}
         </Link>
@@ -289,10 +288,7 @@ export function ChatRoom({
       >
         {messages.length === 0 && (
           <div className="mt-6 flex flex-col items-center px-4 text-center">
-            <div
-              className="grid h-14 w-14 place-items-center rounded-full text-white"
-              style={{ background: other.color ?? "#10C56A" }}
-            >
+            <div className="grid h-14 w-14 place-items-center rounded-full bg-green-500 text-white">
               <span className="font-display text-base">{initials}</span>
             </div>
             <h3 className="mt-3 font-display text-lg">Saluda a @{other.alias}</h3>
@@ -323,7 +319,6 @@ export function ChatRoom({
               mine={item.mine}
               isLastFromSender={item.isLastFromSender}
               otherInitials={initials}
-              otherColor={other.color ?? "#10C56A"}
               showAvatar={item.showAvatar}
               onCromoClick={(n) => setPreviewN(n)}
             />
@@ -373,7 +368,6 @@ function MessageRow({
   mine,
   isLastFromSender,
   otherInitials,
-  otherColor,
   showAvatar,
   onCromoClick,
 }: {
@@ -381,7 +375,6 @@ function MessageRow({
   mine: boolean;
   isLastFromSender: boolean;
   otherInitials: string;
-  otherColor: string;
   showAvatar: boolean;
   onCromoClick: (n: number) => void;
 }) {
@@ -397,10 +390,7 @@ function MessageRow({
     >
       {!mine ? (
         showAvatar ? (
-          <div
-            className="grid h-7 w-7 shrink-0 place-items-center rounded-full font-display text-[11px] text-white"
-            style={{ background: otherColor }}
-          >
+          <div className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-green-500 font-display text-[11px] text-white">
             {otherInitials}
           </div>
         ) : (

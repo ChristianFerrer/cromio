@@ -250,6 +250,24 @@ select:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Respeta la preferencia del usuario en TODAS las animaciones del producto.
+   * Mantenemos solo transiciones cortas (~1ms) para que React no se queje. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* El sweep y los pulses del radar quedan estáticos (no se pintan animados)
+   * para que el usuario con vértigo / migraña no los vea girar/latir. */
+  .cromio-radar-sweep,
+  .cromio-radar-pulse,
+  .cromio-radar-pulse--late {
+    animation: none !important;
+    opacity: 0.2;
+  }
   .cromio-pin {
     animation: none !important;
   }

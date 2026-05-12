@@ -12,12 +12,7 @@ export function UsersList({ rows }: { rows: UserRow[] }) {
             href={`/admin/usuarios/${row.id}`}
             className="flex items-center gap-3 rounded-md border border-line bg-white p-3"
           >
-            <Avatar
-              alias={row.alias}
-              color={row.color}
-              avatarUrl={row.avatar_url}
-              size={40}
-            />
+            <Avatar alias={row.alias} size={40} />
             <div className="min-w-0 flex-1">
               <p className="truncate font-bold text-text">
                 {row.display_name || row.alias}

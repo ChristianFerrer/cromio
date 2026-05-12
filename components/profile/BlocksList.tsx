@@ -59,8 +59,7 @@ export function BlocksList({ rows: initial }: { rows: Block[] }) {
           >
             <Link
               href={`/match/${u.id}`}
-              className="grid h-11 w-11 shrink-0 place-items-center rounded-full font-display text-lg text-white"
-              style={{ background: u.color ?? "#10C56A" }}
+              className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-green-500 font-display text-lg text-white"
               aria-label={`Abrir perfil de ${u.alias}`}
             >
               {initials}

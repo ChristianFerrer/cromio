@@ -4,12 +4,7 @@ import { Avatar } from "@/components/admin/Avatar";
 export function UserDetailHeader({ user }: { user: UserDetail }) {
   return (
     <header className="mt-3 flex items-center gap-3">
-      <Avatar
-        alias={user.alias}
-        color={user.color}
-        avatarUrl={user.avatar_url}
-        size={56}
-      />
+      <Avatar alias={user.alias} size={56} />
       <div className="min-w-0">
         <h2 className="truncate font-display text-2xl">
           {user.display_name || user.alias}

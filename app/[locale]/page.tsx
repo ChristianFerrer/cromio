@@ -31,7 +31,7 @@ const COPY = {
     what: {
       title: "¿Qué es Cromio?",
       body:
-        "Cromio es una comunidad por proximidad para coleccionistas del álbum Panini Mundial 2026. En vez de buscar en marketplaces, grupos o chats, te muestra en tiempo real quién a tu alrededor tiene lo que te falta y necesita lo que tienes repetido.",
+        "Cromio es una comunidad por proximidad para coleccionistas del álbum del Mundial 2026. En vez de buscar en marketplaces, grupos o chats, te muestra en tiempo real quién a tu alrededor tiene lo que te falta y necesita lo que tienes repetido.",
       kpis: [
         { label: "Cromos en el álbum", value: "980" },
         { label: "Selecciones", value: "48" },
@@ -121,7 +121,7 @@ const COPY = {
       privacy: "Privacidad",
       email: "hola@cromio.app",
       disclaimer:
-        "Cromio es una app independiente sin afiliación con Panini Group, FIFA ni la FIFA World Cup 2026™.",
+        "Cromio es una app independiente, sin afiliación con FIFA ni con la editorial del álbum oficial. Los nombres y diseños de los cromos pertenecen a sus respectivos titulares.",
     },
   },
   en: {
@@ -136,7 +136,7 @@ const COPY = {
     what: {
       title: "What is Cromio?",
       body:
-        "Cromio is a proximity community for collectors of the Panini 2026 World Cup album. Instead of trawling marketplaces, you find someone in your neighborhood who has what you need and needs what you have spare.",
+        "Cromio is a proximity community for collectors of the 2026 World Cup album. Instead of trawling marketplaces, you find someone in your neighborhood who has what you need and needs what you have spare.",
       kpis: [
         { label: "Stickers in album", value: "980" },
         { label: "National teams", value: "48" },
@@ -226,7 +226,7 @@ const COPY = {
       privacy: "Privacy",
       email: "hola@cromio.app",
       disclaimer:
-        "Cromio is an independent app, not affiliated with Panini Group, FIFA or the FIFA World Cup 2026™.",
+        "Cromio is an independent app, not affiliated with FIFA or the publisher of the official album. Names and designs belong to their respective owners.",
     },
   },
 } as const;
@@ -237,7 +237,7 @@ const HOW_ICON = { layers: Layers, radar: Radar, handshake: Handshake } as const
 export const metadata = {
   title: "Cromio · Cromos del Mundial 2026, sin envíos",
   description:
-    "Cromio empareja por proximidad a coleccionistas del álbum Panini Mundial 2026. Sin envíos, sin estafas online, sin comisiones.",
+    "Cromio empareja por proximidad a coleccionistas del álbum del Mundial 2026. Sin envíos, sin estafas online, sin comisiones.",
 };
 
 export default async function Home({

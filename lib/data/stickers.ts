@@ -3,7 +3,7 @@ import { COUNTRIES } from "./countries";
 
 const POSITIONS: StickerPosition[] = ["GK", "DEF", "MID", "FWD"];
 
-// Intros (n=1..20). Matches the real Panini 2026 album:
+// Intros (n=1..20). Matches the real 2026 World Cup album structure:
 //   - 1 album cover ("00")
 //   - 5 generic foils (Emblem ×2, Mascots, Slogan, Trionda)  → FWC1..FWC5
 //   - 3 host-country cards (CAN, MEX, USA)                   → FWC6/7/8

@@ -290,7 +290,7 @@ export default function MatchDetailPage({
     : "linear-gradient(135deg, #10C56A 0%, #089258 100%)";
   const accentColor = isLead
     ? CROMIO_COLORS.match.interest
-    : profile.color ?? CROMIO_COLORS.green[500];
+    : CROMIO_COLORS.green[500];
   const distanceLabel = distanceM != null ? fmtDistance(distanceM) : null;
 
   const renderCromoEntries = (

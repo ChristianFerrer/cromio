@@ -39,12 +39,7 @@ export function UsersTable({
                   href={`/admin/usuarios/${row.id}`}
                   className="flex items-center gap-2"
                 >
-                  <Avatar
-                    alias={row.alias}
-                    color={row.color}
-                    avatarUrl={row.avatar_url}
-                    size={28}
-                  />
+                  <Avatar alias={row.alias} size={28} />
                   <span>
                     <span className="block font-bold text-text">
                       {row.display_name || row.alias}

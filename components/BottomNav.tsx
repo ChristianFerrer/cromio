@@ -41,9 +41,18 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-[430px] border-t border-black/5 bg-white/90 pb-[max(env(safe-area-inset-bottom),12px)] pt-1.5 backdrop-blur-xl md:hidden"
+      // Altura fija (incluye safe-area) para que la barra nunca cambie de
+      // tamaño entre rutas: clave para que el menú "no se suba" cuando
+      // navegas en iOS Safari (donde la URL bar al colapsarse cambia el
+      // viewport y, si el padding depende de eso, la barra parece moverse).
+      // Hacemos: una franja fija en altura física, con safe-area DENTRO.
+      style={{
+        height: "calc(58px + env(safe-area-inset-bottom))",
+        paddingBottom: "env(safe-area-inset-bottom)",
+      }}
+      className="fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-[430px] border-t border-black/5 bg-white/90 backdrop-blur-xl md:hidden"
     >
-      <ul className="grid grid-cols-5">
+      <ul className="grid h-[58px] grid-cols-5">
         {TABS.map((tab) => {
           const { id, href } = tab;
           const active =
@@ -59,10 +68,13 @@ export function BottomNav() {
             <li key={id}>
               <Link
                 href={href}
-                className={`flex flex-col items-center gap-0.5 py-1.5 text-[10px] tracking-wide transition-colors ${
-                  active
-                    ? "font-bold text-text"
-                    : "font-medium text-mute"
+                // Sin cambio de font-weight ni strokeWidth entre estados:
+                // ambas cosas producen layout shift sub-pixel en glyph y
+                // path width, suficiente para que el ojo perciba la barra
+                // "lifteando" al cambiar de tab. Usamos solo color para
+                // distinguir activo de inactivo.
+                className={`flex h-full flex-col items-center justify-center gap-0.5 font-medium text-[10px] leading-none tracking-wide ${
+                  active ? "text-text" : "text-mute"
                 }`}
               >
                 <span className="relative">
@@ -76,11 +88,7 @@ export function BottomNav() {
                       className={active ? "" : "opacity-70"}
                     />
                   ) : (
-                    <Icon
-                      size={22}
-                      strokeWidth={active ? 2.2 : 1.8}
-                      aria-hidden
-                    />
+                    <Icon size={22} strokeWidth={2} aria-hidden />
                   )}
                   {badge > 0 && (
                     <span className="absolute -right-2 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 font-display text-[10px] leading-none text-white shadow-sh1">

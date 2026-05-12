@@ -20,16 +20,16 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cromio — Mundial 2026",
+  title: "Cromio · Intercambia cromos a tu alrededor",
   description:
-    "Encuentra coleccionistas del álbum Panini Mundial 2026 cerca de ti. Intercambia cromos en persona.",
+    "Encuentra coleccionistas a tu alrededor e intercambia cromos en persona. Sin envíos, sin intermediarios.",
   manifest: "/manifest.webmanifest",
   applicationName: "Cromio",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Cromio",
-    startupImage: ["/icon.svg"],
+    startupImage: ["/cromio_icon.png"],
   },
   icons: {
     icon: [
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#066B40",
+  themeColor: "#1FAE5A",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",

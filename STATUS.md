@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-11 20:54 UTC** · branch `main`_
+_Last updated: **2026-05-12 11:21 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(27 minutes ago)_
-- ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(7 hours ago)_
-- b7e8c8b style(match): trade button matches the contacts flag treatment _(7 hours ago)_
-- a0f5ae9 style(ui): square radius across buttons + simplify trade button _(7 hours ago)_
-- dc3481f fix(chat): strip stale state/meeting/rating UI from chat list _(8 hours ago)_
-- b786ca7 feat(trades): trade requests replace meeting/rating, chat is now pure _(8 hours ago)_
-- 5f34238 chore(deploy): retrigger production build for chat journey UI _(9 hours ago)_
-- 37a5f10 feat(chat): surface meeting + rating journey on chat list cards (#35) _(9 hours ago)_
-- 9ffa742 docs(contactos): document why match counts are computed pairwise _(9 hours ago)_
-- ca87214 chore(deploy): retrigger production build (#34) _(10 hours ago)_
-- 74b37eb fix(contactos): compute recibes/entregas pairwise from stickers (#33) _(10 hours ago)_
-- b2de1c9 fix(nav): bottom/side nav no longer slides on route change (#32) _(10 hours ago)_
-- 531b5bf feat(contactos): rename header, show visible name, add album stats per row (#31) _(10 hours ago)_
-- c87f931 feat(admin): expose hard delete in the user detail UI _(10 hours ago)_
-- 651175c fix(album): 3-col mobile + responsive desktop + larger +/- targets (#30) _(11 hours ago)_
+- ad57ef5 perf(hooks): cross-navigation cache for user, collection and favourites _(14 hours ago)_
+- da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(15 hours ago)_
+- ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(21 hours ago)_
+- b7e8c8b style(match): trade button matches the contacts flag treatment _(21 hours ago)_
+- a0f5ae9 style(ui): square radius across buttons + simplify trade button _(22 hours ago)_
+- dc3481f fix(chat): strip stale state/meeting/rating UI from chat list _(22 hours ago)_
+- b786ca7 feat(trades): trade requests replace meeting/rating, chat is now pure _(22 hours ago)_
+- 5f34238 chore(deploy): retrigger production build for chat journey UI _(23 hours ago)_
+- 37a5f10 feat(chat): surface meeting + rating journey on chat list cards (#35) _(24 hours ago)_
+- 9ffa742 docs(contactos): document why match counts are computed pairwise _(24 hours ago)_
+- ca87214 chore(deploy): retrigger production build (#34) _(24 hours ago)_
+- 74b37eb fix(contactos): compute recibes/entregas pairwise from stickers (#33) _(24 hours ago)_
+- b2de1c9 fix(nav): bottom/side nav no longer slides on route change (#32) _(25 hours ago)_
+- 531b5bf feat(contactos): rename header, show visible name, add album stats per row (#31) _(25 hours ago)_
+- c87f931 feat(admin): expose hard delete in the user detail UI _(25 hours ago)_
 <!-- AUTO:COMMITS:END -->

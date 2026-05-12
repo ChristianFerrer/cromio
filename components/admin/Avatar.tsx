@@ -2,28 +2,12 @@ import { CROMIO_COLORS } from "@/lib/design/colors";
 
 export function Avatar({
   alias,
-  color,
-  avatarUrl,
   size = 32,
 }: {
   alias: string | null;
-  color: string | null;
-  avatarUrl: string | null;
   size?: number;
 }) {
   const initials = (alias ?? "?").slice(0, 2).toUpperCase();
-  if (avatarUrl) {
-    return (
-      <img
-        src={avatarUrl}
-        alt={alias ?? ""}
-        width={size}
-        height={size}
-        className="rounded-full object-cover"
-        style={{ width: size, height: size }}
-      />
-    );
-  }
   return (
     <span
       aria-hidden
@@ -31,7 +15,7 @@ export function Avatar({
       style={{
         width: size,
         height: size,
-        background: color ?? CROMIO_COLORS.green[500],
+        background: CROMIO_COLORS.green[500],
         fontSize: Math.max(10, Math.round(size * 0.4)),
       }}
     >

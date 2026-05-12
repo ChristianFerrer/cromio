@@ -53,20 +53,9 @@ export default async function PerfilPage() {
       </div>
 
       <section className="mt-5 flex flex-col items-center">
-        {profile?.avatar_url ? (
-          <img
-            src={profile.avatar_url}
-            alt={profile.alias ?? ""}
-            className="h-20 w-20 rounded-full object-cover shadow-sh2"
-          />
-        ) : (
-          <div
-            className="grid h-20 w-20 place-items-center rounded-full font-display text-3xl text-white shadow-sh2"
-            style={{ background: profile?.color ?? "#10C56A" }}
-          >
-            {initials}
-          </div>
-        )}
+        <div className="grid h-20 w-20 place-items-center rounded-full bg-green-500 font-display text-3xl text-white shadow-sh2">
+          {initials}
+        </div>
         <h2 className="mt-3 font-display text-2xl">
           {profile?.display_name || profile?.alias || "anónimo"}
         </h2>
@@ -178,7 +167,7 @@ export default async function PerfilPage() {
       </form>
 
       <p className="mt-6 text-center text-[10px] text-mute">
-        App no oficial · No afiliada con Panini Group ni FIFA.
+        App independiente · Sin afiliación oficial con la editorial del álbum ni con FIFA.
       </p>
     </main>
   );

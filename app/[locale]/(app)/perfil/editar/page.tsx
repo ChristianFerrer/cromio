@@ -11,7 +11,7 @@ export default async function EditProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("alias, display_name, avatar_url, color")
+    .select("alias, display_name")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -21,8 +21,6 @@ export default async function EditProfilePage() {
       initial={{
         alias: profile?.alias ?? "",
         display_name: profile?.display_name ?? "",
-        avatar_url: profile?.avatar_url ?? null,
-        color: profile?.color ?? "#10C56A",
       }}
     />
   );

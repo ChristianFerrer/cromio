@@ -130,7 +130,7 @@ export default function SignupPage() {
       </p>
 
       <p className="pb-4 text-center text-[10px] text-mute">
-        Al continuar aceptas que Cromio es una app no oficial sin afiliación con Panini Group ni FIFA.
+        Al continuar aceptas que Cromio es una app independiente, sin afiliación con la editorial oficial del álbum ni con FIFA.
       </p>
     </main>
   );
