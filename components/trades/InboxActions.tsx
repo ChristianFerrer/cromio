@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   acceptTradeRequest,
   rejectTradeRequest,
@@ -19,6 +20,7 @@ export function InboxActions({
   variant: Variant;
 }) {
   const [pending, start] = useTransition();
+  const router = useRouter();
 
   const handle = (
     label: string,
@@ -28,6 +30,10 @@ export function InboxActions({
       const r = await fn();
       if (r.ok) {
         pushAppToast({ kind: "success", body: `${label} ✓` });
+        // Force re-fetch of the server component data on the inbox page;
+        // revalidatePath alone leaves the current render stale for a beat
+        // and the row visibly reappears for a frame before settling.
+        router.refresh();
       } else {
         pushAppToast({
           kind: "error",

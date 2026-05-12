@@ -159,28 +159,52 @@ function fmtDate(iso: string): string {
   });
 }
 
+function CromoChips({ ns, tone }: { ns: number[]; tone: "in" | "out" }) {
+  if (ns.length === 0) return <span className="text-text-2">—</span>;
+  const cls =
+    tone === "in"
+      ? "bg-green-100 text-green-800"
+      : "bg-red-50 text-red-700";
+  return (
+    <div className="flex flex-wrap gap-1">
+      {ns.map((n) => (
+        <span
+          key={n}
+          className={`rounded px-1.5 py-0.5 text-[11px] font-bold tabular ${cls}`}
+        >
+          #{n}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function TradeSummary({
-  recibi,
-  entregue,
+  recibeNs,
+  entregaNs,
 }: {
-  recibi: number;
-  entregue: number;
+  recibeNs: number[];
+  entregaNs: number[];
 }) {
   return (
-    <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px]">
-      <div className="flex items-center justify-between rounded bg-paper px-2.5 py-1.5">
-        <span className="inline-flex items-center gap-1 text-text-2">
+    <div className="mt-2.5 space-y-1.5 text-[11px]">
+      <div className="rounded bg-paper px-2.5 py-2">
+        <div className="mb-1 inline-flex items-center gap-1 text-text-2">
           <ArrowDown size={11} strokeWidth={2.6} className="text-green-700" />
-          Recibo
-        </span>
-        <span className="font-display text-base text-text">{recibi}</span>
+          <span className="font-bold uppercase tracking-wider">
+            Recibes ({recibeNs.length})
+          </span>
+        </div>
+        <CromoChips ns={recibeNs} tone="in" />
       </div>
-      <div className="flex items-center justify-between rounded bg-paper px-2.5 py-1.5">
-        <span className="inline-flex items-center gap-1 text-text-2">
+      <div className="rounded bg-paper px-2.5 py-2">
+        <div className="mb-1 inline-flex items-center gap-1 text-text-2">
           <ArrowUp size={11} strokeWidth={2.6} className="text-red-600" />
-          Entrego
-        </span>
-        <span className="font-display text-base text-text">{entregue}</span>
+          <span className="font-bold uppercase tracking-wider">
+            Entregas ({entregaNs.length})
+          </span>
+        </div>
+        <CromoChips ns={entregaNs} tone="out" />
       </div>
     </div>
   );
@@ -220,6 +244,14 @@ function EmptyState({ title, body }: { title: string; body: string }) {
   );
 }
 
+function FlowHint({ text }: { text: string }) {
+  return (
+    <p className="mb-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-snug text-amber-900">
+      {text}
+    </p>
+  );
+}
+
 function RecibidasList({ items }: { items: TradeInboxRow[] }) {
   if (items.length === 0)
     return (
@@ -229,20 +261,23 @@ function RecibidasList({ items }: { items: TradeInboxRow[] }) {
       />
     );
   return (
-    <ul className="space-y-2">
-      {items.map((row) => {
-        // Recibidas: from_gives es lo que ME ofrecen (lo que recibo), to_gives es lo que YO doy.
-        const recibi = row.items.from_gives.reduce((s, i) => s + i.qty, 0);
-        const entregue = row.items.to_gives.reduce((s, i) => s + i.qty, 0);
-        return (
-          <li key={row.id} className="rounded-md border border-line bg-white p-3">
-            <CardHeader row={row} />
-            <TradeSummary recibi={recibi} entregue={entregue} />
-            <InboxActions reqId={row.id} variant="incoming" />
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <FlowHint text="Aceptar es comprometerte al intercambio. Cuando os encontréis físicamente y os deis los cromos, ve a “Aceptadas” y marca el intercambio como realizado — ahí es cuando se actualiza tu álbum." />
+      <ul className="space-y-2">
+        {items.map((row) => {
+          // Recibidas: from_gives es lo que ME ofrecen (lo que recibo), to_gives es lo que YO doy.
+          const recibeNs = row.items.from_gives.map((i) => i.n);
+          const entregaNs = row.items.to_gives.map((i) => i.n);
+          return (
+            <li key={row.id} className="rounded-md border border-line bg-white p-3">
+              <CardHeader row={row} />
+              <TradeSummary recibeNs={recibeNs} entregaNs={entregaNs} />
+              <InboxActions reqId={row.id} variant="incoming" />
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }
 
@@ -258,12 +293,12 @@ function EnviadasList({ items }: { items: TradeInboxRow[] }) {
     <ul className="space-y-2">
       {items.map((row) => {
         // Enviadas: from_gives es lo que YO ofrezco (entrego), to_gives es lo que recibo del otro.
-        const recibi = row.items.to_gives.reduce((s, i) => s + i.qty, 0);
-        const entregue = row.items.from_gives.reduce((s, i) => s + i.qty, 0);
+        const recibeNs = row.items.to_gives.map((i) => i.n);
+        const entregaNs = row.items.from_gives.map((i) => i.n);
         return (
           <li key={row.id} className="rounded-md border border-line bg-white p-3">
             <CardHeader row={row} />
-            <TradeSummary recibi={recibi} entregue={entregue} />
+            <TradeSummary recibeNs={recibeNs} entregaNs={entregaNs} />
             <InboxActions reqId={row.id} variant="outgoing" />
           </li>
         );
@@ -281,24 +316,27 @@ function AceptadasList({ items }: { items: TradeInboxRow[] }) {
       />
     );
   return (
-    <ul className="space-y-2">
-      {items.map((row) => {
-        const iAmSender = row.direction === "outgoing";
-        const recibi = iAmSender
-          ? row.items.to_gives.reduce((s, i) => s + i.qty, 0)
-          : row.items.from_gives.reduce((s, i) => s + i.qty, 0);
-        const entregue = iAmSender
-          ? row.items.from_gives.reduce((s, i) => s + i.qty, 0)
-          : row.items.to_gives.reduce((s, i) => s + i.qty, 0);
-        return (
-          <li key={row.id} className="rounded-md border border-line bg-white p-3">
-            <CardHeader row={row} />
-            <TradeSummary recibi={recibi} entregue={entregue} />
-            <InboxActions reqId={row.id} variant="accepted" />
-          </li>
-        );
-      })}
-    </ul>
+    <>
+      <FlowHint text="Estos intercambios ya están acordados. Cuando os encontréis y os deis los cromos físicos, pulsa “Marcar realizado”: tus cromos en el álbum se actualizan al instante para ambos." />
+      <ul className="space-y-2">
+        {items.map((row) => {
+          const iAmSender = row.direction === "outgoing";
+          const recibeNs = iAmSender
+            ? row.items.to_gives.map((i) => i.n)
+            : row.items.from_gives.map((i) => i.n);
+          const entregaNs = iAmSender
+            ? row.items.from_gives.map((i) => i.n)
+            : row.items.to_gives.map((i) => i.n);
+          return (
+            <li key={row.id} className="rounded-md border border-line bg-white p-3">
+              <CardHeader row={row} />
+              <TradeSummary recibeNs={recibeNs} entregaNs={entregaNs} />
+              <InboxActions reqId={row.id} variant="accepted" />
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }
 
@@ -323,10 +361,12 @@ function HistorialList({ items }: { items: HistorialItem[] }) {
       {items.map((t) => {
         const initials = t.other.alias.slice(0, 2).toUpperCase();
         const iWasSender = t.direction === "outgoing";
-        const recibi = iWasSender ? t.items.to_gives : t.items.from_gives;
-        const entregue = iWasSender ? t.items.from_gives : t.items.to_gives;
-        const recibiQty = recibi.reduce((s, i) => s + i.qty, 0);
-        const entregueQty = entregue.reduce((s, i) => s + i.qty, 0);
+        const recibeNs = iWasSender
+          ? t.items.to_gives.map((i) => i.n)
+          : t.items.from_gives.map((i) => i.n);
+        const entregaNs = iWasSender
+          ? t.items.from_gives.map((i) => i.n)
+          : t.items.to_gives.map((i) => i.n);
         return (
           <li key={t.id} className="rounded-md border border-line bg-white p-3">
             <div className="flex items-center gap-3">
@@ -345,7 +385,7 @@ function HistorialList({ items }: { items: HistorialItem[] }) {
                 </p>
               </div>
             </div>
-            <TradeSummary recibi={recibiQty} entregue={entregueQty} />
+            <TradeSummary recibeNs={recibeNs} entregaNs={entregaNs} />
           </li>
         );
       })}
