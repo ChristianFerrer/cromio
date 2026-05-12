@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useEffect, useRef } from "react";
 import {
   BookMarked,
   Flag,
@@ -30,6 +31,42 @@ export function BottomNav() {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const { totalUnread, newNearbyCount } = useNotifications();
+  const navRef = useRef<HTMLElement | null>(null);
+
+  // iOS Safari bug: con position:fixed + bottom:0, cuando la URL bar
+  // colapsa/expande o aparece el teclado, el visualViewport cambia pero el
+  // elemento fixed se queda anclado al LAYOUT viewport — eso produce el
+  // "hueco" abajo que el usuario reporta de rato en rato. Compensamos con
+  // un translateY basado en la diferencia entre layout y visual viewport.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const el = navRef.current;
+    if (!el) return;
+
+    let raf = 0;
+    const apply = () => {
+      raf = 0;
+      const offset = window.innerHeight - vv.height - vv.offsetTop;
+      el.style.transform = offset > 0.5 ? `translateY(-${offset}px)` : "";
+    };
+    const schedule = () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(apply);
+    };
+
+    apply();
+    vv.addEventListener("resize", schedule);
+    vv.addEventListener("scroll", schedule);
+    window.addEventListener("orientationchange", schedule);
+    return () => {
+      vv.removeEventListener("resize", schedule);
+      vv.removeEventListener("scroll", schedule);
+      window.removeEventListener("orientationchange", schedule);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
 
   // Hide on chat detail (/chat/[id]) and match detail (/match/[id]) so the
   // input / sticky CTA can sit at the bottom of the viewport.
@@ -40,12 +77,12 @@ export function BottomNav() {
 
   return (
     <nav
+      ref={navRef}
       aria-label="Primary"
       // Altura fija (incluye safe-area) para que la barra nunca cambie de
-      // tamaño entre rutas: clave para que el menú "no se suba" cuando
-      // navegas en iOS Safari (donde la URL bar al colapsarse cambia el
-      // viewport y, si el padding depende de eso, la barra parece moverse).
-      // Hacemos: una franja fija en altura física, con safe-area DENTRO.
+      // tamaño entre rutas. La posición real la corrige el efecto de
+      // visualViewport arriba — bottom:0 es el ancla; translateY compensa
+      // cuando iOS Safari deja gap entre el layout y el visual viewport.
       style={{
         height: "calc(58px + env(safe-area-inset-bottom))",
         paddingBottom: "env(safe-area-inset-bottom)",
