@@ -3,10 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Cromio · Mockup — Radar (mapa)</title>
+    <title>Cromio · Mockup — Radar (Estadio nocturno)</title>
     <link rel="stylesheet" href="_tokens.css" />
     <link rel="stylesheet" href="_components.css" />
     <style>
+      body { overflow: hidden; }
       .map-frame {
         position: relative;
         min-height: 100dvh;
@@ -19,18 +20,14 @@
         position: absolute;
         inset: 0;
         background:
-          /* Streets — diagonal lighter lines */
           linear-gradient(60deg, transparent 47%, rgba(255, 255, 255, 0.06) 47%, rgba(255, 255, 255, 0.06) 53%, transparent 53%),
           linear-gradient(120deg, transparent 47%, rgba(255, 255, 255, 0.045) 47%, rgba(255, 255, 255, 0.045) 53%, transparent 53%),
-          /* Grid */
           linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
           linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
           radial-gradient(ellipse at 30% 40%, rgba(31, 174, 90, 0.04), transparent 50%),
           var(--map-bg);
         background-size: 200px 200px, 240px 240px, 32px 32px, 32px 32px, 100% 100%, 100% 100%;
       }
-
-      /* Light theme: simulate Positron */
       [data-theme="light"] .map-canvas {
         background:
           linear-gradient(60deg, transparent 47%, rgba(0, 0, 0, 0.05) 47%, rgba(0, 0, 0, 0.05) 53%, transparent 53%),
@@ -41,66 +38,38 @@
         background-size: 200px 200px, 240px 240px, 32px 32px, 32px 32px, 100% 100%;
       }
 
-      /* Radius circle (L.circle replacement) */
       .map-radius {
         position: absolute;
-        left: 50%;
-        top: 50%;
-        width: 280px;
-        height: 280px;
-        margin-left: -140px;
-        margin-top: -140px;
+        left: 50%; top: 50%;
+        width: 280px; height: 280px;
+        margin-left: -140px; margin-top: -140px;
         border-radius: 50%;
         border: 1.5px solid var(--map-radius-stroke);
         background: var(--map-radius-fill);
         pointer-events: none;
       }
-
-      /* Sweep */
       .map-sweep {
         position: absolute;
-        left: 50%;
-        top: 50%;
-        width: 280px;
-        height: 280px;
-        margin-left: -140px;
-        margin-top: -140px;
+        left: 50%; top: 50%;
+        width: 280px; height: 280px;
+        margin-left: -140px; margin-top: -140px;
         border-radius: 50%;
         background: conic-gradient(from 0deg, rgba(31, 174, 90, 0) 0%, rgba(31, 174, 90, 0.18) 6%, rgba(31, 174, 90, 0) 25%);
         animation: cromio-sweep 5s linear infinite;
         pointer-events: none;
       }
-
-      /* Self dot */
       .map-self {
         position: absolute;
-        left: 50%;
-        top: 50%;
+        left: 50%; top: 50%;
         transform: translate(-50%, -50%);
         z-index: 5;
       }
-
-      /* Pins */
       .map-pin {
         position: absolute;
         animation: cromio-pin-drop 350ms var(--ease-bounce) both;
         z-index: 6;
       }
 
-      .pin-with-trade {
-        position: absolute;
-        top: -2px;
-        right: -2px;
-        width: 14px;
-        height: 14px;
-        border-radius: 50%;
-        background: var(--danger);
-        border: 2px solid var(--bg-base);
-        z-index: 10;
-        animation: cromio-badge-pop 280ms var(--ease-bounce);
-      }
-
-      /* Top bar */
       .map-top {
         position: absolute;
         top: 0; left: 0; right: 0;
@@ -142,7 +111,6 @@
         z-index: 30;
       }
 
-      /* Radius card */
       .map-radius-card {
         position: absolute;
         left: var(--space-3);
@@ -192,22 +160,16 @@
         font-weight: var(--fw-bold);
         color: var(--text-secondary);
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
       }
       .map-radius-chips button.is-active {
         background: var(--brand-500);
         color: white;
       }
-      .map-radius-chips button.is-locked {
-        opacity: 0.5;
-        position: relative;
-      }
-      .map-radius-chips button.is-locked::after {
-        content: "🔒";
-        margin-left: 4px;
-        font-size: 10px;
-      }
+      .map-radius-chips button.is-locked { opacity: 0.5; }
 
-      /* Bottom nav */
       .nav-bottom {
         position: absolute;
         bottom: 0; left: 0; right: 0;
@@ -217,9 +179,7 @@
         border-top: 1px solid var(--border-subtle);
         padding-bottom: env(safe-area-inset-bottom);
       }
-      [data-theme="light"] .nav-bottom {
-        background: rgba(255, 255, 255, 0.88);
-      }
+      [data-theme="light"] .nav-bottom { background: rgba(255, 255, 255, 0.88); }
       .nav-bottom-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
@@ -237,32 +197,33 @@
         font-size: 10px;
         cursor: pointer;
         font-weight: var(--fw-medium);
+        position: relative;
       }
       .nav-item.is-active {
         color: var(--text-primary);
         font-weight: var(--fw-bold);
       }
-      .nav-icon {
-        width: 24px;
-        height: 24px;
+      .nav-icon-wrap {
+        position: relative;
+        width: 28px;
+        height: 28px;
         display: grid;
         place-items: center;
-      }
-      .nav-item.is-active .nav-icon {
-        background: var(--brand-bg);
         border-radius: var(--radius-sm);
+      }
+      .nav-item.is-active .nav-icon-wrap {
+        background: var(--brand-bg);
         color: var(--brand-300);
       }
-
       .nav-badge {
         position: absolute;
-        top: 4px;
-        right: 28%;
-        width: 16px; height: 16px;
-        border-radius: 50%;
+        top: -2px;
+        right: -4px;
+        min-width: 16px; height: 16px; padding: 0 4px;
+        border-radius: var(--radius-full);
         background: var(--danger);
         color: white;
-        font-size: 10px;
+        font-size: 9px;
         font-weight: var(--fw-bold);
         display: grid;
         place-items: center;
@@ -270,7 +231,6 @@
       }
       [data-theme="light"] .nav-badge { border-color: var(--bg-surface); }
 
-      /* Attribution */
       .map-attribution {
         position: absolute;
         bottom: 86px;
@@ -282,96 +242,103 @@
         border-radius: var(--radius-xs);
         z-index: 20;
       }
-      .map-attribution a {
-        color: inherit;
-        text-decoration: underline;
-      }
-
-      .invisible-banner {
-        position: absolute;
-        top: 64px; left: var(--space-3); right: var(--space-3);
-        z-index: 28;
-        background: var(--warning-bg);
-        color: var(--warning);
-        border: 1px solid var(--warning);
-        border-radius: var(--radius-md);
-        padding: var(--space-2) var(--space-3);
-        font-size: var(--text-xs);
-        display: none;
-        align-items: center;
-        gap: var(--space-2);
-      }
-      .invisible-banner.is-on { display: flex; }
+      .map-attribution a { color: inherit; text-decoration: underline; }
     </style>
   </head>
   <body>
     <button class="mockup-theme-toggle" id="themeToggle">DARK</button>
 
+    <!-- Reusable SVG icon symbol sprite -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="i-map" viewBox="0 0 24 24"><path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15"/><path d="M15 6v15"/></symbol>
+      <symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></symbol>
+      <symbol id="i-locate" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+      <symbol id="i-album" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16l7-3 7 3Z"/></symbol>
+      <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/><path d="M12 3a9 9 0 0 1 9 9"/></symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24"><path d="M4 22V4"/><path d="M4 4h13l-2 4 2 4H4"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+      <symbol id="i-chevron-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+    </svg>
+
     <main class="mockup-frame">
       <div class="map-frame">
         <div class="map-canvas"></div>
 
-        <!-- Radius + sweep + self -->
         <div class="map-radius"></div>
         <div class="map-sweep"></div>
         <div class="map-self"><div class="me-dot"></div></div>
 
-        <!-- Pins (8 visibles + 1 cluster) -->
-        <div class="map-pin" style="left: 24%; top: 30%;">
+        <!-- Pines v2: frontales, con counts ▼N ▲N visibles -->
+        <div class="map-pin" style="left: 18%; top: 24%;">
+          <div class="pin" data-kind="match" data-trade-active>
+            <div class="pin-counts">
+              <span class="pin-tri-down"></span><span class="pin-num">1</span>
+              <span class="pin-tri-up"></span><span class="pin-num">7</span>
+            </div>
+            <div class="pin-body"><div class="pin-avatar">DE</div></div>
+          </div>
+        </div>
+        <div class="map-pin" style="left: 56%; top: 22%; animation-delay: 80ms;">
           <div class="pin" data-kind="match">
-            <span class="pin-teardrop"></span>
-            <span class="pin-avatar">DE</span>
-            <span class="pin-with-trade" title="Trade activo"></span>
+            <div class="pin-counts">
+              <span class="pin-tri-down"></span><span class="pin-num">2</span>
+              <span class="pin-tri-up"></span><span class="pin-num">6</span>
+            </div>
+            <div class="pin-body"><div class="pin-avatar">PA</div></div>
           </div>
         </div>
-        <div class="map-pin" style="left: 60%; top: 28%; animation-delay: 80ms;">
-          <div class="pin" data-kind="lead">
-            <span class="pin-teardrop"></span>
-            <span class="pin-avatar">PA</span>
-          </div>
-        </div>
-        <div class="map-pin" style="left: 36%; top: 52%; animation-delay: 160ms;">
+        <div class="map-pin" style="left: 36%; top: 48%; animation-delay: 160ms;">
           <div class="pin" data-kind="match">
-            <span class="pin-teardrop"></span>
-            <span class="pin-avatar">CF</span>
+            <div class="pin-counts">
+              <span class="pin-tri-down"></span><span class="pin-num">1</span>
+              <span class="pin-tri-up"></span><span class="pin-num">7</span>
+            </div>
+            <div class="pin-body"><div class="pin-avatar">CF</div></div>
           </div>
         </div>
-        <div class="map-pin" style="left: 70%; top: 56%; animation-delay: 220ms;">
+        <div class="map-pin" style="left: 68%; top: 54%; animation-delay: 220ms;">
           <div class="pin" data-kind="gold">
-            <span class="pin-teardrop"></span>
-            <span class="pin-avatar">JM</span>
+            <div class="pin-counts">
+              <span class="pin-tri-down"></span><span class="pin-num">3</span>
+              <span class="pin-tri-up"></span><span class="pin-num">9</span>
+            </div>
+            <div class="pin-body"><div class="pin-avatar">JM</div></div>
           </div>
         </div>
-        <div class="map-pin" style="left: 16%; top: 60%; animation-delay: 280ms;">
-          <div class="pin" data-kind="match">
-            <span class="pin-teardrop"></span>
-            <span class="pin-avatar">LS</span>
+        <div class="map-pin" style="left: 14%; top: 60%; animation-delay: 280ms;">
+          <div class="pin" data-kind="lead">
+            <div class="pin-counts">
+              <span class="pin-tri-down"></span><span class="pin-num">4</span>
+              <span class="pin-tri-up"></span><span class="pin-num">0</span>
+            </div>
+            <div class="pin-body"><div class="pin-avatar">LS</div></div>
           </div>
         </div>
-        <div class="map-pin" style="left: 82%; top: 40%; animation-delay: 320ms;">
+        <div class="map-pin" style="left: 82%; top: 38%; animation-delay: 320ms;">
           <div class="pin-cluster">12</div>
         </div>
 
-        <!-- Top bar -->
         <div class="map-top">
           <div></div>
           <div class="map-tabs">
-            <button class="is-active" title="Mapa">🗺️</button>
-            <button title="Lista">☰</button>
+            <button class="is-active" title="Mapa" aria-label="Mapa"><svg class="icon icon-sm"><use href="#i-map"/></svg></button>
+            <button title="Lista" aria-label="Lista"><svg class="icon icon-sm"><use href="#i-list"/></svg></button>
           </div>
-          <button class="icon-btn" title="Refrescar" aria-label="Refrescar">↻</button>
+          <button class="icon-btn" title="Refrescar" aria-label="Refrescar"><svg class="icon icon-sm"><use href="#i-refresh"/></svg></button>
         </div>
 
-        <!-- Locate button -->
-        <button class="icon-btn map-cta-locate" title="Centrar mi ubicación" aria-label="Centrar">⊕</button>
+        <button class="icon-btn map-cta-locate" title="Centrar mi ubicación" aria-label="Centrar">
+          <svg class="icon icon-sm"><use href="#i-locate"/></svg>
+        </button>
 
-        <!-- Attribution -->
         <p class="map-attribution">
           © <a href="https://www.openstreetmap.org/copyright">OSM</a> · ©
           <a href="https://carto.com/attributions">CARTO</a>
         </p>
 
-        <!-- Radius card -->
         <div class="map-radius-card">
           <div class="map-radius-card-top">
             <span class="map-radius-card-label">Radio de búsqueda</span>
@@ -382,38 +349,19 @@
             <button class="is-active">500m</button>
             <button>1km</button>
             <button>2km</button>
-            <button class="is-locked">5km</button>
-            <button class="is-locked">10km</button>
-            <button class="is-locked">50km</button>
+            <button class="is-locked"><svg class="icon icon-sm" style="width:12px;height:12px"><use href="#i-lock"/></svg>5km</button>
+            <button class="is-locked"><svg class="icon icon-sm" style="width:12px;height:12px"><use href="#i-lock"/></svg>10km</button>
+            <button class="is-locked"><svg class="icon icon-sm" style="width:12px;height:12px"><use href="#i-lock"/></svg>50km</button>
           </div>
         </div>
 
-        <!-- Bottom nav -->
         <nav class="nav-bottom" aria-label="Primary">
           <div class="nav-bottom-grid">
-            <button class="nav-item">
-              <span class="nav-icon">📒</span>
-              <span>Álbum</span>
-            </button>
-            <button class="nav-item is-active">
-              <span class="nav-icon" style="position: relative;">
-                ⚲
-                <span class="nav-badge">3</span>
-              </span>
-              <span>Radar</span>
-            </button>
-            <button class="nav-item">
-              <span class="nav-icon">🚩</span>
-              <span>Contactos</span>
-            </button>
-            <button class="nav-item">
-              <span class="nav-icon">💬</span>
-              <span>Chats</span>
-            </button>
-            <button class="nav-item">
-              <span class="nav-icon">👤</span>
-              <span>Perfil</span>
-            </button>
+            <button class="nav-item"><span class="nav-icon-wrap"><svg class="icon"><use href="#i-album"/></svg></span><span>Álbum</span></button>
+            <button class="nav-item is-active"><span class="nav-icon-wrap"><svg class="icon"><use href="#i-radar"/></svg><span class="nav-badge">3</span></span><span>Radar</span></button>
+            <button class="nav-item"><span class="nav-icon-wrap"><svg class="icon"><use href="#i-flag"/></svg></span><span>Contactos</span></button>
+            <button class="nav-item"><span class="nav-icon-wrap"><svg class="icon"><use href="#i-chat"/></svg></span><span>Chats</span></button>
+            <button class="nav-item"><span class="nav-icon-wrap"><svg class="icon"><use href="#i-user"/></svg></span><span>Perfil</span></button>
           </div>
         </nav>
       </div>

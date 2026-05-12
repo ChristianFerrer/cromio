@@ -1,0 +1,172 @@
+/* Cromio · Components — Overrides para «Fiesta mundialista»
+ *
+ * Importa _tokens-fiesta.css + _components.css ANTES de este archivo.
+ * Solo contiene los overrides específicos de la dirección: pin
+ * coloreado por selección, cromo de fondo plano + color de país,
+ * acentos secundarios para CTAs.
+ */
+
+/* ============================================================
+ * Tipografía display: Cabinet Grotesk en lugar de Geist
+ * (ya viene del token --font-display, así que esto solo refuerza)
+ * ============================================================ */
+
+.display, h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+
+/* ============================================================
+ * Botón primary con vibe festivo: acento red por defecto
+ * ============================================================ */
+
+.btn-primary {
+  background: var(--accent-red);
+  color: white;
+  box-shadow: var(--shadow-glow-danger);
+}
+.btn-primary:hover { background: var(--accent-violet); }
+
+.btn-accent-blue {
+  background: var(--accent-blue);
+  color: white;
+  border: 0;
+}
+.btn-accent-gold {
+  background: var(--accent-gold);
+  color: #1A1500;
+  border: 0;
+}
+
+/* ============================================================
+ * Pin por selección — el pin coge el color del país del coleccionista.
+ * Aplicamos el color via custom property en el wrapper:
+ *   <div class="pin pin-country" style="--country-stripe-1: #...; ...">
+ * o usando keywords (data-country="ARG" / "BRA" / "FRA" / "MEX" / ...).
+ * ============================================================ */
+
+.pin[data-country="ARG"] {
+  --pin-accent: #ffd60a;
+  --pin-avatar-bg: linear-gradient(180deg, #74acdf 0 33%, #fcfcfc 33% 66%, #74acdf 66%);
+  --pin-avatar-color: #0E120F;
+}
+.pin[data-country="BRA"] {
+  --pin-accent: #ffd60a;
+  --pin-avatar-bg: #009c3b;
+  --pin-avatar-color: #ffd60a;
+}
+.pin[data-country="FRA"] {
+  --pin-accent: var(--accent-red);
+  --pin-avatar-bg: linear-gradient(90deg, #002395 0 33%, #fff 33% 66%, #ed2939 66%);
+  --pin-avatar-color: #0E120F;
+}
+.pin[data-country="MEX"] {
+  --pin-accent: #006847;
+  --pin-avatar-bg: linear-gradient(90deg, #006847 0 33%, #fff 33% 66%, #ce1126 66%);
+  --pin-avatar-color: #0E120F;
+}
+.pin[data-country="ESP"] {
+  --pin-accent: #aa151b;
+  --pin-avatar-bg: linear-gradient(180deg, #aa151b 0 33%, #f1bf00 33% 66%, #aa151b 66%);
+  --pin-avatar-color: #aa151b;
+}
+.pin[data-country="USA"] {
+  --pin-accent: var(--accent-blue);
+  --pin-avatar-bg: #3c3b6e;
+  --pin-avatar-color: white;
+}
+.pin[data-country="ITA"] {
+  --pin-accent: var(--accent-red);
+  --pin-avatar-bg: linear-gradient(90deg, #008c45 0 33%, #fff 33% 66%, #cd212a 66%);
+  --pin-avatar-color: #008c45;
+}
+
+/* Counts chip mantiene fondo neutro; las puntas heredan colores
+ * de las variables del pin para coherencia. */
+.pin[data-country] .pin-counts .pin-tri-down {
+  border-top-color: var(--brand-500);
+}
+.pin[data-country] .pin-counts .pin-tri-up {
+  border-bottom-color: var(--accent-red);
+}
+
+/* ============================================================
+ * Cromos por selección — bloque sólido del color del país en
+ * fondo, tipografía display gigante, sin sombras pesadas.
+ * Activado vía data-country en la card.
+ * ============================================================ */
+
+.cromo[data-country="ARG"] {
+  background: linear-gradient(180deg, #74acdf 0 33%, #ffd60a 33% 66%, #74acdf 66%);
+  border-color: transparent;
+  color: #0E120F;
+}
+.cromo[data-country="BRA"] {
+  background: #009c3b;
+  border-color: transparent;
+  color: #ffd60a;
+}
+.cromo[data-country="FRA"] {
+  background: linear-gradient(90deg, #002395 0 33%, #fff 33% 66%, #ed2939 66%);
+  border-color: transparent;
+  color: #0E120F;
+}
+.cromo[data-country="MEX"] {
+  background: linear-gradient(90deg, #006847 0 33%, #fff 33% 66%, #ce1126 66%);
+  border-color: transparent;
+  color: #0E120F;
+}
+.cromo[data-country="ESP"] {
+  background: linear-gradient(180deg, #aa151b 0 33%, #f1bf00 33% 66%, #aa151b 66%);
+  border-color: transparent;
+  color: #fff;
+}
+.cromo[data-country="USA"] {
+  background: linear-gradient(180deg, #3c3b6e 0 50%, #bf0a30 50%);
+  border-color: transparent;
+  color: #fff;
+}
+
+/* Color del code y meta dentro del cromo por país */
+.cromo[data-country] .cromo-code,
+.cromo[data-country] .cromo-bottom { color: inherit; }
+.cromo[data-country] .cromo-pill {
+  background: rgba(255, 255, 255, 0.22);
+  color: inherit;
+}
+.cromo[data-country="ARG"] .cromo-pill,
+.cromo[data-country="FRA"] .cromo-pill,
+.cromo[data-country="MEX"] .cromo-pill {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+/* Legendarios: gradient gold sólido en lugar de foil sutil */
+.cromo[data-rarity="legendary"] {
+  background: linear-gradient(120deg, #FFE065, #F5C518 50%, #FFE065);
+  border-color: transparent;
+  color: #1A1500;
+}
+.cromo[data-rarity="legendary"] .cromo-code,
+.cromo[data-rarity="legendary"] .cromo-bottom { color: inherit; }
+.cromo[data-rarity="legendary"]::before { display: none; }
+.cromo[data-rarity="legendary"] .cromo-pill {
+  background: rgba(0, 0, 0, 0.15);
+  color: #1A1500;
+}
+
+/* Repe: badge ×N en esquina top-right como en álbum físico */
+.cromo[data-state="repe"]::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--accent-red);
+  color: white;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: var(--fw-black);
+  box-shadow: 0 4px 10px rgba(229, 0, 109, 0.3);
+  z-index: 3;
+}

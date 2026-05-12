@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cromio · Mockup — Onboarding + pre-prompts</title>
+    <link rel="stylesheet" href="_tokens-fiesta.css" />
+    <link rel="stylesheet" href="_components.css" />
+    <link rel="stylesheet" href="_components-fiesta.css" />
+    <style>
+      .mockup-frame { padding: var(--space-12) var(--space-5) var(--space-6); }
+      .stepper {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-bottom: var(--space-6);
+      }
+      .stepper-back {
+        width: 36px; height: 36px;
+        display: grid; place-items: center;
+        border-radius: var(--radius-md);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        cursor: pointer;
+      }
+      .stepper-info { flex: 1; }
+      .stepper-meta { font-size: var(--text-2xs); color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.12em; }
+      .stepper-title { font-family: var(--font-display); font-size: var(--text-lg); }
+      .stepper-bars { display: flex; gap: var(--space-1); width: 80px; }
+      .stepper-bars span { height: 3px; flex: 1; border-radius: var(--radius-full); background: var(--border-default); }
+      .stepper-bars span.is-on { background: var(--brand-500); }
+
+      .pre-illustration {
+        margin: 0 auto var(--space-6);
+        width: 168px;
+        height: 168px;
+        position: relative;
+        display: grid;
+        place-items: center;
+      }
+      .pre-illustration .pulse {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        background: radial-gradient(circle at center, var(--brand-bg), transparent 70%);
+      }
+      .pre-illustration .pulse-ring {
+        position: absolute;
+        inset: 16px;
+        border-radius: 50%;
+        border: 1.5px solid var(--brand-400);
+        opacity: 0.4;
+        animation: cromio-pulse-self 2.6s linear infinite;
+      }
+      .pre-illustration .pulse-ring:nth-child(2) { animation-delay: 1.3s; opacity: 0.25; }
+      .pre-illustration svg { position: relative; z-index: 1; }
+
+      .pre-title {
+        font-family: var(--font-display);
+        font-size: var(--text-3xl);
+        font-weight: var(--fw-black);
+        line-height: 1.05;
+        text-align: center;
+        margin-bottom: var(--space-3);
+      }
+      .pre-sub {
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: var(--text-base);
+        line-height: 1.5;
+        max-width: 36ch;
+        margin: 0 auto var(--space-6);
+      }
+      .pre-bullets {
+        list-style: none;
+        padding: 0;
+        margin: 0 auto var(--space-8);
+        max-width: 36ch;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+      }
+      .pre-bullets li {
+        display: flex;
+        align-items: start;
+        gap: var(--space-3);
+        font-size: var(--text-sm);
+        color: var(--text-primary);
+      }
+      .pre-bullets .check {
+        flex-shrink: 0;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--brand-bg);
+        color: var(--brand-300);
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+      }
+      .pre-actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+      }
+      .pre-meta {
+        margin-top: var(--space-4);
+        font-size: var(--text-2xs);
+        color: var(--text-tertiary);
+        text-align: center;
+      }
+
+      /* Antes/después note */
+      .before-note {
+        position: fixed;
+        left: 12px;
+        bottom: 12px;
+        right: 12px;
+        max-width: 430px;
+        margin: 0 auto;
+        font-size: var(--text-2xs);
+        color: var(--text-tertiary);
+        background: var(--bg-surface);
+        border: 1px dashed var(--border-default);
+        border-radius: var(--radius-md);
+        padding: var(--space-2) var(--space-3);
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="mockup-theme-toggle" id="themeToggle">DARK</button>
+
+    <main class="mockup-frame">
+      <div class="stepper">
+        <button class="stepper-back" aria-label="Atrás">‹</button>
+        <div class="stepper-info">
+          <p class="stepper-meta">Paso 2 de 3</p>
+          <p class="stepper-title">Activar radar</p>
+        </div>
+        <div class="stepper-bars">
+          <span class="is-on"></span>
+          <span class="is-on"></span>
+          <span></span>
+        </div>
+      </div>
+
+      <div class="pre-illustration" aria-hidden="true">
+        <div class="pulse"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle cx="40" cy="40" r="20" fill="none" stroke="var(--brand-300)" stroke-width="2"/>
+          <circle cx="40" cy="40" r="6" fill="var(--brand-400)"/>
+          <circle cx="55" cy="52" r="3" fill="var(--brand-300)"/>
+        </svg>
+      </div>
+
+      <h1 class="pre-title">¿Activamos<br />tu radar?</h1>
+      <p class="pre-sub">
+        Necesitamos tu ubicación aproximada para mostrarte
+        coleccionistas a tu alrededor (200 m a 10 km).
+      </p>
+
+      <ul class="pre-bullets">
+        <li><span class="check">✓</span><span>Solo guardamos una zona difusa, no tu calle.</span></li>
+        <li><span class="check">✓</span><span>Puedes activar el modo invisible cuando quieras.</span></li>
+        <li><span class="check">✓</span><span>Solo se usa mientras tienes Cromio abierto.</span></li>
+      </ul>
+
+      <div class="pre-actions">
+        <button class="btn btn-primary btn-lg btn-full">
+          Activar ubicación
+        </button>
+        <button class="btn btn-ghost btn-lg btn-full">Ahora no</button>
+      </div>
+
+      <p class="pre-meta">
+        Si dices "ahora no" puedes activarla más tarde desde el perfil.
+      </p>
+    </main>
+
+    <p class="before-note">
+      <strong>Antes</strong>: el onboarding actual llama a
+      <code>navigator.geolocation.getCurrentPosition()</code> directamente al
+      pulsar "Compartir ubicación", sin explicar antes lo que se hace con el
+      dato. Tasa esperada de denegación &gt; 40%. Si el usuario rechaza, no
+      hay flow de recuperación.
+    </p>
+
+    <script>
+      const toggle = document.getElementById("themeToggle");
+      const setTheme = (t) => {
+        document.documentElement.setAttribute("data-theme", t);
+        toggle.textContent = t.toUpperCase();
+      };
+      toggle.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        setTheme(cur === "dark" ? "light" : "dark");
+      });
+      setTheme("light");
+    </script>
+  </body>
+</html>

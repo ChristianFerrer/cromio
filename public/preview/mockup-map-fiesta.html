@@ -3,9 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Cromio · Mockup — Radar (Estadio nocturno)</title>
-    <link rel="stylesheet" href="_tokens.css" />
+    <title>Cromio · Mockup — Radar (Fiesta mundialista)</title>
+    <link rel="stylesheet" href="_tokens-fiesta.css" />
     <link rel="stylesheet" href="_components.css" />
+    <link rel="stylesheet" href="_components-fiesta.css" />
     <style>
       body { overflow: hidden; }
       .map-frame {
@@ -273,7 +274,7 @@
 
         <!-- Pines v2: frontales, con counts ▼N ▲N visibles -->
         <div class="map-pin" style="left: 18%; top: 24%;">
-          <div class="pin" data-kind="match" data-trade-active>
+          <div class="pin" data-country="ARG" data-trade-active>
             <div class="pin-counts">
               <span class="pin-tri-down"></span><span class="pin-num">1</span>
               <span class="pin-tri-up"></span><span class="pin-num">7</span>
@@ -282,7 +283,7 @@
           </div>
         </div>
         <div class="map-pin" style="left: 56%; top: 22%; animation-delay: 80ms;">
-          <div class="pin" data-kind="match">
+          <div class="pin" data-country="BRA">
             <div class="pin-counts">
               <span class="pin-tri-down"></span><span class="pin-num">2</span>
               <span class="pin-tri-up"></span><span class="pin-num">6</span>
@@ -291,7 +292,7 @@
           </div>
         </div>
         <div class="map-pin" style="left: 36%; top: 48%; animation-delay: 160ms;">
-          <div class="pin" data-kind="match">
+          <div class="pin" data-country="FRA">
             <div class="pin-counts">
               <span class="pin-tri-down"></span><span class="pin-num">1</span>
               <span class="pin-tri-up"></span><span class="pin-num">7</span>
@@ -300,7 +301,7 @@
           </div>
         </div>
         <div class="map-pin" style="left: 68%; top: 54%; animation-delay: 220ms;">
-          <div class="pin" data-kind="gold">
+          <div class="pin" data-country="MEX">
             <div class="pin-counts">
               <span class="pin-tri-down"></span><span class="pin-num">3</span>
               <span class="pin-tri-up"></span><span class="pin-num">9</span>
@@ -309,7 +310,7 @@
           </div>
         </div>
         <div class="map-pin" style="left: 14%; top: 60%; animation-delay: 280ms;">
-          <div class="pin" data-kind="lead">
+          <div class="pin" data-country="USA">
             <div class="pin-counts">
               <span class="pin-tri-down"></span><span class="pin-num">4</span>
               <span class="pin-tri-up"></span><span class="pin-num">0</span>
@@ -377,7 +378,7 @@
         const cur = document.documentElement.getAttribute("data-theme") || "dark";
         setTheme(cur === "dark" ? "light" : "dark");
       });
-      setTheme("dark");
+      setTheme("light");
     </script>
   </body>
 </html>

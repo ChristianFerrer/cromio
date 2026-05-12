@@ -4,8 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Cromio · Mockup — Álbum</title>
-    <link rel="stylesheet" href="_tokens.css" />
+    <link rel="stylesheet" href="_tokens-fiesta.css" />
     <link rel="stylesheet" href="_components.css" />
+    <link rel="stylesheet" href="_components-fiesta.css" />
     <style>
       .mockup-frame { padding: 0 0 96px; }
       .album-header {
@@ -165,20 +166,20 @@
       </div>
 
       <div class="album-grid">
-        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Escudo</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA1</span><span class="cromo-bottom"><span>Brasil</span><span>—</span></span></div>
-        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Equipo</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA2</span><span class="cromo-bottom"><span>Brasil</span><span>—</span></span></div>
-        <div class="cromo" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA3</span><span class="cromo-bottom"><span>Brasil</span><span>×2</span></span></div>
+        <div class="cromo" data-state="owned" data-country="BRA"><span class="cromo-top"><span class="cromo-pill">Escudo</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA1</span><span class="cromo-bottom"><span>Brasil</span><span>—</span></span></div>
+        <div class="cromo" data-state="owned" data-country="BRA"><span class="cromo-top"><span class="cromo-pill">Equipo</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA2</span><span class="cromo-bottom"><span>Brasil</span><span>—</span></span></div>
+        <div class="cromo" data-state="repe" data-country="BRA" data-count="×2"><span class="cromo-top"><span class="cromo-pill">Repe</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA3</span><span class="cromo-bottom"><span>Brasil</span><span>×2</span></span></div>
 
         <div class="cromo" data-state="empty"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA4</span><span class="cromo-bottom"><span>Brasil</span><span>GK</span></span></div>
-        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA5</span><span class="cromo-bottom"><span>Brasil</span><span>DEF</span></span></div>
+        <div class="cromo" data-state="owned" data-country="BRA"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA5</span><span class="cromo-bottom"><span>Brasil</span><span>DEF</span></span></div>
         <div class="cromo" data-state="empty"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA6</span><span class="cromo-bottom"><span>Brasil</span><span>DEF</span></span></div>
 
-        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA7</span><span class="cromo-bottom"><span>Brasil</span><span>MID</span></span></div>
-        <div class="cromo" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA8</span><span class="cromo-bottom"><span>Brasil</span><span>×3</span></span></div>
+        <div class="cromo" data-state="owned" data-country="BRA"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA7</span><span class="cromo-bottom"><span>Brasil</span><span>MID</span></span></div>
+        <div class="cromo" data-state="repe" data-country="BRA" data-count="×2"><span class="cromo-top"><span class="cromo-pill">Repe</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA8</span><span class="cromo-bottom"><span>Brasil</span><span>×3</span></span></div>
         <div class="cromo" data-state="empty"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA9</span><span class="cromo-bottom"><span>Brasil</span><span>MID</span></span></div>
 
         <div class="cromo" data-state="owned" data-rarity="legendary"><span class="cromo-top"><span class="cromo-pill">Legend</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA20</span><span class="cromo-bottom"><span>Brasil</span><span>FWD</span></span></div>
-        <div class="cromo" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA10</span><span class="cromo-bottom"><span>Brasil</span><span>FWD</span></span></div>
+        <div class="cromo" data-state="owned" data-country="BRA"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA10</span><span class="cromo-bottom"><span>Brasil</span><span>FWD</span></span></div>
         <div class="cromo" data-state="empty"><span class="cromo-top"><span class="cromo-pill">Jugador</span><span class="cromo-flag"></span></span><span class="cromo-code">BRA11</span><span class="cromo-bottom"><span>Brasil</span><span>FWD</span></span></div>
       </div>
 
@@ -198,7 +199,7 @@
         const cur = document.documentElement.getAttribute("data-theme") || "dark";
         setTheme(cur === "dark" ? "light" : "dark");
       });
-      setTheme("dark");
+      setTheme("light");
     </script>
   </body>
 </html>

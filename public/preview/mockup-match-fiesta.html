@@ -4,8 +4,9 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Cromio · Mockup — Detalle de coleccionista (Match)</title>
-    <link rel="stylesheet" href="_tokens.css" />
+    <link rel="stylesheet" href="_tokens-fiesta.css" />
     <link rel="stylesheet" href="_components.css" />
+    <link rel="stylesheet" href="_components-fiesta.css" />
     <style>
       .mockup-frame { padding: 0 0 120px; }
 
@@ -263,8 +264,8 @@
       <section class="match-section">
         <h3>Cromos que recibes <span class="tip">tap para seleccionar</span></h3>
         <div class="cromos-row">
-          <div class="cromo cromo-sm" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">ARG10</span><span class="cromo-bottom"><span>ARG</span><span>FWD</span></span></div>
-          <div class="cromo cromo-sm" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Equipo</span></span><span class="cromo-code">ARG2</span><span class="cromo-bottom"><span>ARG</span></span></div>
+          <div class="cromo cromo-sm" data-state="owned" data-country="ARG"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">ARG10</span><span class="cromo-bottom"><span>ARG</span><span>FWD</span></span></div>
+          <div class="cromo cromo-sm" data-state="owned" data-country="ARG"><span class="cromo-top"><span class="cromo-pill">Equipo</span></span><span class="cromo-code">ARG2</span><span class="cromo-bottom"><span>ARG</span></span></div>
           <div class="cromo cromo-sm" data-state="empty" style="opacity:.5"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">BRA9</span><span class="cromo-bottom"><span>BRA</span><span>MID</span></span></div>
           <div class="cromo cromo-sm" data-state="empty" style="opacity:.5"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">URU5</span><span class="cromo-bottom"><span>URU</span><span>DEF</span></span></div>
         </div>
@@ -304,7 +305,7 @@
         const cur = document.documentElement.getAttribute("data-theme") || "dark";
         setTheme(cur === "dark" ? "light" : "dark");
       });
-      setTheme("dark");
+      setTheme("light");
     </script>
   </body>
 </html>
