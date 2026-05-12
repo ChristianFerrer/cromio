@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cromio · Mockup — Radar (mapa)</title>
+    <link rel="stylesheet" href="_tokens.css" />
+    <link rel="stylesheet" href="_components.css" />
+    <style>
+      .map-frame {
+        position: relative;
+        min-height: 100dvh;
+        background: var(--map-bg);
+        overflow: hidden;
+      }
+
+      /* Simulated CartoDB Dark Matter tiles */
+      .map-canvas {
+        position: absolute;
+        inset: 0;
+        background:
+          /* Streets — diagonal lighter lines */
+          linear-gradient(60deg, transparent 47%, rgba(255, 255, 255, 0.06) 47%, rgba(255, 255, 255, 0.06) 53%, transparent 53%),
+          linear-gradient(120deg, transparent 47%, rgba(255, 255, 255, 0.045) 47%, rgba(255, 255, 255, 0.045) 53%, transparent 53%),
+          /* Grid */
+          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          radial-gradient(ellipse at 30% 40%, rgba(31, 174, 90, 0.04), transparent 50%),
+          var(--map-bg);
+        background-size: 200px 200px, 240px 240px, 32px 32px, 32px 32px, 100% 100%, 100% 100%;
+      }
+
+      /* Light theme: simulate Positron */
+      [data-theme="light"] .map-canvas {
+        background:
+          linear-gradient(60deg, transparent 47%, rgba(0, 0, 0, 0.05) 47%, rgba(0, 0, 0, 0.05) 53%, transparent 53%),
+          linear-gradient(120deg, transparent 47%, rgba(0, 0, 0, 0.04) 47%, rgba(0, 0, 0, 0.04) 53%, transparent 53%),
+          linear-gradient(rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+          var(--map-bg);
+        background-size: 200px 200px, 240px 240px, 32px 32px, 32px 32px, 100% 100%;
+      }
+
+      /* Radius circle (L.circle replacement) */
+      .map-radius {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 280px;
+        height: 280px;
+        margin-left: -140px;
+        margin-top: -140px;
+        border-radius: 50%;
+        border: 1.5px solid var(--map-radius-stroke);
+        background: var(--map-radius-fill);
+        pointer-events: none;
+      }
+
+      /* Sweep */
+      .map-sweep {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 280px;
+        height: 280px;
+        margin-left: -140px;
+        margin-top: -140px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg, rgba(31, 174, 90, 0) 0%, rgba(31, 174, 90, 0.18) 6%, rgba(31, 174, 90, 0) 25%);
+        animation: cromio-sweep 5s linear infinite;
+        pointer-events: none;
+      }
+
+      /* Self dot */
+      .map-self {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 5;
+      }
+
+      /* Pins */
+      .map-pin {
+        position: absolute;
+        animation: cromio-pin-drop 350ms var(--ease-bounce) both;
+        z-index: 6;
+      }
+
+      .pin-with-trade {
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--danger);
+        border: 2px solid var(--bg-base);
+        z-index: 10;
+        animation: cromio-badge-pop 280ms var(--ease-bounce);
+      }
+
+      /* Top bar */
+      .map-top {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        padding: max(var(--space-3), env(safe-area-inset-top)) var(--space-3) var(--space-3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--space-2);
+        z-index: 30;
+        background: linear-gradient(180deg, var(--bg-base) 0%, transparent 100%);
+      }
+
+      .map-tabs {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-md);
+        padding: 3px;
+        display: inline-flex;
+        gap: 2px;
+      }
+      .map-tabs button {
+        width: 44px; height: 38px;
+        display: grid; place-items: center;
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        color: var(--text-secondary);
+        border-radius: var(--radius-sm);
+      }
+      .map-tabs button.is-active {
+        background: var(--bg-base);
+        color: var(--text-primary);
+      }
+
+      .map-cta-locate {
+        position: absolute;
+        right: var(--space-3);
+        bottom: 180px;
+        z-index: 30;
+      }
+
+      /* Radius card */
+      .map-radius-card {
+        position: absolute;
+        left: var(--space-3);
+        right: var(--space-3);
+        bottom: 96px;
+        z-index: 25;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        padding: var(--space-3) var(--space-4);
+        backdrop-filter: blur(var(--blur-md));
+      }
+      .map-radius-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--space-3);
+      }
+      .map-radius-card-label {
+        font-size: var(--text-2xs);
+        font-weight: var(--fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--text-tertiary);
+      }
+      .map-radius-card-value {
+        font-family: var(--font-display);
+        font-size: var(--text-xl);
+        color: var(--brand-300);
+      }
+      .map-radius-chips {
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .map-radius-chips::-webkit-scrollbar { display: none; }
+      .map-radius-chips button {
+        flex-shrink: 0;
+        height: 44px;
+        padding: 0 var(--space-3);
+        background: var(--bg-overlay);
+        border: 0;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        font-weight: var(--fw-bold);
+        color: var(--text-secondary);
+        cursor: pointer;
+      }
+      .map-radius-chips button.is-active {
+        background: var(--brand-500);
+        color: white;
+      }
+      .map-radius-chips button.is-locked {
+        opacity: 0.5;
+        position: relative;
+      }
+      .map-radius-chips button.is-locked::after {
+        content: "🔒";
+        margin-left: 4px;
+        font-size: 10px;
+      }
+
+      /* Bottom nav */
+      .nav-bottom {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        z-index: 50;
+        background: rgba(14, 18, 15, 0.82);
+        backdrop-filter: blur(var(--blur-lg));
+        border-top: 1px solid var(--border-subtle);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      [data-theme="light"] .nav-bottom {
+        background: rgba(255, 255, 255, 0.88);
+      }
+      .nav-bottom-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        padding: 6px 0;
+      }
+      .nav-item {
+        padding: 8px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        background: transparent;
+        border: 0;
+        color: var(--text-tertiary);
+        font-size: 10px;
+        cursor: pointer;
+        font-weight: var(--fw-medium);
+      }
+      .nav-item.is-active {
+        color: var(--text-primary);
+        font-weight: var(--fw-bold);
+      }
+      .nav-icon {
+        width: 24px;
+        height: 24px;
+        display: grid;
+        place-items: center;
+      }
+      .nav-item.is-active .nav-icon {
+        background: var(--brand-bg);
+        border-radius: var(--radius-sm);
+        color: var(--brand-300);
+      }
+
+      .nav-badge {
+        position: absolute;
+        top: 4px;
+        right: 28%;
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        background: var(--danger);
+        color: white;
+        font-size: 10px;
+        font-weight: var(--fw-bold);
+        display: grid;
+        place-items: center;
+        border: 2px solid var(--bg-base);
+      }
+      [data-theme="light"] .nav-badge { border-color: var(--bg-surface); }
+
+      /* Attribution */
+      .map-attribution {
+        position: absolute;
+        bottom: 86px;
+        right: var(--space-2);
+        font-size: 9.5px;
+        color: var(--text-tertiary);
+        background: var(--map-attribution-bg);
+        padding: 2px 6px;
+        border-radius: var(--radius-xs);
+        z-index: 20;
+      }
+      .map-attribution a {
+        color: inherit;
+        text-decoration: underline;
+      }
+
+      .invisible-banner {
+        position: absolute;
+        top: 64px; left: var(--space-3); right: var(--space-3);
+        z-index: 28;
+        background: var(--warning-bg);
+        color: var(--warning);
+        border: 1px solid var(--warning);
+        border-radius: var(--radius-md);
+        padding: var(--space-2) var(--space-3);
+        font-size: var(--text-xs);
+        display: none;
+        align-items: center;
+        gap: var(--space-2);
+      }
+      .invisible-banner.is-on { display: flex; }
+    </style>
+  </head>
+  <body>
+    <button class="mockup-theme-toggle" id="themeToggle">DARK</button>
+
+    <main class="mockup-frame">
+      <div class="map-frame">
+        <div class="map-canvas"></div>
+
+        <!-- Radius + sweep + self -->
+        <div class="map-radius"></div>
+        <div class="map-sweep"></div>
+        <div class="map-self"><div class="me-dot"></div></div>
+
+        <!-- Pins (8 visibles + 1 cluster) -->
+        <div class="map-pin" style="left: 24%; top: 30%;">
+          <div class="pin" data-kind="match">
+            <span class="pin-teardrop"></span>
+            <span class="pin-avatar">DE</span>
+            <span class="pin-with-trade" title="Trade activo"></span>
+          </div>
+        </div>
+        <div class="map-pin" style="left: 60%; top: 28%; animation-delay: 80ms;">
+          <div class="pin" data-kind="lead">
+            <span class="pin-teardrop"></span>
+            <span class="pin-avatar">PA</span>
+          </div>
+        </div>
+        <div class="map-pin" style="left: 36%; top: 52%; animation-delay: 160ms;">
+          <div class="pin" data-kind="match">
+            <span class="pin-teardrop"></span>
+            <span class="pin-avatar">CF</span>
+          </div>
+        </div>
+        <div class="map-pin" style="left: 70%; top: 56%; animation-delay: 220ms;">
+          <div class="pin" data-kind="gold">
+            <span class="pin-teardrop"></span>
+            <span class="pin-avatar">JM</span>
+          </div>
+        </div>
+        <div class="map-pin" style="left: 16%; top: 60%; animation-delay: 280ms;">
+          <div class="pin" data-kind="match">
+            <span class="pin-teardrop"></span>
+            <span class="pin-avatar">LS</span>
+          </div>
+        </div>
+        <div class="map-pin" style="left: 82%; top: 40%; animation-delay: 320ms;">
+          <div class="pin-cluster">12</div>
+        </div>
+
+        <!-- Top bar -->
+        <div class="map-top">
+          <div></div>
+          <div class="map-tabs">
+            <button class="is-active" title="Mapa">🗺️</button>
+            <button title="Lista">☰</button>
+          </div>
+          <button class="icon-btn" title="Refrescar" aria-label="Refrescar">↻</button>
+        </div>
+
+        <!-- Locate button -->
+        <button class="icon-btn map-cta-locate" title="Centrar mi ubicación" aria-label="Centrar">⊕</button>
+
+        <!-- Attribution -->
+        <p class="map-attribution">
+          © <a href="https://www.openstreetmap.org/copyright">OSM</a> · ©
+          <a href="https://carto.com/attributions">CARTO</a>
+        </p>
+
+        <!-- Radius card -->
+        <div class="map-radius-card">
+          <div class="map-radius-card-top">
+            <span class="map-radius-card-label">Radio de búsqueda</span>
+            <span class="map-radius-card-value tabular">500m</span>
+          </div>
+          <div class="map-radius-chips">
+            <button>200m</button>
+            <button class="is-active">500m</button>
+            <button>1km</button>
+            <button>2km</button>
+            <button class="is-locked">5km</button>
+            <button class="is-locked">10km</button>
+            <button class="is-locked">50km</button>
+          </div>
+        </div>
+
+        <!-- Bottom nav -->
+        <nav class="nav-bottom" aria-label="Primary">
+          <div class="nav-bottom-grid">
+            <button class="nav-item">
+              <span class="nav-icon">📒</span>
+              <span>Álbum</span>
+            </button>
+            <button class="nav-item is-active">
+              <span class="nav-icon" style="position: relative;">
+                ⚲
+                <span class="nav-badge">3</span>
+              </span>
+              <span>Radar</span>
+            </button>
+            <button class="nav-item">
+              <span class="nav-icon">🚩</span>
+              <span>Contactos</span>
+            </button>
+            <button class="nav-item">
+              <span class="nav-icon">💬</span>
+              <span>Chats</span>
+            </button>
+            <button class="nav-item">
+              <span class="nav-icon">👤</span>
+              <span>Perfil</span>
+            </button>
+          </div>
+        </nav>
+      </div>
+    </main>
+
+    <script>
+      const toggle = document.getElementById("themeToggle");
+      const setTheme = (t) => {
+        document.documentElement.setAttribute("data-theme", t);
+        toggle.textContent = t.toUpperCase();
+      };
+      toggle.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        setTheme(cur === "dark" ? "light" : "dark");
+      });
+      setTheme("dark");
+    </script>
+  </body>
+</html>

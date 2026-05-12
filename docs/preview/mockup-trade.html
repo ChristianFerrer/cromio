@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Cromio · Mockup — Trade sheet</title>
+    <link rel="stylesheet" href="_tokens.css" />
+    <link rel="stylesheet" href="_components.css" />
+    <style>
+      body {
+        background: var(--bg-base);
+      }
+      .mockup-frame { padding: 0; }
+      .scrim {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+        backdrop-filter: blur(2px);
+      }
+
+      .sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0; right: 0;
+        max-width: 430px;
+        margin: 0 auto;
+        background: var(--bg-elevated);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        box-shadow: var(--shadow-4);
+        z-index: 50;
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .sheet-handle {
+        width: 40px;
+        height: 4px;
+        background: var(--border-strong);
+        border-radius: var(--radius-full);
+        margin: var(--space-3) auto;
+      }
+      .sheet-header {
+        padding: 0 var(--space-5) var(--space-3);
+        display: flex;
+        gap: var(--space-3);
+        align-items: center;
+      }
+      .sheet-avatar {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        background: var(--brand-700);
+        display: grid;
+        place-items: center;
+        font-family: var(--font-display);
+        font-weight: var(--fw-black);
+        font-size: var(--text-sm);
+        color: white;
+        flex-shrink: 0;
+      }
+      .sheet-header h2 {
+        font-family: var(--font-display);
+        font-size: var(--text-lg);
+        font-weight: var(--fw-bold);
+        line-height: 1.2;
+      }
+      .sheet-header p {
+        font-size: var(--text-xs);
+        color: var(--text-secondary);
+        margin-top: 2px;
+      }
+
+      .sheet-cols {
+        padding: 0 var(--space-3);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+      }
+      .sheet-col {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-md);
+        padding: var(--space-2);
+      }
+      .sheet-col-title {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        justify-content: center;
+        margin-bottom: var(--space-2);
+        padding: var(--space-1) 0;
+      }
+      .sheet-col-title .label {
+        font-family: var(--font-display);
+        font-size: var(--text-2xs);
+        font-weight: var(--fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+      }
+      .sheet-col[data-tint="green"] .label { color: var(--brand-300); }
+      .sheet-col[data-tint="red"]   .label { color: var(--danger); }
+      .sheet-col-title .sep { color: var(--text-tertiary); }
+      .sheet-col-title .count {
+        font-family: var(--font-mono);
+        font-weight: var(--fw-bold);
+        color: inherit;
+      }
+      .sheet-col[data-tint="green"] .count { color: var(--brand-300); }
+      .sheet-col[data-tint="red"]   .count { color: var(--danger); }
+      .triangle-down-css {
+        width: 0; height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 7px solid var(--brand-300);
+      }
+      .triangle-up-css {
+        width: 0; height: 0;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-bottom: 7px solid var(--danger);
+      }
+      .sheet-col-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-1);
+      }
+
+      .sheet-footer {
+        padding: var(--space-4) var(--space-4) var(--space-3);
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        border-top: 1px solid var(--border-subtle);
+        margin-top: var(--space-4);
+      }
+
+      .sheet-meta {
+        text-align: center;
+        font-size: var(--text-2xs);
+        color: var(--text-tertiary);
+        padding: 0 var(--space-5) var(--space-3);
+      }
+
+      /* Confetti container */
+      .confetti {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 60;
+        overflow: hidden;
+        display: none;
+      }
+      .confetti.is-on { display: block; }
+      .confetti span {
+        position: absolute;
+        top: -20px;
+        width: 8px;
+        height: 8px;
+        animation: cromio-confetti-fall 1200ms cubic-bezier(0.1, 0.7, 0.3, 1) forwards;
+      }
+      .confetti span:nth-child(odd) { background: var(--brand-400); border-radius: 50%; }
+      .confetti span:nth-child(even) { background: var(--gold); border-radius: var(--radius-xs); }
+    </style>
+  </head>
+  <body>
+    <button class="mockup-theme-toggle" id="themeToggle">DARK</button>
+
+    <!-- Background context (faded match page) -->
+    <main class="mockup-frame" style="opacity:.25;">
+      <div style="padding: 80px var(--space-5);">
+        <h1 class="display" style="font-size: 24px;">Match</h1>
+        <p style="color: var(--text-secondary); margin-top: 8px;">@delia · 1.2 km</p>
+      </div>
+    </main>
+
+    <div class="scrim"></div>
+
+    <aside class="sheet" aria-label="Solicitud de intercambio">
+      <div class="sheet-handle"></div>
+
+      <div class="sheet-header">
+        <div class="sheet-avatar">DE</div>
+        <div>
+          <h2>Solicitud de @delia</h2>
+          <p>Revisa los cromos y decide.</p>
+        </div>
+      </div>
+
+      <div class="sheet-cols">
+        <div class="sheet-col" data-tint="green">
+          <div class="sheet-col-title">
+            <div class="triangle-down-css"></div>
+            <span class="label">Recibes</span>
+            <span class="sep">–</span>
+            <span class="count tabular">2</span>
+          </div>
+          <div class="sheet-col-grid">
+            <div class="cromo cromo-sm" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Jugador</span></span><span class="cromo-code">ARG10</span><span class="cromo-bottom"><span>ARG</span><span>FWD</span></span></div>
+            <div class="cromo cromo-sm" data-state="owned"><span class="cromo-top"><span class="cromo-pill">Equipo</span></span><span class="cromo-code">ARG2</span><span class="cromo-bottom"><span>ARG</span></span></div>
+          </div>
+        </div>
+
+        <div class="sheet-col" data-tint="red">
+          <div class="sheet-col-title">
+            <div class="triangle-up-css"></div>
+            <span class="label">Entregas</span>
+            <span class="sep">–</span>
+            <span class="count tabular">3</span>
+          </div>
+          <div class="sheet-col-grid">
+            <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">ALG3</span><span class="cromo-bottom"><span>ALG</span><span>×2</span></span></div>
+            <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">ALG5</span><span class="cromo-bottom"><span>ALG</span><span>×2</span></span></div>
+            <div class="cromo cromo-sm" data-state="repe"><span class="cromo-top"><span class="cromo-pill">Repe</span></span><span class="cromo-code">JPN8</span><span class="cromo-bottom"><span>JPN</span><span>×3</span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="sheet-meta">Al aceptar acuerdas el intercambio. Os actualizamos los cromos solo cuando alguno marque «realizado» tras la quedada.</p>
+
+      <div class="sheet-footer">
+        <button class="btn btn-primary btn-lg btn-full" onclick="triggerConfetti()">Aceptar</button>
+        <button class="btn btn-ghost btn-full">Rechazar</button>
+      </div>
+    </aside>
+
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+
+    <script>
+      const toggle = document.getElementById("themeToggle");
+      const setTheme = (t) => {
+        document.documentElement.setAttribute("data-theme", t);
+        toggle.textContent = t.toUpperCase();
+      };
+      toggle.addEventListener("click", () => {
+        const cur = document.documentElement.getAttribute("data-theme") || "dark";
+        setTheme(cur === "dark" ? "light" : "dark");
+      });
+      setTheme("dark");
+
+      // Mini confetti — solo demo de la signature animation
+      function triggerConfetti() {
+        const wrap = document.getElementById("confetti");
+        wrap.classList.add("is-on");
+        wrap.innerHTML = "";
+        for (let i = 0; i < 22; i++) {
+          const s = document.createElement("span");
+          s.style.left = Math.random() * 100 + "%";
+          s.style.animationDelay = Math.random() * 200 + "ms";
+          s.style.transform = "rotate(" + (Math.random() * 360) + "deg)";
+          wrap.appendChild(s);
+        }
+        setTimeout(() => wrap.classList.remove("is-on"), 1500);
+      }
+    </script>
+  </body>
+</html>

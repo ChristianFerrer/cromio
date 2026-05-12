@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Cromio">
+  <!-- Squircle (rounded square at 18.75% = 96px on 512) -->
+  <rect width="512" height="512" rx="96" ry="96" fill="#1FAE5A"/>
+
+  <!-- Glifo radar/cromo: anillo abierto + disco + dot satélite.
+       Reconstrucción limpia del PNG real (public/cromio_icon.png). -->
+  <g fill="#FFFFFF">
+    <!-- Anillo principal (abierto a la derecha) construido con un path "donut" recortado -->
+    <path d="
+      M256,116
+      a140,140 0 1,1 0,280
+      a140,140 0 0,1 0,-280
+      Z
+      M256,156
+      a100,100 0 1,0 86,150
+      l28,28
+      a140,140 0 0,0 26,-78
+      a140,140 0 0,0 -140,-140
+      Z
+    " fill-rule="evenodd"/>
+
+    <!-- Disco interior -->
+    <circle cx="256" cy="256" r="40"/>
+
+    <!-- Dot satélite (4-5 del reloj) -->
+    <circle cx="338" cy="328" r="14"/>
+  </g>
+</svg>
