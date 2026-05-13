@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { BottomNav } from "@/components/BottomNav";
 import { SideNav } from "@/components/SideNav";
-import { AppHeightSync } from "@/components/AppHeightSync";
 import { NotificationsRoot } from "@/components/notifications/NotificationsRoot";
 import { loadUnreadByChat } from "@/lib/chat/queries";
 import { loadPendingIncomingCount } from "@/lib/trades/queries";
@@ -39,15 +38,16 @@ export default async function AppLayout({
       initialUnread={initialUnread}
       initialPendingTradesIn={initialPendingTradesIn}
     >
-      <AppHeightSync />
+      {/* position: fixed inset-0 ancla el contenedor al visual viewport
+          de iOS, independiente de body { min-height: 100dvh } y de cómo
+          iOS interpreta dvh/innerHeight. Toda la "franja blanca" que
+          aparecía bajo la nav venía de que body era más alto que el
+          contenedor — con fixed eso ya no puede pasar. */}
       <div
-        // h-[var(--app-height,100dvh)] anchors the column to the REAL
-        // innerHeight (set by AppHeightSync on every visualViewport
-        // change). 100dvh is the SSR fallback.
         className="
-          relative mx-auto flex w-full max-w-screen-xl bg-bone
-          h-[var(--app-height,100dvh)] flex-col overflow-hidden
-          md:h-auto md:min-h-dvh md:flex-row md:overflow-visible md:gap-0
+          fixed inset-0 z-0 flex bg-bone flex-col overflow-hidden
+          md:static md:inset-auto md:mx-auto md:flex-row
+          md:max-w-screen-xl md:min-h-dvh md:overflow-visible
         "
       >
         <SideNav />
