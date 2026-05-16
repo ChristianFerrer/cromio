@@ -36,14 +36,15 @@ export function PageHeader({
         <Link
           href="/album"
           aria-label="Inicio"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-green-500 shadow-sh1"
+          className="block shrink-0"
         >
           <Image
-            src="/radar_cromio.png"
+            src="/icon.svg"
             alt=""
-            width={22}
-            height={22}
+            width={36}
+            height={36}
             priority
+            className="rounded-lg shadow-sh1"
           />
         </Link>
         <h1 className="flex-1 truncate font-display text-2xl tracking-tight">

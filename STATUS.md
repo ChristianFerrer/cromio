@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-16 21:31 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
+_Last updated: **2026-05-16 21:39 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,7 +140,8 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- d4ad3e7 feat(share): página /compartir + tab Compartir en bottomNav _(24 minutes ago)_
+- 6e43cc6 feat(ui): PageHeader sticky compartido + tuerca → /perfil + bg verde en compartir + Perfil fuera del bottomNav _(8 minutes ago)_
+- d4ad3e7 feat(share): página /compartir + tab Compartir en bottomNav _(32 minutes ago)_
 - beedf25 fix(bottomnav): vuelve a layout vertical (icono arriba, label debajo) _(2 hours ago)_
 - 36ac9d3 feat(bottomnav): layout horizontal — icono + label lado a lado, sizes mayores _(2 hours ago)_
 - 6af2c4b fix(map): zoomSnap 0 para fit exacto del radar al viewport _(3 hours ago)_
@@ -154,5 +155,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - f5d7127 fix(ui): nav compact + radar popup banner + radius dropdown + 2% map padding _(4 days ago)_
 - d2b5436 fix(ui): 8 ajustes — nav verde+anclado, mapa con header y auto-fit, onboarding radar, badges intercambio activo _(4 days ago)_
 - 090d166 fix(trades): refresh router + cromo numbers + clarify 2-step flow _(4 days ago)_
-- a0e6477 feat(trades): buzón de intercambios con 4 tabs + badge en álbum _(4 days ago)_
 <!-- AUTO:COMMITS:END -->

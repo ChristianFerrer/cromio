@@ -59,12 +59,12 @@ export default async function CompartirPage({
   });
 
   return (
-    <main className="min-h-full bg-green-500 pb-6 text-white">
+    <main className="pb-6">
       <PageHeader title={t.title} />
       <div className="px-5 pt-4">
-        <p className="text-sm leading-snug text-white/90">{t.sub}</p>
-        {/* Card central con logo + QR */}
-        <div className="mt-5 rounded-2xl bg-green-700 px-6 py-7 text-center shadow-sh2">
+        <p className="text-sm leading-snug text-text-2">{t.sub}</p>
+        {/* Card central con logo + QR — verde Cromio */}
+        <div className="mt-5 rounded-2xl bg-green-500 px-6 py-7 text-center text-white shadow-sh2">
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white shadow-sh1">
             <Image
               src="/radar_cromio.png"
@@ -77,7 +77,7 @@ export default async function CompartirPage({
           <h2 className="mt-3 font-display text-2xl tracking-tight text-white">
             {t.card.name}
           </h2>
-          <p className="text-xs font-semibold text-white/85">{t.card.tag}</p>
+          <p className="text-xs font-semibold text-white/90">{t.card.tag}</p>
 
           <div className="mx-auto mt-5 inline-block rounded-2xl bg-white p-3 shadow-sh1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -93,10 +93,10 @@ export default async function CompartirPage({
         </div>
 
         {/* Divider */}
-        <div className="mt-6 flex items-center gap-3 text-xs uppercase tracking-wider text-white/75">
-          <div className="h-px flex-1 bg-white/30" />
+        <div className="mt-6 flex items-center gap-3 text-xs uppercase tracking-wider text-text-2">
+          <div className="h-px flex-1 bg-line" />
           <span>{t.divider}</span>
-          <div className="h-px flex-1 bg-white/30" />
+          <div className="h-px flex-1 bg-line" />
         </div>
 
         <ShareActions
