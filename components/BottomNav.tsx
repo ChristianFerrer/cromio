@@ -8,6 +8,7 @@ import {
   Flag,
   MessageCircle,
   Radar,
+  Send,
   User,
 } from "lucide-react";
 import { useNotifications } from "@/components/notifications/NotificationsRoot";
@@ -15,7 +16,7 @@ import { useNotifications } from "@/components/notifications/NotificationsRoot";
 type LucideIcon = typeof BookMarked;
 
 const TABS: ReadonlyArray<{
-  id: "album" | "mapa" | "favoritos" | "chat" | "perfil";
+  id: "album" | "mapa" | "favoritos" | "chat" | "compartir" | "perfil";
   href: string;
   icon: LucideIcon;
 }> = [
@@ -23,6 +24,7 @@ const TABS: ReadonlyArray<{
   { id: "mapa", href: "/mapa", icon: Radar },
   { id: "favoritos", href: "/favoritos", icon: Flag },
   { id: "chat", href: "/chat", icon: MessageCircle },
+  { id: "compartir", href: "/compartir", icon: Send },
   { id: "perfil", href: "/perfil", icon: User },
 ];
 
@@ -55,7 +57,7 @@ export function BottomNav() {
       }}
       className="z-50 w-full shrink-0 border-t border-black/5 bg-white/95 backdrop-blur-xl md:hidden"
     >
-      <ul className="grid h-[52px] grid-cols-5">
+      <ul className="grid h-[52px] grid-cols-6">
         {TABS.map((tab) => {
           const { id, href } = tab;
           const active =

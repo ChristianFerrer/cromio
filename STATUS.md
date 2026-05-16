@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-16 19:23 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
+_Last updated: **2026-05-16 21:07 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,11 +140,12 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- 36ac9d3 feat(bottomnav): layout horizontal — icono + label lado a lado, sizes mayores _(5 minutes ago)_
-- 6af2c4b fix(map): zoomSnap 0 para fit exacto del radar al viewport _(36 minutes ago)_
-- a235d72 fix(map): padding 0 en fitBounds — radar pegado a los laterales _(65 minutes ago)_
-- 11a089d feat(landing): ruta /landing pública e independiente del estado de auth _(2 hours ago)_
-- a01fed1 fix(bottomnav): radar usa lucide Radar (svg) en vez de png para currentColor _(2 hours ago)_
+- beedf25 fix(bottomnav): vuelve a layout vertical (icono arriba, label debajo) _(2 hours ago)_
+- 36ac9d3 feat(bottomnav): layout horizontal — icono + label lado a lado, sizes mayores _(2 hours ago)_
+- 6af2c4b fix(map): zoomSnap 0 para fit exacto del radar al viewport _(2 hours ago)_
+- a235d72 fix(map): padding 0 en fitBounds — radar pegado a los laterales _(3 hours ago)_
+- 11a089d feat(landing): ruta /landing pública e independiente del estado de auth _(4 hours ago)_
+- a01fed1 fix(bottomnav): radar usa lucide Radar (svg) en vez de png para currentColor _(4 hours ago)_
 - 655c4d5 fix(layout): contenedor (app) en position:fixed inset-0 — bypass dvh _(4 days ago)_
 - bbdc04b fix(sw): auto-update y auto-reload — la causa real del bug del bottom nav _(4 days ago)_
 - 9940ba6 fix(bottomnav): altura fija 52px sin safe-area como referencia Whistle _(4 days ago)_
@@ -154,5 +155,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - 090d166 fix(trades): refresh router + cromo numbers + clarify 2-step flow _(4 days ago)_
 - a0e6477 feat(trades): buzón de intercambios con 4 tabs + badge en álbum _(4 days ago)_
 - 4606b0d fix(layout): bottom nav en flujo normal con flex column h-dvh _(4 days ago)_
-- 972619f fix(bottomnav): anclar al visualViewport para evitar gap en iOS _(4 days ago)_
 <!-- AUTO:COMMITS:END -->
