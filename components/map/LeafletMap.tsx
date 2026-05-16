@@ -88,7 +88,7 @@ export function LeafletMap({
       map.fitBounds(bounds, {
         animate: true,
         duration: 0.5,
-        padding: [5, 5],
+        padding: [0, 0],
         maxZoom: 18,
       });
     });
