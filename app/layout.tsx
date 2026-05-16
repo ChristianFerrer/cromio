@@ -33,10 +33,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/cromio_icon.png", type: "image/png" },
       { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/cromio_icon.png", type: "image/png" },
     ],
-    shortcut: "/cromio_icon.png",
+    shortcut: "/icon.svg",
     apple: "/cromio_icon.png",
   },
   formatDetection: {

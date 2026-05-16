@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -244,10 +243,9 @@ export function LandingPage({ locale }: { locale: string }) {
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-5 py-5 sm:px-8">
         <Link href={prefix || "/"} className="inline-flex items-center gap-2">
           <span
-            className="grid place-items-center shadow-sh1"
-            style={{ backgroundColor: "#10C56A", padding: 6, borderRadius: 10 }}
+            className="grid h-10 w-10 place-items-center rounded-[10px] bg-green-500 text-white shadow-sh1"
           >
-            <Image src="/radar_cromio.png" alt="Cromio" width={32} height={32} priority />
+            <Radar size={22} strokeWidth={2.4} aria-hidden />
           </span>
           <span className="font-display text-2xl tracking-tight">CROMIO</span>
         </Link>
@@ -272,10 +270,9 @@ export function LandingPage({ locale }: { locale: string }) {
       <section className="mx-auto w-full max-w-5xl px-5 pt-6 pb-12 text-center sm:px-8 sm:pt-12 sm:pb-20">
         <div className="mx-auto inline-flex items-center justify-center">
           <span
-            className="grid place-items-center shadow-sh2"
-            style={{ backgroundColor: "#10C56A", padding: 18, borderRadius: 24 }}
+            className="grid h-32 w-32 place-items-center rounded-3xl bg-green-500 text-white shadow-sh2"
           >
-            <Image src="/radar_cromio.png" alt="Cromio" width={96} height={96} priority />
+            <Radar size={72} strokeWidth={2.2} aria-hidden />
           </span>
         </div>
         <h1 className="mx-auto mt-4 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
@@ -439,15 +436,9 @@ export function LandingPage({ locale }: { locale: string }) {
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2.5">
               <span
-                className="grid place-items-center shadow-sh1"
-                style={{ backgroundColor: "#10C56A", padding: 5, borderRadius: 8 }}
+                className="grid h-9 w-9 place-items-center rounded-lg bg-green-500 text-white shadow-sh1"
               >
-                <Image
-                  src="/radar_cromio.png"
-                  alt="Cromio"
-                  width={28}
-                  height={28}
-                />
+                <Radar size={20} strokeWidth={2.4} aria-hidden />
               </span>
               <div>
                 <p className="font-display text-xl tracking-tight">CROMIO</p>

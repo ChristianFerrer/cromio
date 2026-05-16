@@ -1,5 +1,5 @@
 import QRCode from "qrcode";
-import Image from "next/image";
+import { Radar } from "lucide-react";
 import { ShareActions } from "@/components/share/ShareActions";
 import { PageHeader } from "@/components/PageHeader";
 
@@ -65,14 +65,8 @@ export default async function CompartirPage({
         <p className="text-sm leading-snug text-text-2">{t.sub}</p>
         {/* Card central con logo + QR — verde Cromio */}
         <div className="mt-5 rounded-2xl bg-green-500 px-6 py-7 text-center text-white shadow-sh2">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white shadow-sh1">
-            <Image
-              src="/radar_cromio.png"
-              alt="Cromio"
-              width={32}
-              height={32}
-              priority
-            />
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white text-green-500 shadow-sh1">
+            <Radar size={30} strokeWidth={2.4} aria-hidden />
           </div>
           <h2 className="mt-3 font-display text-2xl tracking-tight text-white">
             {t.card.name}

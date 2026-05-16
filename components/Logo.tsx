@@ -1,13 +1,20 @@
-import Image from "next/image";
+import { Radar } from "lucide-react";
 
 type Size = "sm" | "md" | "lg";
 
-const SIZES: Record<Size, { px: number; pad: number; radius: number; text: string }> = {
-  sm: { px: 24, pad: 4, radius: 8, text: "text-xl" },
-  md: { px: 32, pad: 6, radius: 10, text: "text-3xl" },
-  lg: { px: 48, pad: 8, radius: 14, text: "text-5xl" },
+const SIZES: Record<
+  Size,
+  { tile: number; icon: number; radius: number; text: string }
+> = {
+  sm: { tile: 28, icon: 16, radius: 8, text: "text-xl" },
+  md: { tile: 40, icon: 22, radius: 10, text: "text-3xl" },
+  lg: { tile: 64, icon: 36, radius: 14, text: "text-5xl" },
 };
 
+// Logo de Cromio: chip verde con el glifo Radar (mismo lucide-icon
+// que el tab del bottomNav y el icono de la app). Reemplaza el PNG
+// radar_cromio.png para que el branding sea consistente y escalable
+// en cualquier tamaño sin pérdida de calidad.
 export function Logo({
   size = "md",
   withWordmark = true,
@@ -17,24 +24,18 @@ export function Logo({
   withWordmark?: boolean;
   className?: string;
 }) {
-  const { px, pad, radius, text } = SIZES[size];
+  const { tile, icon, radius, text } = SIZES[size];
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <span
-        className="shrink-0 grid place-items-center shadow-sh1"
+        className="grid shrink-0 place-items-center bg-green-500 text-white shadow-sh1"
         style={{
-          backgroundColor: "#10C56A",
-          padding: pad,
+          width: tile,
+          height: tile,
           borderRadius: radius,
         }}
       >
-        <Image
-          src="/radar_cromio.png"
-          alt="Cromio"
-          width={px}
-          height={px}
-          priority
-        />
+        <Radar size={icon} strokeWidth={2.4} aria-hidden />
       </span>
       {withWordmark && (
         <span className={`font-display tracking-tight text-text ${text}`}>
