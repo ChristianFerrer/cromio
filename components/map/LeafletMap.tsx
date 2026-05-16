@@ -46,6 +46,11 @@ export function LeafletMap({
       bounceAtZoomLimits: false,
       minZoom: 3,
       maxZoom: 18,
+      // Zoom continuo: sin esto fitBounds redondea al entero anterior y
+      // el círculo del radar queda más pequeño que el viewport. Con
+      // zoomSnap=0 Leaflet acepta cualquier fracción y el perímetro
+      // toca exactamente los bordes laterales como pide el usuario.
+      zoomSnap: 0,
     });
 
     L.tileLayer("/tiles/{z}/{x}/{y}.png", {
