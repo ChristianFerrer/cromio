@@ -73,10 +73,10 @@ export function BottomNav() {
             <li key={id}>
               <Link
                 href={href}
-                // Layout horizontal: icono al lado del label, no apilados.
-                // Distribuye 5 tabs uniformemente con grid-cols-5; cada
-                // tab centra su par icono+label horizontalmente.
-                className={`flex h-full flex-row items-center justify-center gap-1.5 px-1 font-semibold text-[11px] leading-none tracking-tight ${
+                // Layout vertical: icono arriba, label debajo (como antes).
+                // Tamaños incrementados respecto a la versión original:
+                // icon 24 y label text-[11px] font-semibold.
+                className={`flex h-full flex-col items-center justify-center gap-0.5 font-semibold text-[11px] leading-none tracking-tight ${
                   active ? "text-green-700" : "text-mute"
                 }`}
               >
