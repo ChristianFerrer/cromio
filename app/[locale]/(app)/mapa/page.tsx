@@ -18,6 +18,7 @@ import { saveHomeLocation } from "@/lib/profile/actions";
 import { CROMIO_COLORS } from "@/lib/design/colors";
 import { MatchArrows } from "@/components/match/MatchArrows";
 import { LeafletMap } from "@/components/map/LeafletMapClient";
+import { PageHeader } from "@/components/PageHeader";
 
 const RADII = [200, 500, 1000, 2000, 5000, 10000, 50000];
 const FREE_MAX = 2000;
@@ -105,25 +106,26 @@ export default function MapaPage() {
 
   return (
     <main className="absolute inset-0 flex flex-col bg-bone">
-      <header className="z-30 px-5 pb-3 pt-14">
-        <div className="flex items-center justify-between gap-2">
-          <h1 className="font-display text-3xl tracking-tight">Radar</h1>
-          <div className="flex items-center gap-2">
+      <PageHeader
+        title="Radar"
+        subtitle={statusText}
+        actions={
+          <>
             <div className="flex h-9 gap-0.5 rounded-md border border-line bg-white p-0.5 shadow-sh1">
               {(["map", "list"] as const).map((v) => (
                 <button
                   key={v}
                   onClick={() => setView(v)}
-                  className={`grid h-full w-9 place-items-center rounded-[8px] text-xs font-semibold transition-colors ${
+                  className={`grid h-full w-8 place-items-center rounded-[8px] text-xs font-semibold transition-colors ${
                     view === v ? "bg-ink text-white" : "bg-transparent text-text-2"
                   }`}
                   aria-label={v === "map" ? "Vista mapa" : "Vista lista"}
                   aria-pressed={view === v}
                 >
                   {v === "map" ? (
-                    <MapIcon size={14} strokeWidth={2} />
+                    <MapIcon size={13} strokeWidth={2} />
                   ) : (
-                    <List size={14} strokeWidth={2} />
+                    <List size={13} strokeWidth={2} />
                   )}
                 </button>
               ))}
@@ -135,13 +137,13 @@ export default function MapaPage() {
                 onClick={() => setRadiusOpen((o) => !o)}
                 aria-haspopup="listbox"
                 aria-expanded={radiusOpen}
-                className="flex h-9 items-center gap-1 rounded-md border border-line bg-white px-2.5 text-xs font-bold text-text shadow-sh1"
+                className="flex h-9 items-center gap-1 rounded-md border border-line bg-white px-2 text-xs font-bold text-text shadow-sh1"
               >
                 <span className="font-display text-sm tabular">
                   {fmtRadius(radius)}
                 </span>
                 <ChevronDown
-                  size={12}
+                  size={11}
                   strokeWidth={2.4}
                   className={`text-text-2 transition-transform ${
                     radiusOpen ? "rotate-180" : ""
@@ -206,12 +208,9 @@ export default function MapaPage() {
                 />
               </button>
             )}
-          </div>
-        </div>
-        <p className="mt-1 text-xs uppercase tracking-wider text-text-2">
-          {statusText}
-        </p>
-      </header>
+          </>
+        }
+      />
 
       <div className="relative flex-1 overflow-hidden">
         {view === "map" && (

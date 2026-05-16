@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/profile";
 import { loadChatsForCurrentUser } from "@/lib/chat/queries";
 import { MatchArrows } from "@/components/match/MatchArrows";
 import { ActiveTradeBadge } from "@/components/trades/ActiveTradeBadge";
+import { PageHeader } from "@/components/PageHeader";
 
 function formatDistance(meters: number | null): string | null {
   if (meters === null || !Number.isFinite(meters)) return null;
@@ -45,9 +46,9 @@ export default async function ChatListPage() {
 
   if (!user) {
     return (
-      <main className="px-5 pb-6 pt-14">
-        <h1 className="font-display text-3xl tracking-tight">Chats</h1>
-        <div className="mt-10 flex flex-col items-center gap-3 rounded-md border border-dashed border-line bg-paper px-5 py-10 text-center">
+      <main className="pb-6">
+        <PageHeader title="Chats" />
+        <div className="mx-5 mt-10 flex flex-col items-center gap-3 rounded-md border border-dashed border-line bg-paper px-5 py-10 text-center">
           <MessageCircle size={32} className="text-mute" />
           <p className="text-sm text-text-2">
             Inicia sesión para chatear con otros coleccionistas.
@@ -66,12 +67,12 @@ export default async function ChatListPage() {
   const chats = await loadChatsForCurrentUser();
 
   return (
-    <main className="px-5 pb-6 pt-14">
-      <h1 className="font-display text-3xl tracking-tight">Chats</h1>
-      <p className="mt-1 text-xs uppercase tracking-wider text-text-2">
-        {chats.length} {chats.length === 1 ? "conversación" : "conversaciones"}
-      </p>
-
+    <main className="pb-6">
+      <PageHeader
+        title="Chats"
+        subtitle={`${chats.length} ${chats.length === 1 ? "conversación" : "conversaciones"}`}
+      />
+      <div className="px-5 pt-4">
       {chats.length === 0 ? (
         <div className="mt-8 flex flex-col items-center rounded-2xl border border-line bg-gradient-to-b from-paper to-bone px-6 py-10 text-center">
           <div className="grid h-16 w-16 place-items-center rounded-2xl bg-gradient-to-br from-green-500 to-green-700 text-white shadow-sh2">
@@ -158,6 +159,7 @@ export default async function ChatListPage() {
           })}
         </div>
       )}
+      </div>
     </main>
   );
 }

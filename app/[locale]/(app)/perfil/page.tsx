@@ -6,6 +6,7 @@ import { Btn } from "@/components/ui/Btn";
 import { createClient } from "@/lib/supabase/server";
 import { ProfileSettings } from "@/components/profile/ProfileSettings";
 import { AdminLink } from "@/components/admin/AdminLink";
+import { PageHeader } from "@/components/PageHeader";
 
 export default async function PerfilPage() {
   const supabase = await createClient();
@@ -40,19 +41,22 @@ export default async function PerfilPage() {
   const initials = (profile?.alias ?? user.email ?? "?").slice(0, 2).toUpperCase();
 
   return (
-    <main className="px-5 pb-6 pt-14">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-3xl tracking-tight">Perfil</h1>
-        <Link
-          href="/perfil/editar"
-          className="grid h-10 w-10 place-items-center rounded-md border border-line bg-white"
-          aria-label="Editar perfil"
-        >
-          <Pencil size={16} strokeWidth={2} />
-        </Link>
-      </div>
+    <main className="pb-6">
+      <PageHeader
+        title="Perfil"
+        actions={
+          <Link
+            href="/perfil/editar"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-md border border-line bg-white"
+            aria-label="Editar perfil"
+          >
+            <Pencil size={16} strokeWidth={2} />
+          </Link>
+        }
+      />
 
-      <section className="mt-5 flex flex-col items-center">
+      <div className="px-5 pt-4">
+      <section className="flex flex-col items-center">
         <div className="grid h-20 w-20 place-items-center rounded-full bg-green-500 font-display text-3xl text-white shadow-sh2">
           {initials}
         </div>
@@ -169,6 +173,7 @@ export default async function PerfilPage() {
       <p className="mt-6 text-center text-[10px] text-mute">
         App independiente · Sin afiliación oficial con la editorial del álbum ni con FIFA.
       </p>
+      </div>
     </main>
   );
 }

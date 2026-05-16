@@ -10,6 +10,7 @@ import { fmtDistance } from "@/lib/matches";
 import { TOTAL_STICKERS } from "@/lib/data/stickers";
 import { MatchArrows } from "@/components/match/MatchArrows";
 import { ActiveTradeBadge } from "@/components/trades/ActiveTradeBadge";
+import { PageHeader } from "@/components/PageHeader";
 
 type FavRow = {
   id: string;
@@ -208,14 +209,14 @@ export default function FavoritosPage() {
   }, [query, user]);
 
   return (
-    <main className="px-5 pb-6 pt-14">
-      <h1 className="font-display text-3xl tracking-tight">Contactos</h1>
-      <p className="mt-1 text-xs uppercase tracking-wider text-text-2">
-        {favs.size} {favs.size === 1 ? "coleccionista" : "coleccionistas"}
-      </p>
-
-      <div className="mt-4 flex items-center gap-2 rounded-md border border-line bg-white px-3.5">
-        <Search size={16} strokeWidth={2} className="text-text-2" />
+    <main className="pb-6">
+      <PageHeader
+        title="Contactos"
+        subtitle={`${favs.size} ${favs.size === 1 ? "coleccionista" : "coleccionistas"}`}
+      />
+      <div className="px-5 pt-4">
+        <div className="flex items-center gap-2 rounded-md border border-line bg-white px-3.5">
+          <Search size={16} strokeWidth={2} className="text-text-2" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -388,6 +389,7 @@ export default function FavoritosPage() {
             );
           })
         )}
+      </div>
       </div>
     </main>
   );

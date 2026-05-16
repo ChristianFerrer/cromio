@@ -1,6 +1,7 @@
 import QRCode from "qrcode";
 import Image from "next/image";
 import { ShareActions } from "@/components/share/ShareActions";
+import { PageHeader } from "@/components/PageHeader";
 
 // Landing pública, independiente del estado de auth. Para que el
 // destinatario siempre vea el pitch y no la app — ver
@@ -58,53 +59,54 @@ export default async function CompartirPage({
   });
 
   return (
-    <main className="px-5 pb-6 pt-14">
-      <h1 className="font-display text-3xl tracking-tight">{t.title}</h1>
-      <p className="mt-2 text-sm leading-snug text-text-2">{t.sub}</p>
+    <main className="min-h-full bg-green-500 pb-6 text-white">
+      <PageHeader title={t.title} />
+      <div className="px-5 pt-4">
+        <p className="text-sm leading-snug text-white/90">{t.sub}</p>
+        {/* Card central con logo + QR */}
+        <div className="mt-5 rounded-2xl bg-green-700 px-6 py-7 text-center shadow-sh2">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white shadow-sh1">
+            <Image
+              src="/radar_cromio.png"
+              alt="Cromio"
+              width={32}
+              height={32}
+              priority
+            />
+          </div>
+          <h2 className="mt-3 font-display text-2xl tracking-tight text-white">
+            {t.card.name}
+          </h2>
+          <p className="text-xs font-semibold text-white/85">{t.card.tag}</p>
 
-      {/* Card amarilla con logo + QR */}
-      <div className="mt-5 rounded-2xl bg-gold px-6 py-7 text-center shadow-sh2">
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-ink shadow-sh1">
-          <Image
-            src="/radar_cromio.png"
-            alt="Cromio"
-            width={32}
-            height={32}
-            priority
-          />
+          <div className="mx-auto mt-5 inline-block rounded-2xl bg-white p-3 shadow-sh1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={qrDataUrl}
+              alt="QR para instalar Cromio"
+              width={240}
+              height={240}
+              className="block h-60 w-60"
+            />
+          </div>
+          <p className="mt-3 text-sm font-bold text-white">{t.card.scan}</p>
         </div>
-        <h2 className="mt-3 font-display text-2xl tracking-tight text-ink">
-          {t.card.name}
-        </h2>
-        <p className="text-xs font-semibold text-ink/80">{t.card.tag}</p>
 
-        <div className="mx-auto mt-5 inline-block rounded-2xl bg-white p-3 shadow-sh1">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={qrDataUrl}
-            alt="QR para instalar Cromio"
-            width={240}
-            height={240}
-            className="block h-60 w-60"
-          />
+        {/* Divider */}
+        <div className="mt-6 flex items-center gap-3 text-xs uppercase tracking-wider text-white/75">
+          <div className="h-px flex-1 bg-white/30" />
+          <span>{t.divider}</span>
+          <div className="h-px flex-1 bg-white/30" />
         </div>
-        <p className="mt-3 text-sm font-bold text-ink">{t.card.scan}</p>
-      </div>
 
-      {/* Divider */}
-      <div className="mt-6 flex items-center gap-3 text-xs uppercase tracking-wider text-text-2">
-        <div className="h-px flex-1 bg-line" />
-        <span>{t.divider}</span>
-        <div className="h-px flex-1 bg-line" />
+        <ShareActions
+          url={SHARE_URL}
+          shareText={t.shareText}
+          whatsappCopy={t.whatsapp}
+          copyCopy={t.copy}
+          moreCopy={t.more}
+        />
       </div>
-
-      <ShareActions
-        url={SHARE_URL}
-        shareText={t.shareText}
-        whatsappCopy={t.whatsapp}
-        copyCopy={t.copy}
-        moreCopy={t.more}
-      />
     </main>
   );
 }

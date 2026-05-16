@@ -12,8 +12,8 @@ import { useNotifications } from "@/components/notifications/NotificationsRoot";
 import { createClient } from "@/lib/supabase/client";
 import { CromoCard } from "@/components/cromo/CromoCard";
 import { Flag } from "@/components/cromo/Flag";
-import { Logo } from "@/components/Logo";
 import { Chip } from "@/components/ui/Chip";
+import { PageHeader } from "@/components/PageHeader";
 
 type Tab = "selecciones" | "especiales" | "estadios";
 type Filter = "todos" | "falti" | "repe";
@@ -80,26 +80,27 @@ export default function AlbumPage() {
 
   return (
     <main className="flex flex-col">
-      <div className="flex items-center justify-between px-5 pt-14">
-        <Logo size="md" />
-        <h1 className="sr-only">Cromio</h1>
-        <Link
-          href="/perfil/intercambios"
-          aria-label="Intercambios"
-          className="relative grid h-10 w-10 place-items-center rounded-md border border-line bg-white text-green-700 shadow-sh1"
-        >
-          <ArrowLeftRight
-            size={18}
-            strokeWidth={2.2}
-            style={{ transform: "rotate(90deg)" }}
-          />
-          {pendingTradesIn > 0 && (
-            <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 font-display text-[11px] leading-none text-white shadow-sh1 ring-2 ring-white">
-              {pendingTradesIn > 9 ? "9+" : pendingTradesIn}
-            </span>
-          )}
-        </Link>
-      </div>
+      <PageHeader
+        title="Álbum"
+        actions={
+          <Link
+            href="/perfil/intercambios"
+            aria-label="Intercambios"
+            className="relative grid h-9 w-9 shrink-0 place-items-center rounded-md border border-line bg-white text-green-700 shadow-sh1"
+          >
+            <ArrowLeftRight
+              size={16}
+              strokeWidth={2.2}
+              style={{ transform: "rotate(90deg)" }}
+            />
+            {pendingTradesIn > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 font-display text-[11px] leading-none text-white shadow-sh1 ring-2 ring-white">
+                {pendingTradesIn > 9 ? "9+" : pendingTradesIn}
+              </span>
+            )}
+          </Link>
+        }
+      />
 
       <section className="px-5 pt-3">
         <p className="text-xs font-semibold uppercase tracking-wider text-text-2">
