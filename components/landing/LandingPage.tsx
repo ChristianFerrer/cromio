@@ -245,7 +245,7 @@ export function LandingPage({ locale }: { locale: string }) {
           <span
             className="grid h-10 w-10 place-items-center rounded-[10px] bg-green-500 text-white shadow-sh1"
           >
-            <Radar size={22} strokeWidth={2.4} aria-hidden />
+            <Radar size={26} strokeWidth={2.4} aria-hidden />
           </span>
           <span className="font-display text-2xl tracking-tight">CROMIO</span>
         </Link>
@@ -272,7 +272,7 @@ export function LandingPage({ locale }: { locale: string }) {
           <span
             className="grid h-32 w-32 place-items-center rounded-3xl bg-green-500 text-white shadow-sh2"
           >
-            <Radar size={72} strokeWidth={2.2} aria-hidden />
+            <Radar size={86} strokeWidth={2.2} aria-hidden />
           </span>
         </div>
         <h1 className="mx-auto mt-4 max-w-3xl font-display text-4xl leading-[1.05] tracking-tight sm:text-6xl">
@@ -438,7 +438,7 @@ export function LandingPage({ locale }: { locale: string }) {
               <span
                 className="grid h-9 w-9 place-items-center rounded-lg bg-green-500 text-white shadow-sh1"
               >
-                <Radar size={20} strokeWidth={2.4} aria-hidden />
+                <Radar size={24} strokeWidth={2.4} aria-hidden />
               </span>
               <div>
                 <p className="font-display text-xl tracking-tight">CROMIO</p>

@@ -39,7 +39,7 @@ export function PageHeader({
         >
           {/* Icono radar reconocible (mismo del tab Radar) sobre chip
              verde Cromio. */}
-          <Radar size={20} strokeWidth={2.4} aria-hidden />
+          <Radar size={24} strokeWidth={2.4} aria-hidden />
         </Link>
         <h1 className="flex-1 truncate font-display text-2xl tracking-tight">
           {title}

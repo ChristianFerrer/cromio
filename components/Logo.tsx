@@ -6,9 +6,9 @@ const SIZES: Record<
   Size,
   { tile: number; icon: number; radius: number; text: string }
 > = {
-  sm: { tile: 28, icon: 16, radius: 8, text: "text-xl" },
-  md: { tile: 40, icon: 22, radius: 10, text: "text-3xl" },
-  lg: { tile: 64, icon: 36, radius: 14, text: "text-5xl" },
+  sm: { tile: 28, icon: 19, radius: 8, text: "text-xl" },
+  md: { tile: 40, icon: 26, radius: 10, text: "text-3xl" },
+  lg: { tile: 64, icon: 43, radius: 14, text: "text-5xl" },
 };
 
 // Logo de Cromio: chip verde con el glifo Radar (mismo lucide-icon

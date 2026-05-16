@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-16 21:49 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
+_Last updated: **2026-05-16 22:36 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- be29925 fix(header): logo cabecera usa el icono Radar de lucide _(6 minutes ago)_
-- a755c73 fix(ui): compartir solo card verde + logo cabecera usa icon.svg _(10 minutes ago)_
-- 6e43cc6 feat(ui): PageHeader sticky compartido + tuerca → /perfil + bg verde en compartir + Perfil fuera del bottomNav _(18 minutes ago)_
-- d4ad3e7 feat(share): página /compartir + tab Compartir en bottomNav _(42 minutes ago)_
-- beedf25 fix(bottomnav): vuelve a layout vertical (icono arriba, label debajo) _(2 hours ago)_
+- ec6d0b8 feat(brand): lucide Radar como logo de Cromio en toda la app + iconos PWA _(47 minutes ago)_
+- be29925 fix(header): logo cabecera usa el icono Radar de lucide _(53 minutes ago)_
+- a755c73 fix(ui): compartir solo card verde + logo cabecera usa icon.svg _(57 minutes ago)_
+- 6e43cc6 feat(ui): PageHeader sticky compartido + tuerca → /perfil + bg verde en compartir + Perfil fuera del bottomNav _(65 minutes ago)_
+- d4ad3e7 feat(share): página /compartir + tab Compartir en bottomNav _(89 minutes ago)_
+- beedf25 fix(bottomnav): vuelve a layout vertical (icono arriba, label debajo) _(3 hours ago)_
 - 36ac9d3 feat(bottomnav): layout horizontal — icono + label lado a lado, sizes mayores _(3 hours ago)_
-- 6af2c4b fix(map): zoomSnap 0 para fit exacto del radar al viewport _(3 hours ago)_
+- 6af2c4b fix(map): zoomSnap 0 para fit exacto del radar al viewport _(4 hours ago)_
 - a235d72 fix(map): padding 0 en fitBounds — radar pegado a los laterales _(4 hours ago)_
-- 11a089d feat(landing): ruta /landing pública e independiente del estado de auth _(4 hours ago)_
-- a01fed1 fix(bottomnav): radar usa lucide Radar (svg) en vez de png para currentColor _(5 hours ago)_
+- 11a089d feat(landing): ruta /landing pública e independiente del estado de auth _(5 hours ago)_
+- a01fed1 fix(bottomnav): radar usa lucide Radar (svg) en vez de png para currentColor _(6 hours ago)_
 - 655c4d5 fix(layout): contenedor (app) en position:fixed inset-0 — bypass dvh _(4 days ago)_
 - bbdc04b fix(sw): auto-update y auto-reload — la causa real del bug del bottom nav _(4 days ago)_
 - 9940ba6 fix(bottomnav): altura fija 52px sin safe-area como referencia Whistle _(4 days ago)_
 - de030a0 fix(ui): nav más compacta (cap safe-area), radio dropdown chico, mapa fit con whenReady + 5px padding _(4 days ago)_
-- f5d7127 fix(ui): nav compact + radar popup banner + radius dropdown + 2% map padding _(4 days ago)_
 <!-- AUTO:COMMITS:END -->

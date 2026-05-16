@@ -66,7 +66,7 @@ export default async function CompartirPage({
         {/* Card central con logo + QR — verde Cromio */}
         <div className="mt-5 rounded-2xl bg-green-500 px-6 py-7 text-center text-white shadow-sh2">
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-white text-green-500 shadow-sh1">
-            <Radar size={30} strokeWidth={2.4} aria-hidden />
+            <Radar size={36} strokeWidth={2.4} aria-hidden />
           </div>
           <h2 className="mt-3 font-display text-2xl tracking-tight text-white">
             {t.card.name}
