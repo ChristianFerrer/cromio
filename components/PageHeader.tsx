@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Settings } from "lucide-react";
+import { Radar, Settings } from "lucide-react";
 
 /**
  * Cabecera sticky compartida por todas las páginas de (app).
@@ -36,16 +35,11 @@ export function PageHeader({
         <Link
           href="/album"
           aria-label="Inicio"
-          className="block shrink-0"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-green-500 text-white shadow-sh1"
         >
-          <Image
-            src="/icon.svg"
-            alt=""
-            width={36}
-            height={36}
-            priority
-            className="rounded-lg shadow-sh1"
-          />
+          {/* Icono radar reconocible (mismo del tab Radar) sobre chip
+             verde Cromio. */}
+          <Radar size={20} strokeWidth={2.4} aria-hidden />
         </Link>
         <h1 className="flex-1 truncate font-display text-2xl tracking-tight">
           {title}
