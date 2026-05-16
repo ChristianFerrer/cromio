@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-16 18:46 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
+_Last updated: **2026-05-16 19:18 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,8 +140,9 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- a235d72 fix(map): padding 0 en fitBounds — radar pegado a los laterales _(29 minutes ago)_
-- 11a089d feat(landing): ruta /landing pública e independiente del estado de auth _(80 minutes ago)_
+- 6af2c4b fix(map): zoomSnap 0 para fit exacto del radar al viewport _(32 minutes ago)_
+- a235d72 fix(map): padding 0 en fitBounds — radar pegado a los laterales _(60 minutes ago)_
+- 11a089d feat(landing): ruta /landing pública e independiente del estado de auth _(2 hours ago)_
 - a01fed1 fix(bottomnav): radar usa lucide Radar (svg) en vez de png para currentColor _(2 hours ago)_
 - 655c4d5 fix(layout): contenedor (app) en position:fixed inset-0 — bypass dvh _(4 days ago)_
 - bbdc04b fix(sw): auto-update y auto-reload — la causa real del bug del bottom nav _(4 days ago)_
@@ -154,5 +155,4 @@ Or manually: `git config core.hooksPath .githooks`.
 - 4606b0d fix(layout): bottom nav en flujo normal con flex column h-dvh _(4 days ago)_
 - 972619f fix(bottomnav): anclar al visualViewport para evitar gap en iOS _(4 days ago)_
 - 275cf43 fix: skeleton mapa sin pulse + radar más lento + selección vacía bloquea + sin ★ _(4 days ago)_
-- 337c518 feat: quick wins no-visuales + avatar uniforme verde + nav estable _(4 days ago)_
 <!-- AUTO:COMMITS:END -->

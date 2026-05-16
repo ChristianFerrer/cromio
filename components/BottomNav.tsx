@@ -73,24 +73,22 @@ export function BottomNav() {
             <li key={id}>
               <Link
                 href={href}
-                // Sin cambio de font-weight ni strokeWidth entre estados:
-                // ambas cosas producen layout shift sub-pixel en glyph y
-                // path width, suficiente para que el ojo perciba la barra
-                // "lifteando" al cambiar de tab. Usamos solo color para
-                // distinguir activo de inactivo.
-                className={`flex h-full flex-col items-center justify-center gap-0.5 font-medium text-[10px] leading-none tracking-wide ${
+                // Layout horizontal: icono al lado del label, no apilados.
+                // Distribuye 5 tabs uniformemente con grid-cols-5; cada
+                // tab centra su par icono+label horizontalmente.
+                className={`flex h-full flex-row items-center justify-center gap-1.5 px-1 font-semibold text-[11px] leading-none tracking-tight ${
                   active ? "text-green-700" : "text-mute"
                 }`}
               >
-                <span className="relative">
-                  <Icon size={22} strokeWidth={2} aria-hidden />
+                <span className="relative shrink-0">
+                  <Icon size={24} strokeWidth={2} aria-hidden />
                   {badge > 0 && (
-                    <span className="absolute -right-2 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 font-display text-[10px] leading-none text-white shadow-sh1">
+                    <span className="absolute -right-2 -top-1.5 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 font-display text-[10px] leading-none text-white shadow-sh1">
                       {badge > 9 ? "9+" : badge}
                     </span>
                   )}
                 </span>
-                <span>{t(id)}</span>
+                <span className="truncate">{t(id)}</span>
               </Link>
             </li>
           );
