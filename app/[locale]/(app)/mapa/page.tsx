@@ -7,7 +7,6 @@ import {
   Lock,
   RefreshCw,
   LocateFixed,
-  ChevronDown,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -32,24 +31,12 @@ export default function MapaPage() {
   const [view, setView] = useState<"map" | "list">("map");
   const [listFilter, setListFilter] = useState<"all" | "match" | "lead">("all");
   const [recenterToken, setRecenterToken] = useState(0);
-  const [radiusOpen, setRadiusOpen] = useState(false);
   const [emptyBannerDismissed, setEmptyBannerDismissed] = useState(false);
   // Re-show the empty banner whenever the radius changes — the message
   // depends on radius so dismissing for 200m shouldn't hide it for 5km.
   useEffect(() => {
     setEmptyBannerDismissed(false);
   }, [radius]);
-  const radiusBtnRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    if (!radiusOpen) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (!radiusBtnRef.current?.contains(e.target as Node)) {
-        setRadiusOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, [radiusOpen]);
 
   const {
     users,
@@ -90,13 +77,6 @@ export default function MapaPage() {
   // Header subtitle: only count + radius when there ARE users (or
   // while loading). The "Sin coleccionistas" message is shown as a
   // floating popup over the map area instead, per request.
-  const statusText = useMemo(() => {
-    if (usersLoading) return "Buscando…";
-    if (!isAuthenticated) return "";
-    if (users.length === 0) return fmtRadius(radius);
-    return `${users.length} ${users.length === 1 ? "coleccionista" : "coleccionistas"} en ${fmtRadius(radius)}`;
-  }, [usersLoading, isAuthenticated, users.length, radius]);
-
   const showEmptyPopup =
     isAuthenticated &&
     !usersLoading &&
@@ -108,7 +88,6 @@ export default function MapaPage() {
     <main className="absolute inset-0 flex flex-col bg-bone">
       <PageHeader
         title="Radar"
-        subtitle={statusText}
         actions={
           <>
             <div className="flex h-9 gap-0.5 rounded-md border border-line bg-white p-0.5 shadow-sh1">
@@ -131,67 +110,6 @@ export default function MapaPage() {
               ))}
             </div>
 
-            <div ref={radiusBtnRef} className="relative">
-              <button
-                type="button"
-                onClick={() => setRadiusOpen((o) => !o)}
-                aria-haspopup="listbox"
-                aria-expanded={radiusOpen}
-                className="flex h-9 items-center gap-1 rounded-md border border-line bg-white px-2 text-xs font-bold text-text shadow-sh1"
-              >
-                <span className="font-display text-sm tabular">
-                  {fmtRadius(radius)}
-                </span>
-                <ChevronDown
-                  size={11}
-                  strokeWidth={2.4}
-                  className={`text-text-2 transition-transform ${
-                    radiusOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-              {radiusOpen && (
-                <ul
-                  role="listbox"
-                  className="absolute right-0 top-[calc(100%+4px)] z-50 min-w-[120px] overflow-hidden rounded-md border border-line bg-white shadow-sh3"
-                >
-                  {RADII.map((r) => {
-                    const locked = r > FREE_MAX;
-                    const active = r === radius;
-                    return (
-                      <li key={r} role="option" aria-selected={active}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            if (locked) return;
-                            setRadius(r);
-                            setRadiusOpen(false);
-                          }}
-                          disabled={locked}
-                          className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm ${
-                            active
-                              ? "bg-green-50 font-bold text-green-700"
-                              : locked
-                                ? "text-mute"
-                                : "text-text hover:bg-paper"
-                          }`}
-                        >
-                          <span>{fmtRadius(r)}</span>
-                          {locked && (
-                            <Lock
-                              size={12}
-                              className="text-gold"
-                              strokeWidth={2.4}
-                            />
-                          )}
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-
             {isAuthenticated && (
               <button
                 onClick={refreshUsers}
@@ -211,6 +129,45 @@ export default function MapaPage() {
           </>
         }
       />
+
+      {/* Panel de radio de búsqueda: chips visibles siempre, sin
+          dropdown. El subtítulo de status se elimina; el conteo se
+          ve directamente en el popup del mapa (o en la lista). */}
+      <section className="border-b border-line bg-bone px-5 pb-3 pt-2">
+        <div className="flex items-baseline justify-between">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-text-2">
+            Radio de búsqueda
+          </p>
+          <p className="font-display text-base tabular text-text">
+            {fmtRadius(radius)}
+          </p>
+        </div>
+        <div className="mt-1.5 flex gap-1">
+          {RADII.map((r) => {
+            const locked = r > FREE_MAX;
+            const active = r === radius;
+            return (
+              <button
+                key={r}
+                onClick={() => !locked && setRadius(r)}
+                disabled={locked}
+                className={`flex h-8 flex-1 items-center justify-center gap-0.5 rounded text-[11px] font-semibold transition-colors ${
+                  active
+                    ? "bg-ink text-white"
+                    : locked
+                      ? "bg-paper text-mute"
+                      : "bg-paper text-text"
+                }`}
+              >
+                {locked && (
+                  <Lock size={10} className="text-gold" strokeWidth={2.4} />
+                )}
+                {r >= 1000 ? `${r / 1000}km` : `${r}m`}
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       <div className="relative flex-1 overflow-hidden">
         {view === "map" && (
