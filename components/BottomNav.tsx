@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -8,6 +7,7 @@ import {
   BookMarked,
   Flag,
   MessageCircle,
+  Radar,
   User,
 } from "lucide-react";
 import { useNotifications } from "@/components/notifications/NotificationsRoot";
@@ -17,10 +17,10 @@ type LucideIcon = typeof BookMarked;
 const TABS: ReadonlyArray<{
   id: "album" | "mapa" | "favoritos" | "chat" | "perfil";
   href: string;
-  icon: LucideIcon | "radar";
+  icon: LucideIcon;
 }> = [
   { id: "album", href: "/album", icon: BookMarked },
-  { id: "mapa", href: "/mapa", icon: "radar" },
+  { id: "mapa", href: "/mapa", icon: Radar },
   { id: "favoritos", href: "/favoritos", icon: Flag },
   { id: "chat", href: "/chat", icon: MessageCircle },
   { id: "perfil", href: "/perfil", icon: User },
@@ -83,18 +83,7 @@ export function BottomNav() {
                 }`}
               >
                 <span className="relative">
-                  {Icon === "radar" ? (
-                    <Image
-                      src="/radar.png"
-                      alt=""
-                      width={22}
-                      height={22}
-                      aria-hidden
-                      className={active ? "" : "opacity-70"}
-                    />
-                  ) : (
-                    <Icon size={22} strokeWidth={2} aria-hidden />
-                  )}
+                  <Icon size={22} strokeWidth={2} aria-hidden />
                   {badge > 0 && (
                     <span className="absolute -right-2 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-red-500 px-1 font-display text-[10px] leading-none text-white shadow-sh1">
                       {badge > 9 ? "9+" : badge}

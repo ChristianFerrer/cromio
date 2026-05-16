@@ -1,7 +1,7 @@
 # Cromio — Project Status
 
 <!-- AUTO:UPDATED:START -->
-_Last updated: **2026-05-13 00:43 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
+_Last updated: **2026-05-16 16:53 UTC** · branch `claude/setup-cromio-pwa-design-Tnidb`_
 <!-- AUTO:UPDATED:END -->
 
 > Hyperlocal PWA that connects collectors of the **Panini Mundial 2026** album by geolocation so they can swap stickers in person.
@@ -140,19 +140,19 @@ Or manually: `git config core.hooksPath .githooks`.
 ## Recent commits
 
 <!-- AUTO:COMMITS:START -->
-- bbdc04b fix(sw): auto-update y auto-reload — la causa real del bug del bottom nav _(42 minutes ago)_
-- 9940ba6 fix(bottomnav): altura fija 52px sin safe-area como referencia Whistle _(59 minutes ago)_
-- de030a0 fix(ui): nav más compacta (cap safe-area), radio dropdown chico, mapa fit con whenReady + 5px padding _(76 minutes ago)_
-- f5d7127 fix(ui): nav compact + radar popup banner + radius dropdown + 2% map padding _(2 hours ago)_
-- d2b5436 fix(ui): 8 ajustes — nav verde+anclado, mapa con header y auto-fit, onboarding radar, badges intercambio activo _(2 hours ago)_
-- 090d166 fix(trades): refresh router + cromo numbers + clarify 2-step flow _(3 hours ago)_
-- a0e6477 feat(trades): buzón de intercambios con 4 tabs + badge en álbum _(4 hours ago)_
-- 4606b0d fix(layout): bottom nav en flujo normal con flex column h-dvh _(11 hours ago)_
-- 972619f fix(bottomnav): anclar al visualViewport para evitar gap en iOS _(11 hours ago)_
-- 275cf43 fix: skeleton mapa sin pulse + radar más lento + selección vacía bloquea + sin ★ _(13 hours ago)_
-- 337c518 feat: quick wins no-visuales + avatar uniforme verde + nav estable _(13 hours ago)_
-- ad57ef5 perf(hooks): cross-navigation cache for user, collection and favourites _(28 hours ago)_
-- da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(28 hours ago)_
-- ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(34 hours ago)_
-- b7e8c8b style(match): trade button matches the contacts flag treatment _(35 hours ago)_
+- 655c4d5 fix(layout): contenedor (app) en position:fixed inset-0 — bypass dvh _(4 days ago)_
+- bbdc04b fix(sw): auto-update y auto-reload — la causa real del bug del bottom nav _(4 days ago)_
+- 9940ba6 fix(bottomnav): altura fija 52px sin safe-area como referencia Whistle _(4 days ago)_
+- de030a0 fix(ui): nav más compacta (cap safe-area), radio dropdown chico, mapa fit con whenReady + 5px padding _(4 days ago)_
+- f5d7127 fix(ui): nav compact + radar popup banner + radius dropdown + 2% map padding _(4 days ago)_
+- d2b5436 fix(ui): 8 ajustes — nav verde+anclado, mapa con header y auto-fit, onboarding radar, badges intercambio activo _(4 days ago)_
+- 090d166 fix(trades): refresh router + cromo numbers + clarify 2-step flow _(4 days ago)_
+- a0e6477 feat(trades): buzón de intercambios con 4 tabs + badge en álbum _(4 days ago)_
+- 4606b0d fix(layout): bottom nav en flujo normal con flex column h-dvh _(4 days ago)_
+- 972619f fix(bottomnav): anclar al visualViewport para evitar gap en iOS _(4 days ago)_
+- 275cf43 fix: skeleton mapa sin pulse + radar más lento + selección vacía bloquea + sin ★ _(4 days ago)_
+- 337c518 feat: quick wins no-visuales + avatar uniforme verde + nav estable _(4 days ago)_
+- ad57ef5 perf(hooks): cross-navigation cache for user, collection and favourites _(5 days ago)_
+- da43b7f fix(perf,nav): disable view transitions + add skeletons for instant nav _(5 days ago)_
+- ac06e4b feat(match,trade): selection-aware request, chat reuse, compact header _(5 days ago)_
 <!-- AUTO:COMMITS:END -->
